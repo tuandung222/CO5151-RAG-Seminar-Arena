@@ -361,6 +361,7 @@ with st.sidebar:
         hf_model_choice = st.selectbox(
             "Model Architecture:" if lang == "en" else "Kiến trúc mô hình:",
             options=[
+                "Qwen/Qwen3.5-9B (Next-Gen Multimodal Foundation)",
                 "Qwen/Qwen2.5-72B-Instruct (SOTA Flagship)",
                 "meta-llama/Llama-3.1-8B-Instruct (Academic Baseline)",
                 "Qwen/Qwen2.5-Coder-32B-Instruct (High-Precision Reasoning)",
@@ -617,7 +618,12 @@ with tab1:
             }
 
     # Determine Active State (Dynamically responsive to all UI controls: distractor, failure mode, model)
-    model_key = "meta-llama/Llama-3.1-8B-Instruct" if "llama" in cur_model.lower() else "Qwen/Qwen2.5-72B-Instruct"
+    if "3.5" in cur_model:
+        model_key = "Qwen/Qwen3.5-9B"
+    elif "llama" in cur_model.lower():
+        model_key = "meta-llama/Llama-3.1-8B-Instruct"
+    else:
+        model_key = "Qwen/Qwen2.5-72B-Instruct"
 
     if not inject_distractor:
         scenario_key = "clean_context"
@@ -878,7 +884,7 @@ with tab2:
         cached_case_t2 = cached_benchmark.get("tab2", {}).get("case_1", {})
         tab2_data = {
             "is_cached": True,
-            "model": "meta-llama/Llama-3.1-8B-Instruct" if "llama" in cur_model.lower() else "Qwen/Qwen2.5-72B-Instruct",
+            "model": "Qwen/Qwen3.5-9B" if "3.5" in cur_model else ("meta-llama/Llama-3.1-8B-Instruct" if "llama" in cur_model.lower() else "Qwen/Qwen2.5-72B-Instruct"),
             "naive": cached_case_t2.get("naive", {}),
             "graph": cached_case_t2.get("graph", {}),
             "question": q_tab2,
@@ -1072,7 +1078,7 @@ with tab3:
         
         tab3_data = {
             "is_cached": True,
-            "model": "Qwen/Qwen2.5-72B-Instruct",
+            "model": "Qwen/Qwen3.5-9B" if "3.5" in cur_model else "Qwen/Qwen2.5-72B-Instruct",
             "result": tab3_res_data,
             "question": cached_case_t3.get("question", q_tab3),
         }
@@ -1263,7 +1269,7 @@ with tab4:
         
         tab4_data = {
             "is_cached": True,
-            "model": "Qwen/Qwen2.5-72B-Instruct",
+            "model": "Qwen/Qwen3.5-9B" if "3.5" in cur_model else "Qwen/Qwen2.5-72B-Instruct",
             "result": active_f_res,
             "question": q_tab4,
         }
