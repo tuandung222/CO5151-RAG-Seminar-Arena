@@ -322,7 +322,7 @@ if "tab1_run" not in st.session_state and "tab1" in cached_benchmark:
     c0 = cached_benchmark["tab1"]["case_0"]
     st.session_state["tab1_run"] = {
         "is_cached": True,
-        "model": cached_benchmark.get("metadata", {}).get("model", "meta-llama/Llama-3.1-8B-Instruct"),
+        "model": c0.get("self", {}).get("model", "Qwen/Qwen2.5-72B-Instruct"),
         "pure": c0["pure"],
         "naive": c0["naive"],
         "self": c0["self"],
@@ -333,7 +333,7 @@ if "tab2_run" not in st.session_state and "tab2" in cached_benchmark:
     c1 = cached_benchmark["tab2"]["case_1"]
     st.session_state["tab2_run"] = {
         "is_cached": True,
-        "model": cached_benchmark.get("metadata", {}).get("model", "meta-llama/Llama-3.1-8B-Instruct"),
+        "model": c1.get("graph", {}).get("model", "Qwen/Qwen2.5-72B-Instruct"),
         "naive": c1["naive"],
         "graph": c1["graph"],
         "question": c1["question"],
@@ -343,7 +343,7 @@ if "tab3_run" not in st.session_state and "tab3" in cached_benchmark:
     c3 = cached_benchmark["tab3"]["case_3"]
     st.session_state["tab3_run"] = {
         "is_cached": True,
-        "model": cached_benchmark.get("metadata", {}).get("model", "meta-llama/Llama-3.1-8B-Instruct"),
+        "model": c3.get("result", {}).get("model", "Qwen/Qwen2.5-72B-Instruct"),
         "result": c3["result"],
         "question": c3["question"],
     }
@@ -352,7 +352,7 @@ if "tab4_run" not in st.session_state and "tab4" in cached_benchmark:
     c2 = cached_benchmark["tab4"]["case_2"]
     st.session_state["tab4_run"] = {
         "is_cached": True,
-        "model": cached_benchmark.get("metadata", {}).get("model", "meta-llama/Llama-3.1-8B-Instruct"),
+        "model": c2.get("result", {}).get("model", "Qwen/Qwen2.5-72B-Instruct"),
         "result": c2["result"],
         "question": c2["question"],
     }
