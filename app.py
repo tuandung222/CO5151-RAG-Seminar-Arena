@@ -696,7 +696,7 @@ with tab1:
         st.markdown("---")
         with st.expander("Scientific Anatomy of Context Poisoning (When Retrieval Hurts)", expanded=False):
             st.markdown("""
-            #### Why Semantic Similarity $\\neq$ Statutory Truth:
+            #### Why Semantic Similarity ≠ Statutory Truth:
             - **The Semantic Trap:** The repealed Article 32 of Labor Code 2012 has a high cosine similarity of **0.78** to queries about probation durations, because it contains identical legal vocabulary (*thời gian thử việc*, *hợp đồng*, *ngày*).
             - **The Naive RAG Failure:** Because Naive RAG blindly ranks by cosine similarity and concatenates chunks without reflection, the generator LLM is misled by the outdated text, falsely claiming probation is capped at **60 days**.
             - **The Self-RAG Defense:** Self-RAG's passage critic `[IsREL]` checks validity and recency, recognizes that Article 32/2012 has been repealed by Labor Code 2019, prunes it immediately, and retains only Article 25/2019 (180 days for enterprise executives).
@@ -813,18 +813,21 @@ with tab2:
 
         st.markdown("---")
         with st.expander("Hierarchical Map-Reduce Visual Architecture & Modularity Math", expanded=False):
-            st.markdown(r"""
+            st.markdown("""
             #### How GraphRAG Solves 'Local Blindness' (Edge et al., Microsoft Research 2024):
             Traditional **Naive RAG** retrieves only the top-k nearest chunks in embedding space. When a query requires a holistic synthesis (e.g., *"Summarize all employee termination grounds and severance rights across the labor code"*), Naive RAG exhibits **Local Blindness**—it pulls 2-3 isolated articles from Chapter III, completely missing related provisions in Chapter II, Chapter IX, and Chapter XII!
 
             **GraphRAG Algorithm:**
             1. **Graph Construction:** Extracts entities and statutory cross-references into a formal knowledge graph $G = (V, E)$.
-            2. **Community Detection (Newman's Modularity Maximization $Q$):**
-               $$Q = \\sum_{c=1}^C \\left[ \\frac{e_c}{2m} - \\left(\\frac{d_c}{2m}\\right)^2 \\right]$$
-               Partitions the 15 statutory articles into 3 dense thematic clusters:
-               - **Community 1:** Labor Contracts & Probation (Arts 13, 20, 24, 25, 26, 27)
-               - **Community 2:** Termination Grounds & Severance Compensation (Arts 34, 35, 36, 37, 40, 41, 46)
-               - **Community 3:** Discipline Principles & Sanctions (Arts 122, 125)
+            2. **Community Detection (Newman's Modularity Maximization):**
+            """)
+            st.latex(r"Q = \sum_{c=1}^C \left[ \frac{e_c}{2m} - \left(\frac{d_c}{2m}\right)^2 \right]")
+            st.markdown("""
+            Partitions the 15 statutory articles into 3 dense thematic clusters:
+            - **Community 1:** Labor Contracts & Probation (Arts 13, 20, 24, 25, 26, 27)
+            - **Community 2:** Termination Grounds & Severance Compensation (Arts 34, 35, 36, 37, 40, 41, 46)
+            - **Community 3:** Discipline Principles & Sanctions (Arts 122, 125)
+            
             3. **Hierarchical Map Phase:** Generates parallel thematic summary reports for each community simultaneously.
             4. **Global Reduce Phase:** The generator LLM performs multi-document synthesis over the community reports, ensuring **100% statutory coverage with zero blind spots**.
             """)
@@ -919,20 +922,16 @@ with tab3:
         # Scientific Deep-Dive: Token Probabilities & Logprobs in Self-RAG
         st.markdown("---")
         with st.expander("Theoretical & Engineering Deep Dive: Does Self-RAG use Token Probabilities (Logprobs)?", expanded=True):
-            st.markdown(r"""
-            #### 1. Theoretical Formulation (Asai et al., ICLR 2024)
-            **YES, absolutely.** In the original Self-RAG paper (*"Learning to Retrieve, Generate, and Critique through Self-Reflection"*), reflection tokens are trained directly into the language model vocabulary $\\mathcal{V}$.
-            At each generation step, the model computes the **Softmax probability distribution** over these tokens:
-            $$P(\\text{Token} = w \\mid x) = \\frac{\\exp(z_w)}{\\sum_{v \\in \\mathcal{V}} \\exp(z_v)}$$
+            st.markdown("#### 1. Theoretical Formulation (Asai et al., ICLR 2024)")
+            st.markdown("**YES, absolutely.** In the original Self-RAG paper (*'Learning to Retrieve, Generate, and Critique through Self-Reflection'*), reflection tokens are trained directly into the language model vocabulary $\\mathcal{V}$. At each generation step, the model computes the **Softmax probability distribution** over these tokens:")
+            st.latex(r"P(\text{Token} = w \mid x) = \frac{\exp(z_w)}{\sum_{v \in \mathcal{V}} \exp(z_v)}")
 
-            - **Adaptive Retrieval Gate $[\\text{Retrieve}]$:**
-              $$P(\\text{Retrieve} = \\text{yes}) = \\frac{P([\\text{Retrieve}])}{P([\\text{Retrieve}]) + P([\\text{No Retrieve}])}$$
-              If $P(\\text{Retrieve} = \\text{yes}) > \\tau_{\\text{threshold}}$ (default $\\tau = 0.5$), external retrieval is triggered; otherwise, the LLM generates purely from parametric memory.
-            
-            - **Segment Scoring & Reranking during Beam Search:**
-              Candidate generation segments are scored via a weighted sum of token log-probabilities:
-              $$\\text{Score}(y_t, d) = \\log P(y_t \\mid x, d) + w_{\\text{rel}} \\log P([\\text{Relevant}]) + w_{\\text{sup}} \\log P([\\text{Fully supported}]) + w_{\\text{use}} \\log P([\\text{Utility:5}])$$
-            """)
+            st.markdown("**Adaptive Retrieval Gate [Retrieve]:**")
+            st.latex(r"P(\text{Retrieve} = \text{yes}) = \frac{P([\text{Retrieve}])}{P([\text{Retrieve}]) + P([\text{No Retrieve}])}")
+            st.caption("If P(Retrieve = yes) > tau (default threshold tau = 0.5), external retrieval is triggered; otherwise, the LLM generates purely from parametric memory.")
+
+            st.markdown("**Segment Scoring & Reranking during Beam Search:**")
+            st.latex(r"\text{Score}(y_t, d) = \log P(y_t \mid x, d) + w_{\text{rel}} \log P([\text{Relevant}]) + w_{\text{sup}} \log P([\text{Fully supported}]) + w_{\text{use}} \log P([\text{Utility:5}])")
 
             st.markdown("""
             #### 2. Hugging Face API Capability: Can we retrieve token logprobs?
@@ -1068,8 +1067,10 @@ with tab4:
             #### How Forward-Looking Active Retrieval (FLARE) Operates (Jiang et al., EMNLP 2023):
             Unlike traditional RAG which retrieves passively upfront before writing a single word, **FLARE** generates forward drafts sentence-by-sentence:
             1. **Forward Draft Generation:** The LLM generates a candidate continuation sentence $S = (w_1, w_2, \\dots, w_L)$.
-            2. **Uncertainty Evaluation:** The system computes token-level log probabilities $P(w_i \\mid x, w_{<i})$. If any factual token's confidence drops below threshold $\\theta$:
-               $$\\min_{w_i \\in S} P(w_i) < \\theta$$
+            2. **Uncertainty Evaluation:** The system computes token-level log probabilities. If any factual token's confidence drops below threshold $\\theta$:
+            """)
+            st.latex(r"\min_{w_i \in S} P(w_i \mid x, w_{<i}) < \theta")
+            st.markdown("""
             3. **Active Query Formulation:** The low-confidence sentence is masked into a targeted retrieval query: `Search(query_subtopic)`.
             4. **Fact-Grounded Rewriting:** Only that specific sentence is rewritten using the newly retrieved evidence chunks.
             5. **Retain High-Confidence Sentences:** Sentences where the model is confident ($P \\ge \\theta$) are kept without performing retrieval, saving **60-80% of unnecessary retriever computations**!
