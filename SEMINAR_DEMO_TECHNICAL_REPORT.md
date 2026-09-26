@@ -36,7 +36,7 @@ To rigorously demonstrate and evaluate solutions to these challenges, we built a
 
 ### 3.1. Corpus Architecture
 - **Active Statutory Corpus:** 15 selected articles from the Vietnamese Labor Code 2019 (Law No. 45/2019/QH14, effective January 1, 2021). Spans contracts, probation limits, wages, unilateral termination rights, severance allowance, and labor discipline.
-- **Adversarial Distractor Passage:** Article 32 of Labor Code 2012 (Law No. 10/2012/QH13, officially repealed on Jan 1, 2021). It limits probation for technical roles to **60 days**, conflicting directly with the active 2019 statute (Article 25) which grants up to **180 days** for enterprise executives.
+- **Adversarial Distractor Passage:** Article 27 of Labor Code 2012 (Law No. 10/2012/QH13, officially repealed on Jan 1, 2021). It limits probation for technical roles to **60 days**, conflicting directly with the active 2019 statute (Article 25) which grants up to **180 days** for enterprise executives.
 
 ### 3.2. Dense Neural Vector Space
 - **Encoder Architecture:** `BAAI/bge-m3` (Multilingual, 1024 embedding dimensions).
@@ -80,7 +80,7 @@ To rigorously demonstrate and evaluate solutions to these challenges, we built a
 ### 4.2. Paradigm 2: Naive RAG (Lewis et al., NeurIPS 2020)
 - **Mechanism:** Linear pipeline. Retriever fetches top-k passages; chunks are concatenated into prompt:
   $$\text{Prompt} = [x \circ d_1 \circ d_2 \circ \dots \circ d_K]$$
-- **Observed Failure ("When Retrieval Hurts"):** Because repealed Article 32/2012 shares heavy keyword overlap with Article 25/2019, its cosine similarity reaches **0.78**. Naive RAG blindly injects it into context. The generator adopts the distractor, authoritatively stating the maximum probation is **60 days**. Retrieval degraded accuracy compared to parametric knowledge.
+- **Observed Failure ("When Retrieval Hurts"):** Because repealed Article 27/2012 shares heavy keyword overlap with Article 25/2019, its cosine similarity reaches **0.78**. Naive RAG blindly injects it into context. The generator adopts the distractor, authoritatively stating the maximum probation is **60 days**. Retrieval degraded accuracy compared to parametric knowledge.
 
 ### 4.3. Paradigm 3: Self-RAG (Asai et al., ICLR 2024)
 - **Mechanism:** Incorporates 4 reflection tokens to govern the inference lifecycle:
@@ -91,7 +91,7 @@ To rigorously demonstrate and evaluate solutions to these challenges, we built a
   4. `[IsUSE]`: Holistic utility score ($1 \sim 5$).
 - **Token Logprob Formulation:** During beam search, candidate generation segments are reranked using:
   $$\text{Score}(y_t, d) = \log P(y_t \mid x, d) + w_{\text{rel}} \log P([\text{Relevant}]) + w_{\text{sup}} \log P([\text{Fully supported}]) + w_{\text{use}} \log P([\text{Utility:5}])$$
-- **Observed Result:** Passage Critic detects statutory repeal in Article 32/2012 ($P = 8.5\% \to \text{Pruned}$), retains valid Article 25/2019 ($P = 96.2\%$), and outputs the verified 180-day probation limit.
+- **Observed Result:** Passage Critic detects statutory repeal in Article 27/2012 ($P = 8.5\% \to \text{Pruned}$), retains valid Article 25/2019 ($P = 96.2\%$), and outputs the verified 180-day probation limit.
 
 ### 4.4. Paradigm 4: GraphRAG (Edge et al., Microsoft Research 2024)
 - **Mechanism:** Constructs a Knowledge Graph $G = (V, E)$ of statutory cross-references, partitions the graph using **Greedy Modularity Maximization ($Q$)**:
