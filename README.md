@@ -8,36 +8,60 @@ app_port: 7860
 pinned: false
 ---
 
-# The RAG Paradigm Inspector · CO5151 Seminar Arena
+# ⚖️ CO5151 RAG Paradigm Inspector
 
-Hệ thống thực nghiệm đối chứng các cơ chế RAG khoa học phục vụ môn học **CO5151 (Advanced Agentic AI)** - Giảng viên: TS. Lê Xuân Bách (ĐHBK ĐHQG-HCM).
+[![Hugging Face Space](https://img.shields.io/badge/🤗%20Hugging%20Face-Space%20Live-yellow.svg)](https://huggingface.co/spaces/tuandunghcmut/CO5151-RAG-Seminar-Arena)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-tuandung222%2FCO5151--RAG--Seminar--Arena-blue?logo=github)](https://github.com/tuandung222/CO5151-RAG-Seminar-Arena)
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10+-3776AB.svg?logo=python&logoColor=white)](https://python.org)
+[![Streamlit App](https://img.shields.io/badge/Streamlit-FF4B4B.svg?logo=Streamlit&logoColor=white)](https://streamlit.io)
 
-## 4 Trục Thực Nghiệm Khoa Học
-1. **🛡️ When Retrieval Hurts:** Đo lường sự suy giảm độ chính xác của Naive RAG khi gặp văn bản hết hiệu lực / nhiễu (Lewis et al., 2020) so với cơ chế phản biện Self-RAG.
-2. **🕸️ GraphRAG vs. Global Synthesis:** Khắc phục tính mù cục bộ (Local Blindness) của Vector Search bằng đồ thị tri thức và tóm tắt cộng đồng Map-Reduce (Edge et al., Microsoft 2024).
-3. **🔍 Self-RAG Reflection Inspector:** Giải phẫu 4 token phản biện `[Retrieve]`, `[IsREL]`, `[IsSUP]`, `[IsUSE]` (Asai et al., ICLR 2024).
-4. **⚡ Active Retrieval (FLARE):** Truy xuất chủ động theo độ bất định của Token trong quá trình sinh nháp (Jiang et al., EMNLP 2023).
+Interactive empirical benchmark and diagnostic arena comparing **5 RAG paradigms** on authentic legal reasoning (Vietnamese Labor Code 2019 vs. obsolete 2012 distractors).
+
+Built for **CO5151 (Advanced Agentic AI)** seminar under **Dr. Lê Xuân Bách** at **HCMUT (ĐHBK ĐHQG-HCM)**.
 
 ---
 
-## Khởi Chạy Nhanh
+## 🎯 5 RAG Paradigms Evaluated
 
-### 1. Chạy trực tiếp (Local Python)
+| Paradigm | Key Mechanism | Paper Citation |
+|---|---|---|
+| **Pure LLM** | Direct generation without external knowledge grounding | Baseline |
+| **Naive RAG** | Top-k dense semantic vector retrieval | Lewis et al. (NeurIPS 2020) |
+| **Modular RAG** | Dense + BM25 reciprocal rank fusion + Cross-Encoder reranking | Gao et al. (2023) |
+| **Self-RAG** | Self-reflection critique tokens (`[Retrieve]`, `[IsREL]`, `[IsSUP]`, `[IsUSE]`) | Asai et al. (ICLR 2024) |
+| **GraphRAG** | Knowledge Graph extraction & hierarchical community summary synthesis | Edge et al. (Microsoft 2024) |
+| **FLARE** | Forward-looking active retrieval triggered by low token confidence | Jiang et al. (EMNLP 2023) |
+
+---
+
+## 🔗 Quick Links
+
+- 🌐 **Live Web App**: [tuandunghcmut-co5151-rag-seminar-arena.hf.space](https://tuandunghcmut-co5151-rag-seminar-arena.hf.space)
+- 🤗 **Hugging Face Space**: [tuandunghcmut/CO5151-RAG-Seminar-Arena](https://huggingface.co/spaces/tuandunghcmut/CO5151-RAG-Seminar-Arena)
+- 📑 **Slide & Technical Report**: [`SEMINAR_DEMO_TECHNICAL_REPORT.md`](./SEMINAR_DEMO_TECHNICAL_REPORT.md)
+
+---
+
+## 🚀 Quickstart
+
+### Local Setup
 ```bash
+git clone https://github.com/tuandung222/CO5151-RAG-Seminar-Arena.git
+cd CO5151-RAG-Seminar-Arena
 pip install -r requirements.txt
 streamlit run app.py
 ```
 
-### 2. Chạy qua Docker Compose
+### Docker
 ```bash
-docker compose up --build -d
+docker compose up -d
 ```
-Truy cập ứng dụng tại: `http://localhost:8501`.
+Access the application at `http://localhost:8501`.
 
-### 3. Deploy lên Hugging Face Spaces
-Tạo một Space mới trên Hugging Face (chọn SDK: Streamlit), sau đó push toàn bộ thư mục này lên repository của Space:
-```bash
-git remote add space https://huggingface.co/spaces/<username>/<space-name>
-git push space main
-```
-Hệ thống sẽ tự động build và chạy trực tiếp trên cloud miễn phí!
+---
+
+## 👥 Credits
+
+- **Course**: CO5151 Advanced Agentic AI — Ho Chi Minh City University of Technology (HCMUT)
+- **Instructor**: Dr. Lê Xuân Bách
+- **Author**: Tuan-Dung Le ([@tuandung222](https://github.com/tuandung222))
