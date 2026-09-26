@@ -1,0 +1,35 @@
+[
+  {
+    "id": "CASE_1_OUTDATED_LAW_HURTS",
+    "name": "Case 1: When Retrieval Hurts (Outdated BLLĐ 2012 vs Current BLLĐ 2019)",
+    "question": "Thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp (người quản lý doanh nghiệp) theo pháp luật hiện hành là bao nhiêu ngày?",
+    "focus": "Thực tế pháp lý: BLLĐ 2012 cũ tối đa chỉ 60 ngày; BLLĐ 2019 mới nâng lên 180 ngày. Khi retriever vớt phải điều luật 2012 cũ trong kho dữ liệu, Naive RAG bị lừa trả lời sai; Self-RAG nhận diện văn bản hết hiệu lực để bác bỏ.",
+    "distractor_passage": {
+      "article_id": "BLLD_2012_Dieu_27",
+      "title": "Điều 27. Thời gian thử việc - Bộ luật Lao động số 10/2012/QH13 (Hết hiệu lực từ 01/01/2021)",
+      "content": "Thời gian thử việc căn cứ vào tính chất và mức độ phức tạp của công việc nhưng chỉ được thử việc một lần đối với một công việc và bảo đảm điều kiện sau đây: 1. Không quá 60 ngày đối với công việc có chức danh nghề nghiệp cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên; 2. Không quá 30 ngày đối với công việc có chức danh trung cấp; 3. Không quá 06 ngày làm việc đối với công việc khác."
+    },
+    "expected_real_fact": "Không quá 180 ngày đối với công việc của người quản lý doanh nghiệp (Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14 hiện hành)."
+  },
+  {
+    "id": "CASE_2_GLOBAL_SYNTHESIS",
+    "name": "Case 2: Global Question (Naive RAG vs GraphRAG Community Summary)",
+    "question": "Tổng hợp toàn diện các trường hợp Người sử dụng lao động KHÔNG ĐƯỢC hoặc BỊ HẠN CHẾ quyền chấm dứt hợp đồng và xử lý kỷ luật đối với người lao động?",
+    "focus": "Thực tế pháp lý: Quy định bảo vệ lao động nằm rải rác ở 2 chương khác nhau: Chương III về Đơn phương chấm dứt (Điều 37) và Chương VIII về Kỷ luật sa thải (Điều 122). Naive RAG vector search chỉ bốc được 1 chương; GraphRAG kết nối đồ thị gom đủ cả 2 chế định.",
+    "relevant_articles": ["Dieu_37", "Dieu_122", "Dieu_36"]
+  },
+  {
+    "id": "CASE_3_ACTIVE_FLARE",
+    "name": "Case 3: Active Retrieval / FLARE (Forward-Looking Retrieval on Demand)",
+    "question": "Khi người lao động đơn phương chấm dứt hợp đồng lao động trái pháp luật thì có được nhận trợ cấp thôi việc không và phải bồi thường những khoản tiền cụ thể nào?",
+    "focus": "Thực tế pháp lý: Nguyên tắc chung không được trợ cấp thì LLM tự nhớ được với độ tự tin cao; nhưng các định lượng chế tài chính xác (nửa tháng tiền lương, tiền lương ngày không báo trước, chi phí đào tạo theo Điều 40) kích hoạt truy xuất tại chỗ.",
+    "relevant_articles": ["Dieu_40", "Dieu_46"]
+  },
+  {
+    "id": "CASE_4_SELF_RAG_REFLECTION",
+    "name": "Case 4: Self-RAG Reflection Tokens Inspector ([Retrieve], [IsREL], [IsSUP])",
+    "question": "Mức tiền lương thử việc tối thiểu bằng bao nhiêu phần trăm lương chính thức, và nếu người lao động tự ý bỏ việc 05 ngày liên tục thì bị xử lý ra sao?",
+    "focus": "Thực tế pháp lý: Câu hỏi đa ý (multi-intent) đòi hỏi tích hợp Điều 26 (85% lương thử việc) và Điều 36/125 (đơn phương chấm dứt và sa thải do bỏ việc 05 ngày). Minh chứng vai trò lọc tài liệu rác của [IsREL] và xác thực chứng cứ [IsSUP].",
+    "relevant_articles": ["Dieu_26", "Dieu_36", "Dieu_125"]
+  }
+]

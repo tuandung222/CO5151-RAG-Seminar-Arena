@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  rag-inspector:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: co5151-rag-inspector
+    ports:
+      - "8501:8501"
+    environment:
+      - LLM_PROVIDER=huggingface
+      - HF_TOKEN=${HF_TOKEN}
+      - LLM_MODEL=meta-llama/Llama-3.1-8B-Instruct
+    restart: unless-stopped
