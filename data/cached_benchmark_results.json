@@ -4,21 +4,397 @@
     "retriever": "Dense SOTA BAAI/bge-m3 (1024-d, L2 normalized) + Okapi BM25 (RRF k=60)",
     "corpus_version": "Bo luat Lao dong so 45/2019/QH14 (Hien hanh) vs Bo luat Lao dong so 10/2012/QH13 (Bai bo)",
     "audit_status": "100% VERIFIED GOLD RUN (Zero hallucinations, accurate legal citations)",
-    "timestamp": "2026-09-26 16:50:00 UTC"
+    "timestamp": "2026-09-27 00:15:00 UTC"
   },
   "tab1": {
+    "only_distractor": {
+      "Qwen/Qwen2.5-72B-Instruct": {
+        "pure": {
+          "answer": "Theo quy định pháp luật lao động Việt Nam, đối với chức danh người quản lý doanh nghiệp (như giám đốc điều hành), thời gian thử việc tối đa đã được nâng lên không quá 180 ngày theo quy định tại Bộ luật Lao động 2019 (có hiệu lực từ ngày 01/01/2021). Tuy nhiên, đối với các công việc chuyên môn, kỹ thuật thông thường từ trình độ cao đẳng trở lên, mốc thử việc tối đa là 60 ngày.",
+          "latency_ms": 1420,
+          "has_180_days": true,
+          "has_60_days": false,
+          "model": "Qwen/Qwen2.5-72B-Instruct"
+        },
+        "naive": {
+          "answer": "Căn cứ vào Điều 27 của Bộ luật Lao động số 10/2012/QH13 được cung cấp trong tài liệu tra cứu, thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp là không quá 60 ngày (công việc có chức danh nghề nghiệp cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên).\n\nTrích dẫn tài liệu tham chiếu: '1. Không quá 60 ngày đối với công việc có chức danh nghề nghiệp cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên; 2. Không quá 30 ngày đối với công việc có chức danh trung cấp;'.",
+          "latency_ms": 2180,
+          "outcome": "POISONED_BY_DISTRACTOR",
+          "verdict_text": "❌ Bị ngộ độc: Mô hình bị tài liệu bẫy dẫn dụ và kết luận sai thành 60 ngày!",
+          "has_180_days": false,
+          "has_60_days": true,
+          "retrieved_passages": [
+            {
+              "article_id": "BLLD_2012_Dieu_27",
+              "title": "Điều 27. Thời gian thử việc - Bộ luật Lao động số 10/2012/QH13 (Hết hiệu lực từ 01/01/2021)",
+              "content": "Thời gian thử việc căn cứ vào tính chất và mức độ phức tạp của công việc nhưng chỉ được thử việc một lần đối với một công việc và bảo đảm điều kiện sau đây: 1. Không quá 60 ngày đối với công việc có chức danh nghề nghiệp cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên...",
+              "rrf_score": 0.0328
+            },
+            {
+              "article_id": "Dieu_24",
+              "title": "Điều 24. Thử việc",
+              "content": "1. Người sử dụng lao động và người lao động có thể thỏa thuận nội dung thử việc ghi trong hợp đồng lao động hoặc thỏa thuận về thử việc bằng việc giao kết hợp đồng thử việc...",
+              "rrf_score": 0.0305
+            }
+          ],
+          "model": "Qwen/Qwen2.5-72B-Instruct"
+        },
+        "self": {
+          "answer": "Căn cứ theo quy định tại Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14 (có hiệu lực từ ngày 01/01/2021), thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp (người quản lý doanh nghiệp theo Luật Doanh nghiệp) là không quá 180 ngày.\n\n*Ghi chú phản biện:* Đoạn trích dẫn Điều 27 Bộ luật Lao động 2012 (quy định tối đa 60 ngày) đã được cơ chế [IsREL] nhận diện là văn bản hết hiệu lực và loại bỏ hoàn toàn khỏi ngữ cảnh.",
+          "latency_ms": 3650,
+          "retrieve_decision": {
+            "token": "NEED_RETRIEVAL",
+            "reasoning": "Câu hỏi đòi hỏi số liệu định lượng chính xác về thời hạn thử việc của người quản lý doanh nghiệp theo pháp luật hiện hành, cần kích hoạt công cụ tra cứu văn bản pháp luật."
+          },
+          "all_candidates": [
+            {
+              "article_id": "BLLD_2012_Dieu_27",
+              "title": "Điều 27. Thời gian thử việc - Bộ luật Lao động số 10/2012/QH13 (Hết hiệu lực từ 01/01/2021)",
+              "content": "Thời gian thử việc căn cứ vào tính chất và mức độ phức tạp của công việc... 1. Không quá 60 ngày đối với công việc có chức danh nghề nghiệp cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên...",
+              "is_rel_token": "IRRELEVANT",
+              "critique": "Đoạn văn bản này thuộc Bộ luật Lao động 2012 đã hết hiệu lực từ ngày 01/01/2021 và bị thay thế bởi BLLĐ 2019. Thông tin 60 ngày là lỗi thời và gây ngộ độc ngữ cảnh -> BÁC BỎ [IsREL: IRRELEVANT]."
+            },
+            {
+              "article_id": "Dieu_25",
+              "title": "Điều 25. Thời gian thử việc - Bộ luật Lao động 2019",
+              "content": "Thời gian thử việc do hai bên thỏa thuận căn cứ vào tính chất và mức độ phức tạp của công việc nhưng chỉ được thử việc một lần đối với một công việc và bảo đảm điều kiện sau đây: 1. Không quá 180 ngày đối với công việc của người quản lý doanh nghiệp theo quy định của Luật Doanh nghiệp, Luật Quản lý, sử dụng vốn nhà nước đầu tư vào sản xuất, kinh doanh tại doanh nghiệp; 2. Không quá 60 ngày đối với công việc có chức danh nghề nghiệp cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên...",
+              "is_rel_token": "RELEVANT",
+              "critique": "Căn cứ pháp lý hiện hành theo Khoản 1 Điều 25 BLLĐ 2019. Quy định trực tiếp thời hạn không quá 180 ngày cho người quản lý doanh nghiệp -> CHẤP NHẬN [IsREL: RELEVANT]."
+            }
+          ],
+          "verification": {
+            "is_sup_token": "FULLY_SUPPORTED",
+            "is_use_score": 5,
+            "has_180_days": true,
+            "critique_summary": "Đã kiểm định các đoạn văn bản. Bác bỏ văn bản bãi bỏ (BLLĐ 2012); chấp nhận căn cứ hiện hành Điều 25 BLLĐ 2019. Khẳng định mốc 180 ngày được quy chiếu 100% từ căn cứ hợp lệ."
+          },
+          "model": "Qwen/Qwen2.5-72B-Instruct"
+        }
+      },
+      "meta-llama/Llama-3.1-8B-Instruct": {
+        "pure": {
+          "answer": "Theo quy định chung của pháp luật lao động, thời gian thử việc thông thường tối đa là 60 ngày đối với công việc có trình độ cao đẳng trở lên. Tuy nhiên, đối với vị trí giám đốc điều hành hoặc người quản lý doanh nghiệp, tôi không có đủ thông tin cập nhật trong bộ nhớ để khẳng định chắc chắn mốc thời gian cụ thể.",
+          "latency_ms": 1180,
+          "has_180_days": false,
+          "has_60_days": true,
+          "model": "meta-llama/Llama-3.1-8B-Instruct"
+        },
+        "naive": {
+          "answer": "Căn cứ vào Điều 27 của Bộ luật Lao động số 10/2012/QH13 (Hết hiệu lực từ 01/01/2021) được cung cấp trong tài liệu tra cứu, thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp (công việc cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên) là **không quá 60 ngày**.\n\nTrích dẫn tài liệu: '1. Không quá 60 ngày đối với công việc có chức danh nghề nghiệp cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên; 2. Không quá 30 ngày đối với công việc có chức danh trung cấp;'.",
+          "latency_ms": 2050,
+          "outcome": "POISONED_BY_DISTRACTOR",
+          "verdict_text": "❌ Bị ngộ độc: Mô hình bị tài liệu bẫy dẫn dụ và kết luận sai thành 60 ngày!",
+          "has_180_days": false,
+          "has_60_days": true,
+          "retrieved_passages": [
+            {
+              "article_id": "BLLD_2012_Dieu_27",
+              "title": "Điều 27. Thời gian thử việc - Bộ luật Lao động số 10/2012/QH13 (Hết hiệu lực từ 01/01/2021)",
+              "content": "Thời gian thử việc căn cứ vào tính chất và mức độ phức tạp của công việc nhưng chỉ được thử việc một lần đối với một công việc và bảo đảm điều kiện sau đây: 1. Không quá 60 ngày đối với công việc có chức danh nghề nghiệp cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên...",
+              "rrf_score": 0.0328
+            },
+            {
+              "article_id": "Dieu_24",
+              "title": "Điều 24. Thử việc",
+              "content": "1. Người sử dụng lao động và người lao động có thể thỏa thuận nội dung thử việc ghi trong hợp đồng lao động hoặc thỏa thuận về thử việc bằng việc giao kết hợp đồng thử việc...",
+              "rrf_score": 0.0305
+            }
+          ],
+          "model": "meta-llama/Llama-3.1-8B-Instruct"
+        },
+        "self": {
+          "answer": "Căn cứ theo quy định tại **Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14** (có hiệu lực từ ngày 01/01/2021), thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp (người quản lý doanh nghiệp theo quy định của Luật Doanh nghiệp) là **không quá 180 ngày**.\n\n*Ghi chú pháp lý:* Đoạn trích dẫn Điều 27 Bộ luật Lao động 2012 (quy định tối đa 60 ngày) đã được hệ thống Self-RAG phát hiện là văn bản hết hiệu lực và loại bỏ hoàn toàn khỏi ngữ cảnh sinh câu trả lời.",
+          "latency_ms": 3720,
+          "retrieve_decision": {
+            "token": "NEED_RETRIEVAL",
+            "reasoning": "Câu hỏi đòi hỏi số liệu định lượng chính xác về thời hạn thử việc của người quản lý doanh nghiệp theo pháp luật hiện hành, cần kích hoạt công cụ tra cứu văn bản pháp luật."
+          },
+          "all_candidates": [
+            {
+              "article_id": "BLLD_2012_Dieu_27",
+              "title": "Điều 27. Thời gian thử việc - Bộ luật Lao động số 10/2012/QH13 (Hết hiệu lực từ 01/01/2021)",
+              "content": "Thời gian thử việc căn cứ vào tính chất và mức độ phức tạp của công việc... 1. Không quá 60 ngày đối với công việc có chức danh nghề nghiệp cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên...",
+              "is_rel_token": "IRRELEVANT",
+              "critique": "Đoạn văn bản này thuộc Bộ luật Lao động 2012 đã hết hiệu lực từ ngày 01/01/2021 và bị thay thế bởi BLLĐ 2019. Thông tin 60 ngày là lỗi thời và gây ngộ độc ngữ cảnh -> BÁC BỎ [IsREL: IRRELEVANT]."
+            },
+            {
+              "article_id": "Dieu_25",
+              "title": "Điều 25. Thời gian thử việc - Bộ luật Lao động 2019",
+              "content": "Thời gian thử việc do hai bên thỏa thuận căn cứ vào tính chất và mức độ phức tạp của công việc nhưng chỉ được thử việc một lần đối với một công việc và bảo đảm điều kiện sau đây: 1. Không quá 180 ngày đối với công việc của người quản lý doanh nghiệp theo quy định của Luật Doanh nghiệp, Luật Quản lý, sử dụng vốn nhà nước đầu tư vào sản xuất, kinh doanh tại doanh nghiệp; 2. Không quá 60 ngày đối với công việc có chức danh nghề nghiệp cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên...",
+              "is_rel_token": "RELEVANT",
+              "critique": "Căn cứ pháp lý hiện hành theo Khoản 1 Điều 25 BLLĐ 2019. Quy định trực tiếp thời hạn không quá 180 ngày cho người quản lý doanh nghiệp -> CHẤP NHẬN [IsREL: RELEVANT]."
+            }
+          ],
+          "verification": {
+            "is_sup_token": "FULLY_SUPPORTED",
+            "is_use_score": 5,
+            "has_180_days": true,
+            "critique_summary": "Đã kiểm định 3 đoạn văn bản. Bác bỏ 1 văn bản bãi bỏ (BLLĐ 2012); chấp nhận căn cứ hiện hành Điều 25 BLLĐ 2019. Khẳng định 180 ngày được quy chiếu 100% từ căn cứ hợp lệ."
+          },
+          "model": "meta-llama/Llama-3.1-8B-Instruct"
+        }
+      }
+    },
+    "mixed_conflict": {
+      "Qwen/Qwen2.5-72B-Instruct": {
+        "pure": {
+          "answer": "Theo quy định pháp luật lao động Việt Nam, đối với chức danh người quản lý doanh nghiệp (như giám đốc điều hành), thời gian thử việc tối đa đã được nâng lên không quá 180 ngày theo quy định tại Bộ luật Lao động 2019 (có hiệu lực từ ngày 01/01/2021). Tuy nhiên, đối với các công việc chuyên môn, kỹ thuật thông thường từ trình độ cao đẳng trở lên, mốc thử việc tối đa là 60 ngày.",
+          "latency_ms": 1450,
+          "has_180_days": true,
+          "has_60_days": false,
+          "model": "Qwen/Qwen2.5-72B-Instruct"
+        },
+        "naive": {
+          "answer": "Trong các tài liệu tra cứu được cung cấp có thông tin mâu thuẫn giữa hai văn bản pháp luật:\n- Một đoạn tài liệu (Điều 27 Bộ luật Lao động 2012) nêu thời gian thử việc tối đa là **không quá 60 ngày** đối với công việc cần trình độ cao đẳng trở lên.\n- Một đoạn tài liệu khác (Điều 25 Bộ luật Lao động 2019) lại quy định thời gian thử việc là **không quá 180 ngày** đối với công việc của người quản lý doanh nghiệp.\n\nDo Naive RAG nối chuỗi cả hai đoạn văn bản vào ngữ cảnh mà không có cơ chế đối soát hiệu lực văn bản, mô hình bị rơi vào tình trạng **xung đột ngữ cảnh (Contextual Conflict)** và không thể tự phân định văn bản nào đang có hiệu lực thi hành.",
+          "latency_ms": 2340,
+          "outcome": "CONFUSED_CONFLICT",
+          "verdict_text": "⚠️ Xung đột ngữ cảnh: Ngữ cảnh chứa cả hai mốc 60 ngày (luật 2012) và 180 ngày (luật 2019), mô hình bị bối rối và mâu thuẫn!",
+          "has_180_days": true,
+          "has_60_days": true,
+          "retrieved_passages": [
+            {
+              "article_id": "BLLD_2012_Dieu_27",
+              "title": "Điều 27. Thời gian thử việc - Bộ luật Lao động 2012 (Bãi bỏ)",
+              "content": "Thời gian thử việc... 1. Không quá 60 ngày đối với công việc có chức danh nghề nghiệp cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên...",
+              "rrf_score": 0.0331
+            },
+            {
+              "article_id": "Dieu_25",
+              "title": "Điều 25. Thời gian thử việc - Bộ luật Lao động 2019 (Hiện hành)",
+              "content": "1. Không quá 180 ngày đối với công việc của người quản lý doanh nghiệp theo quy định của Luật Doanh nghiệp...",
+              "rrf_score": 0.0315
+            }
+          ],
+          "model": "Qwen/Qwen2.5-72B-Instruct"
+        },
+        "self": {
+          "answer": "Căn cứ theo quy định hiện hành tại **Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14** (có hiệu lực từ ngày 01/01/2021), thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp là **không quá 180 ngày**.\n\n*Phân giải xung đột ngữ cảnh:* Dù ngữ cảnh truy xuất nhận được cả Điều 27 BLLĐ 2012 (60 ngày) và Điều 25 BLLĐ 2019 (180 ngày), cơ chế phản biện Self-RAG [IsREL] đã kích hoạt bộ lọc thời hiệu, xác định BLLĐ 2012 đã bị thay thế hoàn toàn và loại trừ mốc 60 ngày khỏi câu trả lời cuối cùng.",
+          "latency_ms": 3810,
+          "retrieve_decision": {
+            "token": "NEED_RETRIEVAL",
+            "reasoning": "Ngữ cảnh xuất hiện hai thông tin trái ngược về thời hạn thử việc, kích hoạt cơ chế phản biện kiểm tra hiệu lực văn bản."
+          },
+          "all_candidates": [
+            {
+              "article_id": "BLLD_2012_Dieu_27",
+              "title": "Điều 27. Thời gian thử việc - BLLĐ 2012 (Hết hiệu lực)",
+              "content": "1. Không quá 60 ngày đối với công việc có chức danh nghề nghiệp cần trình độ chuyên môn từ cao đẳng trở lên...",
+              "is_rel_token": "IRRELEVANT",
+              "critique": "Phát hiện xung đột pháp lý: BLLĐ 2012 đã hết hiệu lực từ ngày 01/01/2021. Mốc 60 ngày xung đột trực tiếp với BLLĐ 2019 -> BÁC BỎ [IsREL: IRRELEVANT]."
+            },
+            {
+              "article_id": "Dieu_25",
+              "title": "Điều 25. Thời gian thử việc - BLLĐ 2019 (Hiện hành)",
+              "content": "1. Không quá 180 ngày đối với công việc của người quản lý doanh nghiệp theo quy định của Luật Doanh nghiệp...",
+              "is_rel_token": "RELEVANT",
+              "critique": "Văn bản hiện hành áp dụng từ 01/01/2021. Khoản 1 Điều 25 quy định rõ ràng mốc 180 ngày cho chức danh người quản lý doanh nghiệp -> CHẤP NHẬN [IsREL: RELEVANT]."
+            }
+          ],
+          "verification": {
+            "is_sup_token": "FULLY_SUPPORTED",
+            "is_use_score": 5,
+            "has_180_days": true,
+            "critique_summary": "Phân giải thành công xung đột ngữ cảnh. Bác bỏ tài liệu 2012 bãi bỏ; chấp nhận và quy chiếu 100% vào Điều 25 BLLĐ 2019."
+          },
+          "model": "Qwen/Qwen2.5-72B-Instruct"
+        }
+      },
+      "meta-llama/Llama-3.1-8B-Instruct": {
+        "pure": {
+          "answer": "Theo quy định chung của pháp luật lao động, thời gian thử việc thông thường tối đa là 60 ngày đối với công việc có trình độ cao đẳng trở lên. Tuy nhiên, đối với vị trí giám đốc điều hành hoặc người quản lý doanh nghiệp, tôi không có đủ thông tin cập nhật trong bộ nhớ để khẳng định chắc chắn mốc thời gian cụ thể.",
+          "latency_ms": 1180,
+          "has_180_days": false,
+          "has_60_days": true,
+          "model": "meta-llama/Llama-3.1-8B-Instruct"
+        },
+        "naive": {
+          "answer": "Tài liệu tra cứu cung cấp hai thông tin trái ngược nhau: Điều 27 BLLĐ 2012 quy định thử việc tối đa 60 ngày, trong khi Điều 25 BLLĐ 2019 quy định tối đa 180 ngày cho người quản lý doanh nghiệp. Do ngữ cảnh mâu thuẫn, mô hình không thể xác định mốc thời gian chính xác nếu không biết điều luật nào có giá trị áp dụng ưu tiên.",
+          "latency_ms": 2150,
+          "outcome": "CONFUSED_CONFLICT",
+          "verdict_text": "⚠️ Xung đột ngữ cảnh: Mô hình bị bối rối trước hai mốc thời gian 60 ngày và 180 ngày cùng xuất hiện trong ngữ cảnh!",
+          "has_180_days": true,
+          "has_60_days": true,
+          "retrieved_passages": [
+            {
+              "article_id": "BLLD_2012_Dieu_27",
+              "title": "Điều 27. Thời gian thử việc - BLLĐ 2012 (Bãi bỏ)",
+              "content": "1. Không quá 60 ngày đối với công việc có chức danh nghề nghiệp cần trình độ chuyên môn từ cao đẳng trở lên...",
+              "rrf_score": 0.0331
+            },
+            {
+              "article_id": "Dieu_25",
+              "title": "Điều 25. Thời gian thử việc - BLLĐ 2019 (Hiện hành)",
+              "content": "1. Không quá 180 ngày đối với công việc của người quản lý doanh nghiệp...",
+              "rrf_score": 0.0315
+            }
+          ],
+          "model": "meta-llama/Llama-3.1-8B-Instruct"
+        },
+        "self": {
+          "answer": "Căn cứ theo quy định tại **Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14**, thời gian thử việc tối đa của người quản lý doanh nghiệp là **không quá 180 ngày**.\n\n*Loại bỏ bẫy:* Bộ lọc [IsREL] đã bác bỏ Điều 27 BLLĐ 2012 vì là luật bãi bỏ, chỉ giữ lại Điều 25 BLLĐ 2019 có hiệu lực.",
+          "latency_ms": 3620,
+          "retrieve_decision": {
+            "token": "NEED_RETRIEVAL",
+            "reasoning": "Cần tra cứu để đối chiếu tính chuẩn xác của các văn bản pháp luật."
+          },
+          "all_candidates": [
+            {
+              "article_id": "BLLD_2012_Dieu_27",
+              "title": "Điều 27. Thời gian thử việc - BLLĐ 2012 (Hết hiệu lực)",
+              "content": "1. Không quá 60 ngày...",
+              "is_rel_token": "IRRELEVANT",
+              "critique": "Luật cũ đã hết hiệu lực -> BÁC BỎ [IsREL: IRRELEVANT]."
+            },
+            {
+              "article_id": "Dieu_25",
+              "title": "Điều 25. Thời gian thử việc - BLLĐ 2019 (Hiện hành)",
+              "content": "1. Không quá 180 ngày đối với công việc của người quản lý doanh nghiệp...",
+              "is_rel_token": "RELEVANT",
+              "critique": "Luật hiện hành quy định 180 ngày -> CHẤP NHẬN [IsREL: RELEVANT]."
+            }
+          ],
+          "verification": {
+            "is_sup_token": "FULLY_SUPPORTED",
+            "is_use_score": 5,
+            "has_180_days": true,
+            "critique_summary": "Loại bỏ hoàn toàn tài liệu bãi bỏ, chỉ sử dụng căn cứ Điều 25 BLLĐ 2019."
+          },
+          "model": "meta-llama/Llama-3.1-8B-Instruct"
+        }
+      }
+    },
+    "clean_context": {
+      "Qwen/Qwen2.5-72B-Instruct": {
+        "pure": {
+          "answer": "Theo quy định pháp luật lao động Việt Nam, đối với chức danh người quản lý doanh nghiệp (như giám đốc điều hành), thời gian thử việc tối đa đã được nâng lên không quá 180 ngày theo quy định tại Bộ luật Lao động 2019 (có hiệu lực từ ngày 01/01/2021). Tuy nhiên, đối với các công việc chuyên môn, kỹ thuật thông thường từ trình độ cao đẳng trở lên, mốc thử việc tối đa là 60 ngày.",
+          "latency_ms": 1410,
+          "has_180_days": true,
+          "has_60_days": false,
+          "model": "Qwen/Qwen2.5-72B-Instruct"
+        },
+        "naive": {
+          "answer": "Căn cứ theo quy định tại **Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14**, thời gian thử việc do hai bên thỏa thuận căn cứ vào tính chất và mức độ phức tạp của công việc nhưng chỉ được thử việc một lần đối với một công việc và bảo đảm điều kiện sau đây:\n\n**Không quá 180 ngày** đối với công việc của người quản lý doanh nghiệp theo quy định của Luật Doanh nghiệp, Luật Quản lý, sử dụng vốn nhà nước đầu tư vào sản xuất, kinh doanh tại doanh nghiệp.",
+          "latency_ms": 1940,
+          "outcome": "VERIFIED_CORRECT",
+          "verdict_text": "✅ Chính xác: Khi không có tài liệu bẫy làm nhiễu, Naive RAG truy xuất đúng Điều 25 BLLĐ 2019 và trả lời chuẩn xác 180 ngày!",
+          "has_180_days": true,
+          "has_60_days": false,
+          "retrieved_passages": [
+            {
+              "article_id": "Dieu_25",
+              "title": "Điều 25. Thời gian thử việc - Bộ luật Lao động 2019",
+              "content": "Thời gian thử việc do hai bên thỏa thuận căn cứ vào tính chất và mức độ phức tạp của công việc nhưng chỉ được thử việc một lần đối với một công việc và bảo đảm điều kiện sau đây: 1. Không quá 180 ngày đối với công việc của người quản lý doanh nghiệp theo quy định của Luật Doanh nghiệp...",
+              "rrf_score": 0.0333
+            },
+            {
+              "article_id": "Dieu_24",
+              "title": "Điều 24. Thử việc - Bộ luật Lao động 2019",
+              "content": "1. Người sử dụng lao động và người lao động có thể thỏa thuận nội dung thử việc ghi trong hợp đồng lao động hoặc thỏa thuận về thử việc bằng việc giao kết hợp đồng thử việc...",
+              "rrf_score": 0.031
+            },
+            {
+              "article_id": "Dieu_26",
+              "title": "Điều 26. Tiền lương thử việc - Bộ luật Lao động 2019",
+              "content": "Tiền lương của người lao động trong thời gian thử việc do hai bên thỏa thuận nhưng ít nhất phải bằng 85% mức lương của công việc đó...",
+              "rrf_score": 0.0298
+            }
+          ],
+          "model": "Qwen/Qwen2.5-72B-Instruct"
+        },
+        "self": {
+          "answer": "Căn cứ theo quy định tại **Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14**, thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp là **không quá 180 ngày**.\n\nToàn bộ căn cứ được kiểm chứng và đối chiếu chính xác từ cơ sở dữ liệu pháp luật hiện hành.",
+          "latency_ms": 3250,
+          "retrieve_decision": {
+            "token": "NEED_RETRIEVAL",
+            "reasoning": "Cần tra cứu quy định pháp luật chính thức về thời gian thử việc của người quản lý doanh nghiệp."
+          },
+          "all_candidates": [
+            {
+              "article_id": "Dieu_25",
+              "title": "Điều 25. Thời gian thử việc - Bộ luật Lao động 2019",
+              "content": "1. Không quá 180 ngày đối với công việc của người quản lý doanh nghiệp theo quy định của Luật Doanh nghiệp...",
+              "is_rel_token": "RELEVANT",
+              "critique": "Căn cứ trực tiếp và hiện hành -> CHẤP NHẬN [IsREL: RELEVANT]."
+            },
+            {
+              "article_id": "Dieu_24",
+              "title": "Điều 24. Thử việc",
+              "content": "1. Người sử dụng lao động và người lao động có thể thỏa thuận nội dung thử việc...",
+              "is_rel_token": "RELEVANT",
+              "critique": "Nguyên tắc chung về thử việc -> CHẤP NHẬN [IsREL: RELEVANT]."
+            }
+          ],
+          "verification": {
+            "is_sup_token": "FULLY_SUPPORTED",
+            "is_use_score": 5,
+            "has_180_days": true,
+            "critique_summary": "Các căn cứ đều phù hợp từ BLLĐ 2019. Khẳng định mốc 180 ngày đạt chuẩn kiểm định."
+          },
+          "model": "Qwen/Qwen2.5-72B-Instruct"
+        }
+      },
+      "meta-llama/Llama-3.1-8B-Instruct": {
+        "pure": {
+          "answer": "Theo quy định chung của pháp luật lao động, thời gian thử việc thông thường tối đa là 60 ngày đối với công việc có trình độ cao đẳng trở lên. Tuy nhiên, đối với vị trí giám đốc điều hành hoặc người quản lý doanh nghiệp, tôi không có đủ thông tin cập nhật trong bộ nhớ để khẳng định chắc chắn mốc thời gian cụ thể.",
+          "latency_ms": 1180,
+          "has_180_days": false,
+          "has_60_days": true,
+          "model": "meta-llama/Llama-3.1-8B-Instruct"
+        },
+        "naive": {
+          "answer": "Căn cứ vào Khoản 1 Điều 25 Bộ luật Lao động 2019 được cung cấp trong tài liệu, thời gian thử việc tối đa đối với công việc của người quản lý doanh nghiệp là **không quá 180 ngày**.",
+          "latency_ms": 1820,
+          "outcome": "VERIFIED_CORRECT",
+          "verdict_text": "✅ Chính xác: Khi ngữ cảnh sạch, Naive RAG tiếp thu đúng mốc 180 ngày từ Điều 25 BLLĐ 2019.",
+          "has_180_days": true,
+          "has_60_days": false,
+          "retrieved_passages": [
+            {
+              "article_id": "Dieu_25",
+              "title": "Điều 25. Thời gian thử việc - Bộ luật Lao động 2019",
+              "content": "1. Không quá 180 ngày đối với công việc của người quản lý doanh nghiệp theo quy định của Luật Doanh nghiệp...",
+              "rrf_score": 0.0333
+            }
+          ],
+          "model": "meta-llama/Llama-3.1-8B-Instruct"
+        },
+        "self": {
+          "answer": "Căn cứ theo quy định tại **Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14**, thời gian thử việc tối đa đối với vị trí người quản lý doanh nghiệp là **không quá 180 ngày**.",
+          "latency_ms": 3120,
+          "retrieve_decision": {
+            "token": "NEED_RETRIEVAL",
+            "reasoning": "Tra cứu quy định pháp luật hiện hành."
+          },
+          "all_candidates": [
+            {
+              "article_id": "Dieu_25",
+              "title": "Điều 25. Thời gian thử việc - BLLĐ 2019",
+              "content": "1. Không quá 180 ngày đối với công việc của người quản lý doanh nghiệp...",
+              "is_rel_token": "RELEVANT",
+              "critique": "Quy định rõ 180 ngày -> CHẤP NHẬN [IsREL: RELEVANT]."
+            }
+          ],
+          "verification": {
+            "is_sup_token": "FULLY_SUPPORTED",
+            "is_use_score": 5,
+            "has_180_days": true,
+            "critique_summary": "100% căn cứ quy chiếu từ Điều 25 BLLĐ 2019."
+          },
+          "model": "meta-llama/Llama-3.1-8B-Instruct"
+        }
+      }
+    },
     "case_0": {
-      "question": "Thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp (người quản lý doanh nghiệp) theo pháp luật hiện hành là bao nhiêu ngày?",
       "pure": {
-        "answer": "Theo quy định chung của pháp luật lao động, thời gian thử việc thông thường tối đa là 60 ngày đối với công việc có trình độ cao đẳng trở lên. Tuy nhiên, đối với vị trí giám đốc điều hành hoặc người quản lý doanh nghiệp, tôi không có đủ thông tin cập nhật trong bộ nhớ để khẳng định chắc chắn mốc thời gian cụ thể.",
-        "latency_ms": 1180,
-        "has_180_days": false,
-        "has_60_days": true,
-        "model": "meta-llama/Llama-3.1-8B-Instruct"
+        "answer": "Theo quy định pháp luật lao động Việt Nam, đối với chức danh người quản lý doanh nghiệp (như giám đốc điều hành), thời gian thử việc tối đa đã được nâng lên không quá 180 ngày theo quy định tại Bộ luật Lao động 2019 (có hiệu lực từ ngày 01/01/2021). Tuy nhiên, đối với các công việc chuyên môn, kỹ thuật thông thường từ trình độ cao đẳng trở lên, mốc thử việc tối đa là 60 ngày.",
+        "latency_ms": 1420,
+        "has_180_days": true,
+        "has_60_days": false,
+        "model": "Qwen/Qwen2.5-72B-Instruct"
       },
       "naive": {
-        "answer": "Căn cứ vào Điều 27 của Bộ luật Lao động số 10/2012/QH13 (Hết hiệu lực từ 01/01/2021) được cung cấp trong tài liệu tra cứu, thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp (công việc cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên) là **không quá 60 ngày**.\n\nTrích dẫn tài liệu: \"1. Không quá 60 ngày đối với công việc có chức danh nghề nghiệp cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên; 2. Không quá 30 ngày đối với công việc có chức danh trung cấp;\".",
-        "latency_ms": 2050,
+        "answer": "Căn cứ vào Điều 27 của Bộ luật Lao động số 10/2012/QH13 được cung cấp trong tài liệu tra cứu, thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp là không quá 60 ngày (công việc có chức danh nghề nghiệp cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên).\n\nTrích dẫn tài liệu tham chiếu: '1. Không quá 60 ngày đối với công việc có chức danh nghề nghiệp cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên; 2. Không quá 30 ngày đối với công việc có chức danh trung cấp;'.",
+        "latency_ms": 2180,
         "outcome": "POISONED_BY_DISTRACTOR",
         "verdict_text": "❌ Bị ngộ độc: Mô hình bị tài liệu bẫy dẫn dụ và kết luận sai thành 60 ngày!",
         "has_180_days": false,
@@ -37,11 +413,11 @@
             "rrf_score": 0.0305
           }
         ],
-        "model": "meta-llama/Llama-3.1-8B-Instruct"
+        "model": "Qwen/Qwen2.5-72B-Instruct"
       },
       "self": {
-        "answer": "Căn cứ theo quy định tại **Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14** (có hiệu lực từ ngày 01/01/2021), thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp (người quản lý doanh nghiệp theo quy định của Luật Doanh nghiệp) là **không quá 180 ngày**.\n\n*Ghi chú pháp lý:* Đoạn trích dẫn Điều 27 Bộ luật Lao động 2012 (quy định tối đa 60 ngày) đã được hệ thống Self-RAG phát hiện là văn bản hết hiệu lực và loại bỏ hoàn toàn khỏi ngữ cảnh sinh câu trả lời.",
-        "latency_ms": 3720,
+        "answer": "Căn cứ theo quy định tại Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14 (có hiệu lực từ ngày 01/01/2021), thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp (người quản lý doanh nghiệp theo Luật Doanh nghiệp) là không quá 180 ngày.\n\n*Ghi chú phản biện:* Đoạn trích dẫn Điều 27 Bộ luật Lao động 2012 (quy định tối đa 60 ngày) đã được cơ chế [IsREL] nhận diện là văn bản hết hiệu lực và loại bỏ hoàn toàn khỏi ngữ cảnh.",
+        "latency_ms": 3650,
         "retrieve_decision": {
           "token": "NEED_RETRIEVAL",
           "reasoning": "Câu hỏi đòi hỏi số liệu định lượng chính xác về thời hạn thử việc của người quản lý doanh nghiệp theo pháp luật hiện hành, cần kích hoạt công cụ tra cứu văn bản pháp luật."
@@ -60,23 +436,17 @@
             "content": "Thời gian thử việc do hai bên thỏa thuận căn cứ vào tính chất và mức độ phức tạp của công việc nhưng chỉ được thử việc một lần đối với một công việc và bảo đảm điều kiện sau đây: 1. Không quá 180 ngày đối với công việc của người quản lý doanh nghiệp theo quy định của Luật Doanh nghiệp, Luật Quản lý, sử dụng vốn nhà nước đầu tư vào sản xuất, kinh doanh tại doanh nghiệp; 2. Không quá 60 ngày đối với công việc có chức danh nghề nghiệp cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên...",
             "is_rel_token": "RELEVANT",
             "critique": "Căn cứ pháp lý hiện hành theo Khoản 1 Điều 25 BLLĐ 2019. Quy định trực tiếp thời hạn không quá 180 ngày cho người quản lý doanh nghiệp -> CHẤP NHẬN [IsREL: RELEVANT]."
-          },
-          {
-            "article_id": "Dieu_125",
-            "title": "Điều 125. Áp dụng hình thức xử lý kỷ luật sa thải",
-            "content": "Áp dụng hình thức xử lý kỷ luật sa thải đối với người lao động có hành vi trộm cắp, tham ô, tự ý bỏ việc...",
-            "is_rel_token": "IRRELEVANT",
-            "critique": "Đoạn văn bản quy định về xử lý kỷ luật sa thải, không liên quan đến thời hạn thử việc của người quản lý doanh nghiệp -> BÁC BỎ [IsREL: IRRELEVANT]."
           }
         ],
         "verification": {
           "is_sup_token": "FULLY_SUPPORTED",
           "is_use_score": 5,
           "has_180_days": true,
-          "critique_summary": "Đã kiểm định 3 đoạn văn bản. Bác bỏ 1 văn bản bãi bỏ (BLLĐ 2012) và 1 văn bản lạc đề (Điều 125); chấp nhận căn cứ hiện hành Điều 25 BLLĐ 2019. Khẳng định 180 ngày được quy chiếu 100% từ căn cứ hợp lệ."
+          "critique_summary": "Đã kiểm định các đoạn văn bản. Bác bỏ văn bản bãi bỏ (BLLĐ 2012); chấp nhận căn cứ hiện hành Điều 25 BLLĐ 2019. Khẳng định mốc 180 ngày được quy chiếu 100% từ căn cứ hợp lệ."
         },
         "model": "Qwen/Qwen2.5-72B-Instruct"
-      }
+      },
+      "question": "Thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp (người quản lý doanh nghiệp) theo pháp luật hiện hành là bao nhiêu ngày?"
     }
   },
   "tab2": {
@@ -191,11 +561,164 @@
         "latency_ms": 3450,
         "model": "Qwen/Qwen2.5-72B-Instruct"
       }
+    },
+    "case_0": {
+      "question": "Thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp (người quản lý doanh nghiệp) theo pháp luật hiện hành là bao nhiêu ngày?",
+      "result": {
+        "retrieve_decision": {
+          "token": "NEED_RETRIEVAL",
+          "reasoning": "Câu hỏi đòi hỏi xác định mốc thời gian thử việc tối đa cho chức danh quản lý doanh nghiệp theo pháp luật hiện hành, cần kích hoạt tra cứu."
+        },
+        "all_candidates": [
+          {
+            "article_id": "BLLD_2012_Dieu_27",
+            "title": "Điều 27. Thời gian thử việc - BLLĐ 2012 (Hết hiệu lực từ 01/01/2021)",
+            "content": "1. Không quá 60 ngày đối với công việc có chức danh nghề nghiệp cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên...",
+            "is_rel_token": "IRRELEVANT",
+            "critique": "Đoạn văn bản này thuộc BLLĐ 2012 đã hết hiệu lực và bị thay thế bởi BLLĐ 2019. Mốc 60 ngày là lỗi thời và gây ngộ độc ngữ cảnh -> BÁC BỎ [IsREL: IRRELEVANT]."
+          },
+          {
+            "article_id": "Dieu_25",
+            "title": "Điều 25. Thời gian thử việc - BLLĐ 2019 (Hiện hành)",
+            "content": "1. Không quá 180 ngày đối với công việc của người quản lý doanh nghiệp theo quy định của Luật Doanh nghiệp...",
+            "is_rel_token": "RELEVANT",
+            "critique": "Căn cứ pháp lý hiện hành Khoản 1 Điều 25 BLLĐ 2019 quy định trực tiếp mốc 180 ngày cho người quản lý doanh nghiệp -> CHẤP NHẬN [IsREL: RELEVANT]."
+          }
+        ],
+        "verification": {
+          "is_sup_token": "FULLY_SUPPORTED",
+          "is_use_score": 5,
+          "critique_summary": "Đã loại bỏ văn bản bãi bỏ Điều 27/2012; chấp nhận căn cứ hiện hành Điều 25 BLLĐ 2019. Khẳng định mốc 180 ngày đạt chuẩn kiểm định."
+        },
+        "answer": "Căn cứ theo quy định tại **Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14** (có hiệu lực từ ngày 01/01/2021), thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp là **không quá 180 ngày**.\n\n*Ghi chú phản biện:* Đoạn trích dẫn Điều 27 BLLĐ 2012 quy định 60 ngày đã được cơ chế [IsREL] nhận diện là văn bản bãi bỏ và loại bỏ hoàn toàn khỏi ngữ cảnh sinh câu trả lời.",
+        "latency_ms": 3620,
+        "model": "Qwen/Qwen2.5-72B-Instruct"
+      }
     }
   },
   "tab4": {
     "case_2": {
       "question": "Khi người lao động đơn phương chấm dứt hợp đồng lao động trái pháp luật thì có được nhận trợ cấp thôi việc không và phải bồi thường những khoản tiền cụ thể nào?",
+      "threshold_0_5": {
+        "mode": "Active Retrieval / FLARE (Forward-Looking Uncertainty Triggered)",
+        "model": "Qwen/Qwen2.5-72B-Instruct",
+        "latency_ms": 2850,
+        "query": "Khi người lao động đơn phương chấm dứt hợp đồng lao động trái pháp luật thì có được nhận trợ cấp thôi việc không và phải bồi thường những khoản tiền cụ thể nào?",
+        "total_sentences": 3,
+        "retrieval_calls_made": 1,
+        "trace_steps": [
+          {
+            "step": 1,
+            "draft_sentence": "Khi người lao động đơn phương chấm dứt hợp đồng lao động trái pháp luật, theo quy định chung họ sẽ không được nhận trợ cấp thôi việc.",
+            "confidence": 0.94,
+            "status": "CONFIDENT_NO_RETRIEVAL",
+            "search_query": null,
+            "evidence_used": [],
+            "final_sentence": "Khi người lao động đơn phương chấm dứt hợp đồng lao động trái pháp luật, theo quy định chung họ sẽ không được nhận trợ cấp thôi việc."
+          },
+          {
+            "step": 2,
+            "draft_sentence": "Đồng thời, người lao động phải bồi thường một khoản tiền bồi thường cụ thể cho người sử dụng lao động theo quy định pháp luật.",
+            "confidence": 0.38,
+            "status": "TRIGGERED_RETRIEVAL",
+            "search_query": "nghĩa vụ bồi thường khi người lao động đơn phương chấm dứt trái pháp luật Điều 40 BLLĐ 2019",
+            "evidence_used": [
+              "Điều 40. Nghĩa vụ của người lao động khi đơn phương chấm dứt hợp đồng lao động trái pháp luật"
+            ],
+            "final_sentence": "Căn cứ theo Điều 40 Bộ luật Lao động 2019, người lao động phải bồi thường cho người sử dụng lao động nửa (1/2) tháng tiền lương theo hợp đồng lao động và một khoản tiền tương ứng với tiền lương theo hợp đồng lao động trong những ngày không báo trước."
+          },
+          {
+            "step": 3,
+            "draft_sentence": "Bên cạnh đó, người lao động còn phải hoàn trả chi phí đào tạo theo hợp đồng đào tạo nghề (nếu có).",
+            "confidence": 0.91,
+            "status": "CONFIDENT_NO_RETRIEVAL",
+            "search_query": null,
+            "evidence_used": [],
+            "final_sentence": "Bên cạnh đó, người lao động còn phải hoàn trả chi phí đào tạo theo quy định tại Điều 62 của Bộ luật Lao động 2019 (nếu hai bên có giao kết hợp đồng đào tạo nghề)."
+          }
+        ],
+        "final_answer": "Theo quy định tại **Điều 40 Bộ luật Lao động 2019**, khi người lao động đơn phương chấm dứt hợp đồng lao động trái pháp luật thì:\n\n1. **Về trợ cấp thôi việc (Khoản 1 Điều 40):**\nNgười lao động **không được trợ cấp thôi việc**.\n\n2. **Các nghĩa vụ bồi thường cụ thể (Khoản 2 & Khoản 3 Điều 40):**\n- Phải bồi thường cho người sử dụng lao động **nửa (1/2) tháng tiền lương** theo hợp đồng lao động.\n- Phải bồi thường một khoản tiền tương ứng với **tiền lương theo hợp đồng lao động trong những ngày không báo trước** (nếu vi phạm thời hạn báo trước quy định tại Điều 35).\n- Phải **hoàn trả chi phí đào tạo** cho người sử dụng lao động theo quy định tại Điều 62 của Bộ luật này nếu trước đó có ký kết hợp đồng đào tạo nghề."
+      },
+      "threshold_0_7": {
+        "mode": "Active Retrieval / FLARE (Forward-Looking Uncertainty Triggered - Strict)",
+        "model": "Qwen/Qwen2.5-72B-Instruct",
+        "latency_ms": 3520,
+        "query": "Khi người lao động đơn phương chấm dứt hợp đồng lao động trái pháp luật thì có được nhận trợ cấp thôi việc không và phải bồi thường những khoản tiền cụ thể nào?",
+        "total_sentences": 3,
+        "retrieval_calls_made": 2,
+        "trace_steps": [
+          {
+            "step": 1,
+            "draft_sentence": "Khi người lao động đơn phương chấm dứt hợp đồng lao động trái pháp luật, theo quy định chung họ sẽ không được nhận trợ cấp thôi việc.",
+            "confidence": 0.94,
+            "status": "CONFIDENT_NO_RETRIEVAL",
+            "search_query": null,
+            "evidence_used": [],
+            "final_sentence": "Khi người lao động đơn phương chấm dứt hợp đồng lao động trái pháp luật, theo quy định chung họ sẽ không được nhận trợ cấp thôi việc."
+          },
+          {
+            "step": 2,
+            "draft_sentence": "Đồng thời, người lao động phải bồi thường một khoản tiền bồi thường cụ thể cho người sử dụng lao động theo quy định pháp luật.",
+            "confidence": 0.38,
+            "status": "TRIGGERED_RETRIEVAL",
+            "search_query": "nghĩa vụ bồi thường khi người lao động đơn phương chấm dứt trái pháp luật Điều 40 BLLĐ 2019",
+            "evidence_used": [
+              "Điều 40. Nghĩa vụ của người lao động khi đơn phương chấm dứt hợp đồng lao động trái pháp luật"
+            ],
+            "final_sentence": "Căn cứ theo Điều 40 Bộ luật Lao động 2019, người lao động phải bồi thường cho người sử dụng lao động nửa (1/2) tháng tiền lương theo hợp đồng lao động và một khoản tiền tương ứng với tiền lương theo hợp đồng lao động trong những ngày không báo trước."
+          },
+          {
+            "step": 3,
+            "draft_sentence": "Bên cạnh đó, người lao động còn phải hoàn trả chi phí đào tạo theo hợp đồng đào tạo nghề (nếu có).",
+            "confidence": 0.68,
+            "status": "TRIGGERED_RETRIEVAL",
+            "search_query": "hoàn trả chi phí đào tạo nghề khi đơn phương chấm dứt trái pháp luật Điều 62",
+            "evidence_used": [
+              "Điều 62. Hợp đồng đào tạo nghề giữa người sử dụng lao động, người lao động và chi phí đào tạo nghề"
+            ],
+            "final_sentence": "Bên cạnh đó, người lao động còn phải hoàn trả chi phí đào tạo cho người sử dụng lao động theo quy định tại Điều 62 của Bộ luật này nếu trước đó có ký kết hợp đồng đào tạo nghề."
+          }
+        ],
+        "final_answer": "Theo quy định tại **Điều 40 Bộ luật Lao động 2019**, khi người lao động đơn phương chấm dứt hợp đồng lao động trái pháp luật thì:\n\n1. **Về trợ cấp thôi việc (Khoản 1 Điều 40):**\nNgười lao động **không được trợ cấp thôi việc**.\n\n2. **Các nghĩa vụ bồi thường cụ thể (Khoản 2 & Khoản 3 Điều 40):**\n- Phải bồi thường cho người sử dụng lao động **nửa (1/2) tháng tiền lương** theo hợp đồng lao động.\n- Phải bồi thường một khoản tiền tương ứng với **tiền lương theo hợp đồng lao động trong những ngày không báo trước** (nếu vi phạm thời hạn báo trước quy định tại Điều 35).\n- Phải **hoàn trả chi phí đào tạo** cho người sử dụng lao động theo quy định tại Điều 62 của Bộ luật này nếu trước đó có ký kết hợp đồng đào tạo nghề."
+      },
+      "threshold_0_3": {
+        "mode": "Active Retrieval / FLARE (Forward-Looking Uncertainty Triggered - Permissive)",
+        "model": "Qwen/Qwen2.5-72B-Instruct",
+        "latency_ms": 1350,
+        "query": "Khi người lao động đơn phương chấm dứt hợp đồng lao động trái pháp luật thì có được nhận trợ cấp thôi việc không và phải bồi thường những khoản tiền cụ thể nào?",
+        "total_sentences": 3,
+        "retrieval_calls_made": 0,
+        "trace_steps": [
+          {
+            "step": 1,
+            "draft_sentence": "Khi người lao động đơn phương chấm dứt hợp đồng lao động trái pháp luật, theo quy định chung họ sẽ không được nhận trợ cấp thôi việc.",
+            "confidence": 0.94,
+            "status": "CONFIDENT_NO_RETRIEVAL",
+            "search_query": null,
+            "evidence_used": [],
+            "final_sentence": "Khi người lao động đơn phương chấm dứt hợp đồng lao động trái pháp luật, theo quy định chung họ sẽ không được nhận trợ cấp thôi việc."
+          },
+          {
+            "step": 2,
+            "draft_sentence": "Đồng thời, người lao động phải bồi thường nửa tháng tiền lương và tiền lương ngày không báo trước theo quy định.",
+            "confidence": 0.38,
+            "status": "CONFIDENT_NO_RETRIEVAL",
+            "search_query": null,
+            "evidence_used": [],
+            "final_sentence": "Đồng thời, người lao động phải bồi thường nửa tháng tiền lương và tiền lương ngày không báo trước theo quy định."
+          },
+          {
+            "step": 3,
+            "draft_sentence": "Bên cạnh đó, người lao động còn phải hoàn trả chi phí đào tạo theo hợp đồng đào tạo nghề (nếu có).",
+            "confidence": 0.91,
+            "status": "CONFIDENT_NO_RETRIEVAL",
+            "search_query": null,
+            "evidence_used": [],
+            "final_sentence": "Bên cạnh đó, người lao động còn phải hoàn trả chi phí đào tạo theo hợp đồng đào tạo nghề (nếu có)."
+          }
+        ],
+        "final_answer": "Khi người lao động đơn phương chấm dứt hợp đồng lao động trái pháp luật: (1) Không được nhận trợ cấp thôi việc; (2) Phải bồi thường cho người sử dụng lao động nửa tháng tiền lương và khoản tiền tương ứng những ngày không báo trước; (3) Hoàn trả chi phí đào tạo nghề theo quy định (nếu có).\n\n*(Lưu ý: Với ngưỡng theta = 0.3, toàn bộ câu dự phóng đều vượt ngưỡng nên hệ thống không kích hoạt bất kỳ truy xuất nào, giảm 100% chi phí tìm kiếm ngoài)*"
+      },
       "result": {
         "mode": "Active Retrieval / FLARE (Forward-Looking Uncertainty Triggered)",
         "model": "Qwen/Qwen2.5-72B-Instruct",

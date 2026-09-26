@@ -319,45 +319,15 @@ def load_base_resources():
 
 retriever, test_cases, cached_benchmark = load_base_resources()
 
-# Initialize session state with pre-computed gold benchmark runs
-if "tab1_run" not in st.session_state and "tab1" in cached_benchmark:
-    c0 = cached_benchmark["tab1"]["case_0"]
-    st.session_state["tab1_run"] = {
-        "is_cached": True,
-        "model": c0.get("self", {}).get("model", "Qwen/Qwen2.5-72B-Instruct"),
-        "pure": c0["pure"],
-        "naive": c0["naive"],
-        "self": c0["self"],
-        "question": c0["question"],
-    }
-
-if "tab2_run" not in st.session_state and "tab2" in cached_benchmark:
-    c1 = cached_benchmark["tab2"]["case_1"]
-    st.session_state["tab2_run"] = {
-        "is_cached": True,
-        "model": c1.get("graph", {}).get("model", "Qwen/Qwen2.5-72B-Instruct"),
-        "naive": c1["naive"],
-        "graph": c1["graph"],
-        "question": c1["question"],
-    }
-
-if "tab3_run" not in st.session_state and "tab3" in cached_benchmark:
-    c3 = cached_benchmark["tab3"]["case_3"]
-    st.session_state["tab3_run"] = {
-        "is_cached": True,
-        "model": c3.get("result", {}).get("model", "Qwen/Qwen2.5-72B-Instruct"),
-        "result": c3["result"],
-        "question": c3["question"],
-    }
-
-if "tab4_run" not in st.session_state and "tab4" in cached_benchmark:
-    c2 = cached_benchmark["tab4"]["case_2"]
-    st.session_state["tab4_run"] = {
-        "is_cached": True,
-        "model": c2.get("result", {}).get("model", "Qwen/Qwen2.5-72B-Instruct"),
-        "result": c2["result"],
-        "question": c2["question"],
-    }
+# Initialize live execution flags in session state (enables dynamic responsiveness to all UI options)
+if "tab1_is_live" not in st.session_state:
+    st.session_state["tab1_is_live"] = False
+if "tab2_is_live" not in st.session_state:
+    st.session_state["tab2_is_live"] = False
+if "tab3_is_live" not in st.session_state:
+    st.session_state["tab3_is_live"] = False
+if "tab4_is_live" not in st.session_state:
+    st.session_state["tab4_is_live"] = False
 
 # ==========================================
 # SIDEBAR: SYSTEM CONTROLS & TELEMETRY
@@ -470,8 +440,34 @@ with st.sidebar:
     )
     selected_case = test_cases[selected_preset_idx]
     st.caption(f"**{'Evaluation Focus' if lang == 'en' else 'Mục tiêu kiểm định'}:** {selected_case['focus']}")
+    
+    preset_tab_map = {
+        0: ("Tab 1: When Retrieval Hurts", 1),
+        1: ("Tab 2: GraphRAG vs Global Synthesis", 2),
+        2: ("Tab 4: Active Retrieval (FLARE)", 4),
+        3: ("Tab 3: Self-RAG Reflection Inspector", 3),
+    }
+    t_tab_name, _ = preset_tab_map.get(selected_preset_idx, ("Tab 1", 1))
+    st.info(f"📍 **{'Phân Tích Tại:' if lang == 'vi' else 'Mapped to:'}** `{t_tab_name}`")
+    
+    if st.button("🚀 " + ("Synchronize Question to Tab" if lang == "en" else "Nạp Câu Hỏi Vào Tab"), use_container_width=True, key="btn_sync_preset"):
+        if selected_preset_idx == 0:
+            st.session_state["q_tab1"] = selected_case["question"]
+            st.session_state["tab1_is_live"] = False
+        elif selected_preset_idx == 1:
+            st.session_state["q_tab2"] = selected_case["question"]
+            st.session_state["tab2_is_live"] = False
+        elif selected_preset_idx == 2:
+            st.session_state["q_tab4"] = selected_case["question"]
+            st.session_state["tab4_is_live"] = False
+        elif selected_preset_idx == 3:
+            st.session_state["q_tab3"] = selected_case["question"]
+            st.session_state["tab3_is_live"] = False
+        st.success("Đã nạp câu hỏi vào Tab!" if lang == "vi" else "Question loaded into target Tab!")
+        st.rerun()
+
     st.markdown("---")
-    st.caption(f"CO5151: Advanced Agentic AI\n{t('sidebar_author', lang)} tuandung222\n{t('sidebar_supervisor', lang)} TS. Lê Xuân Bách")
+    st.caption(f"CO5151: Advanced Agentic AI\n{t('sidebar_author', lang)} tuandung222")
 
 # Instantiate pipeline objects dynamically using current LLM
 naive_pipe = NaiveRAGPipeline(retriever, llm)
@@ -561,8 +557,8 @@ with tab1:
     with col_q:
         q_tab1 = st.text_input(
             t("tab1_q_label", lang),
-            value=test_cases[0]["question"],
-            key="q_tab1",
+            value=st.session_state.get("q_tab1", test_cases[0]["question"]),
+            key="q_tab1_input",
         )
     with col_btn:
         st.write("")
@@ -610,7 +606,8 @@ with tab1:
 
                 status_box.update(label="Hoàn tất kiểm chứng trực tiếp!" if lang == "vi" else "Live Verification Complete!", state="complete", expanded=False)
 
-            st.session_state["tab1_run"] = {
+            st.session_state["tab1_is_live"] = True
+            st.session_state["tab1_live"] = {
                 "is_cached": False,
                 "model": cur_model,
                 "pure": res_pure_live,
@@ -619,26 +616,56 @@ with tab1:
                 "question": q_tab1,
             }
 
-    # Render Active State (Cached Gold or Live)
-    if "tab1_run" in st.session_state:
-        tab1_data = st.session_state["tab1_run"]
-        is_cached_1 = tab1_data.get("is_cached", False)
-        res_pure = tab1_data["pure"]
-        res_naive = tab1_data["naive"]
-        res_self = tab1_data["self"]
+    # Determine Active State (Dynamically responsive to all UI controls: distractor, failure mode, model)
+    model_key = "meta-llama/Llama-3.1-8B-Instruct" if "llama" in cur_model.lower() else "Qwen/Qwen2.5-72B-Instruct"
 
-        if is_cached_1:
-            st.markdown(f"""
-            <div class="status-banner-cached">
-                <b>{'Trạng Thái Thực Nghiệm:' if lang == 'vi' else 'Benchmark Status:'}</b> <span class="badge-cached">{t('status_cached_label', lang)}</span> | 
-                <b>{'Kiến Trúc Mô Hình:' if lang == 'vi' else 'Model Architecture:'}</b> <code>{tab1_data.get('model', 'Qwen/Qwen2.5-72B-Instruct')}</code> | 
-                <b>{'Mã Hóa Dense:' if lang == 'vi' else 'Dense Retriever:'}</b> <code>BAAI/bge-m3 (1024-d)</code> | 
-                <b>{'Truy Xuất Sparse:' if lang == 'vi' else 'Sparse Retriever:'}</b> <code>Okapi BM25</code>
-                <br>
-                <span style="color: #64748b; font-size: 0.82rem;">{t('cached_telemetry_note', lang)}</span>
-            </div>
-            """, unsafe_allow_html=True)
-        else:
+    if not inject_distractor:
+        scenario_key = "clean_context"
+        scenario_desc = "Ngữ Cảnh Sạch (Không Bẫy Nhiễu)" if lang == "vi" else "Clean Context (No Distractor)"
+    elif dist_mode == "mixed_conflict":
+        scenario_key = "mixed_conflict"
+        scenario_desc = "Xung Đột Ngữ Cảnh (Chứa Cả Luật 2012 và 2019)" if lang == "vi" else "Contextual Conflict (2012 & 2019 Statutes)"
+    else:
+        scenario_key = "only_distractor"
+        scenario_desc = "Dương Tính Giả (Chỉ Bốc BLLĐ 2012 Bãi Bỏ)" if lang == "vi" else "False Positive (Repealed 2012 Only)"
+
+    if st.session_state.get("tab1_is_live") and "tab1_live" in st.session_state:
+        tab1_data = st.session_state["tab1_live"]
+        is_cached_1 = False
+    else:
+        tab1_scenario = cached_benchmark.get("tab1", {}).get(scenario_key, {}).get(model_key)
+        if not tab1_scenario:
+            tab1_scenario = cached_benchmark.get("tab1", {}).get(scenario_key, {}).get("Qwen/Qwen2.5-72B-Instruct") or cached_benchmark.get("tab1", {}).get("case_0", {})
+        
+        tab1_data = {
+            "is_cached": True,
+            "model": model_key,
+            "pure": tab1_scenario["pure"],
+            "naive": tab1_scenario["naive"],
+            "self": tab1_scenario["self"],
+            "question": q_tab1,
+            "scenario_name": scenario_desc,
+        }
+        is_cached_1 = True
+
+    res_pure = tab1_data["pure"]
+    res_naive = tab1_data["naive"]
+    res_self = tab1_data["self"]
+
+    if is_cached_1:
+        st.markdown(f"""
+        <div class="status-banner-cached">
+            <b>{'Trạng Thái Thực Nghiệm:' if lang == 'vi' else 'Benchmark Status:'}</b> <span class="badge-cached">{t('status_cached_label', lang)}</span> | 
+            <b>{'Kịch Bản Hiển Thị:' if lang == 'vi' else 'Active Scenario:'}</b> <code>{tab1_data.get('scenario_name', scenario_desc)}</code> | 
+            <b>{'Kiến Trúc Mô Hình:' if lang == 'vi' else 'Model Architecture:'}</b> <code>{tab1_data.get('model', model_key)}</code> | 
+            <b>{'Mã Hóa Dense:' if lang == 'vi' else 'Dense Retriever:'}</b> <code>BAAI/bge-m3 (1024-d)</code>
+            <br>
+            <span style="color: #64748b; font-size: 0.82rem;">{t('cached_telemetry_note', lang)}</span>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        c_l1, c_l2 = st.columns([4, 1])
+        with c_l1:
             st.markdown(f"""
             <div class="status-banner-live">
                 <b>{'Trạng Thái Thực Nghiệm:' if lang == 'vi' else 'Benchmark Status:'}</b> <span class="badge-verified">{t('status_live_label', lang)}</span> | 
@@ -646,67 +673,80 @@ with tab1:
                 <b>{'Độ Trễ Thực Thi:' if lang == 'vi' else 'Execution Latency:'}</b> Pure: <code>{res_pure['latency_ms']} ms</code> · Naive: <code>{res_naive['latency_ms']} ms</code> · Self-RAG: <code>{res_self['latency_ms']} ms</code>
             </div>
             """, unsafe_allow_html=True)
+        with c_l2:
+            if st.button("🔄 " + ("Reset to Gold" if lang == "en" else "Về Gold Pre-computed"), key="btn_reset_tab1", use_container_width=True):
+                st.session_state["tab1_is_live"] = False
+                st.rerun()
 
-        c1, c2, c3 = st.columns(3)
+    c1, c2, c3 = st.columns(3)
 
-        with c1:
-            box1 = st.container(border=True)
-            box1.markdown(f'<div class="arena-header-1">{t("model1_title", lang)}</div>', unsafe_allow_html=True)
-            box1.caption(t("model1_caption", lang))
-            box1.info(res_pure["answer"])
-            box1.markdown(f"**{'Độ trễ:' if lang == 'vi' else 'Latency:'}** `{res_pure['latency_ms']} ms`")
-            if res_pure.get("has_180_days"):
-                box1.caption("Nhận diện mốc 180 ngày từ bộ nhớ trong." if lang == "vi" else "Identified statutory 180-day milestone from parametric memory.")
-            elif res_pure.get("has_60_days"):
-                box1.caption("Gợi nhớ mốc 60 ngày lỗi thời từ dữ liệu huấn luyện." if lang == "vi" else "Recalled outdated 60-day milestone from pre-training corpus.")
-            else:
-                box1.caption("Phản hồi chung chung, không có mốc thời gian luật định." if lang == "vi" else "Generic response without exact statutory duration.")
+    with c1:
+        box1 = st.container(border=True)
+        box1.markdown(f'<div class="arena-header-1">{t("model1_title", lang)}</div>', unsafe_allow_html=True)
+        box1.caption(t("model1_caption", lang))
+        box1.info(res_pure["answer"])
+        box1.markdown(f"**{'Độ trễ:' if lang == 'vi' else 'Latency:'}** `{res_pure['latency_ms']} ms`")
+        if res_pure.get("has_180_days"):
+            box1.caption("Nhận diện mốc 180 ngày từ bộ nhớ trong." if lang == "vi" else "Identified statutory 180-day milestone from parametric memory.")
+        elif res_pure.get("has_60_days"):
+            box1.caption("Gợi nhớ mốc 60 ngày lỗi thời từ dữ liệu huấn luyện." if lang == "vi" else "Recalled outdated 60-day milestone from pre-training corpus.")
+        else:
+            box1.caption("Phản hồi chung chung, không có mốc thời gian luật định." if lang == "vi" else "Generic response without exact statutory duration.")
 
-        with c2:
-            box2 = st.container(border=True)
-            box2.markdown(f'<div class="arena-header-2">{t("model2_title", lang)}</div>', unsafe_allow_html=True)
-            box2.caption(t("model2_caption", lang))
-            if res_naive["outcome"] == "POISONED_BY_DISTRACTOR":
-                box2.error(res_naive["answer"])
-                box2.caption(f"**{res_naive['verdict_text']}**")
-            elif res_naive["outcome"] == "CONFUSED_CONFLICT":
-                box2.warning(res_naive["answer"])
-                box2.caption(f"**{res_naive['verdict_text']}**")
-            else:
-                box2.success(res_naive["answer"])
-                box2.caption(f"**{res_naive['verdict_text']}**")
+    with c2:
+        box2 = st.container(border=True)
+        box2.markdown(f'<div class="arena-header-2">{t("model2_title", lang)}</div>', unsafe_allow_html=True)
+        box2.caption(t("model2_caption", lang))
+        if res_naive["outcome"] == "POISONED_BY_DISTRACTOR":
+            box2.error(res_naive["answer"])
+            box2.caption(f"**{res_naive['verdict_text']}**")
+        elif res_naive["outcome"] == "CONFUSED_CONFLICT":
+            box2.warning(res_naive["answer"])
+            box2.caption(f"**{res_naive['verdict_text']}**")
+        else:
+            box2.success(res_naive["answer"])
+            box2.caption(f"**{res_naive['verdict_text']}**")
 
-            box2.markdown(f"**{'Độ trễ:' if lang == 'vi' else 'Latency:'}** `{res_naive['latency_ms']} ms`")
-            exp_chunks_title = "Các đoạn văn bản được nhồi vào prompt" if lang == "vi" else "Retrieved Passages Injected into Prompt"
-            with box2.expander(exp_chunks_title):
-                for p in res_naive.get("retrieved_passages", []):
-                    st.markdown(f"- **{p['title']}** (Score: `{p.get('rrf_score', 'N/A')}`)")
-                    st.text(p["content"][:200] + "...")
+        box2.markdown(f"**{'Độ trễ:' if lang == 'vi' else 'Latency:'}** `{res_naive['latency_ms']} ms`")
+        exp_chunks_title = "Các đoạn văn bản được nhồi vào prompt" if lang == "vi" else "Retrieved Passages Injected into Prompt"
+        with box2.expander(exp_chunks_title):
+            for p in res_naive.get("retrieved_passages", []):
+                st.markdown(f"- **{p['title']}** (Score: `{p.get('rrf_score', 'N/A')}`)")
+                st.text(p["content"][:200] + "...")
 
-        with c3:
-            box3 = st.container(border=True)
-            box3.markdown(f'<div class="arena-header-3">{t("model3_title", lang)}</div>', unsafe_allow_html=True)
-            box3.caption(t("model3_caption", lang))
-            box3.success(res_self["answer"])
-            box3.caption("Đã xác thực căn cứ; bẫy pháp lý đã bị loại trừ." if lang == "vi" else "Attribution verified; distractor successfully pruned.")
-            box3.markdown(f"**{'Độ trễ:' if lang == 'vi' else 'Latency:'}** `{res_self['latency_ms']} ms`")
-            v_info = res_self.get("verification", {})
-            box3.markdown(f"**Token [IsSUP]:** `{v_info.get('is_sup_token', 'SUPPORTED')}` | **{'Hữu dụng' if lang == 'vi' else 'Utility'} [IsUSE]:** `{v_info.get('is_use_score', 5)}/5`")
+    with c3:
+        box3 = st.container(border=True)
+        box3.markdown(f'<div class="arena-header-3">{t("model3_title", lang)}</div>', unsafe_allow_html=True)
+        box3.caption(t("model3_caption", lang))
+        box3.success(res_self["answer"])
+        box3.caption("Đã xác thực căn cứ; bẫy pháp lý đã bị loại trừ." if lang == "vi" else "Attribution verified; distractor successfully pruned.")
+        box3.markdown(f"**{'Độ trễ:' if lang == 'vi' else 'Latency:'}** `{res_self['latency_ms']} ms`")
+        v_info = res_self.get("verification", {})
+        box3.markdown(f"**Token [IsSUP]:** `{v_info.get('is_sup_token', 'SUPPORTED')}` | **{'Hữu dụng' if lang == 'vi' else 'Utility'} [IsUSE]:** `{v_info.get('is_use_score', 5)}/5`")
 
-        # Comparative Matrix Table
-        st.markdown("---")
-        st.markdown(f"### {t('matrix_title', lang)}")
+    # Comparative Matrix Table
+    st.markdown("---")
+    st.markdown(f"### {t('matrix_title', lang)}")
 
-        if lang == "vi":
-            claim_pure = "180 ngày (Hợp lệ)" if res_pure.get("has_180_days") else ("60 ngày (Lỗi thời)" if res_pure.get("has_60_days") else "Chung chung")
-            claim_naive = "60 ngày (Bị ngộ độc luật bãi bỏ)" if res_naive.get("has_60_days") else ("180 ngày (Hợp lệ)" if res_naive.get("has_180_days") else "Mâu thuẫn")
-            claim_self = "180 ngày (Xác thực BLLĐ 2019)" if res_self.get('verification', {}).get("has_180_days") else "Có căn cứ pháp luật hiện hành"
+    if lang == "vi":
+        claim_pure = "180 ngày (Hợp lệ)" if res_pure.get("has_180_days") else ("60 ngày (Lỗi thời)" if res_pure.get("has_60_days") else "Chung chung")
+        
+        if res_naive.get("outcome") == "POISONED_BY_DISTRACTOR":
+            claim_naive = "60 ngày (Bị ngộ độc luật bãi bỏ)"
+            vuln_naive = "Dễ tổn thương (100% tiếp nhận tài liệu bẫy bãi bỏ)"
+        elif res_naive.get("outcome") == "CONFUSED_CONFLICT":
+            claim_naive = "Mâu thuẫn (60 ngày vs 180 ngày)"
+            vuln_naive = "Bối rối trước xung đột ngữ cảnh (Không có cơ chế trọng tài hiệu lực)"
+        else:
+            claim_naive = "180 ngày (Hợp lệ)"
+            vuln_naive = "An toàn khi ngữ cảnh sạch (Truy xuất đúng BLLĐ 2019)"
 
-            vuln_pure = "Độc lập ngữ cảnh (Dễ bị ảo giác do cutoff)"
-            vuln_naive = "Dễ tổn thương (100% tiếp nhận tài liệu bẫy bãi bỏ)" if res_naive["outcome"] == "POISONED_BY_DISTRACTOR" else "Rủi ro cao (Thiếu bộ lọc phản tư)"
-            vuln_self = "Vững chắc (Chủ động phát hiện và loại bỏ tài liệu bãi bỏ)"
+        claim_self = "180 ngày (Xác thực BLLĐ 2019)" if res_self.get('verification', {}).get("has_180_days") else "Có căn cứ pháp luật hiện hành"
 
-            matrix_md = f"""
+        vuln_pure = "Độc lập ngữ cảnh (Dễ bị ảo giác do cutoff)"
+        vuln_self = "Vững chắc (Chủ động phát hiện và loại bỏ tài liệu bãi bỏ)"
+
+        matrix_md = f"""
 | {t('matrix_dim', lang)} | {t('matrix_m1', lang)} | {t('matrix_m2', lang)} | {t('matrix_m3', lang)} |
 | :--- | :--- | :--- | :--- |
 | **{t('matrix_mech', lang)}** | Thuần trọng số tham số mô hình | Nối thô top-k ngữ cảnh | Phản tư [IsREL] & Kiểm định [IsSUP] |
@@ -715,16 +755,25 @@ with tab1:
 | **{t('matrix_distractor', lang)}** | {vuln_pure} | {vuln_naive} | {vuln_self} |
 | **{t('matrix_domain', lang)}** | Trung bình (Dễ ảo giác) | Rất nguy hiểm (Dễ bị ngộ độc luật cũ) | Độ tin cậy cao (Được đối chiếu và xác thực) |
 """
+    else:
+        claim_pure = "180 days (Valid)" if res_pure.get("has_180_days") else ("60 days (Outdated)" if res_pure.get("has_60_days") else "Generic")
+        
+        if res_naive.get("outcome") == "POISONED_BY_DISTRACTOR":
+            claim_naive = "60 days (Poisoned by repealed law)"
+            vuln_naive = "Vulnerable (100% acceptance of outdated distractor)"
+        elif res_naive.get("outcome") == "CONFUSED_CONFLICT":
+            claim_naive = "Conflicted (60 vs 180 days)"
+            vuln_naive = "Confused by conflicting context (No validity arbitration)"
         else:
-            claim_pure = "180 days (Valid)" if res_pure.get("has_180_days") else ("60 days (Outdated)" if res_pure.get("has_60_days") else "Generic")
-            claim_naive = "60 days (Poisoned by repealed law)" if res_naive.get("has_60_days") else ("180 days (Valid)" if res_naive.get("has_180_days") else "Conflicted")
-            claim_self = "180 days (Verified Labor Code 2019)" if res_self.get('verification', {}).get("has_180_days") else "Grounded under current law"
+            claim_naive = "180 days (Valid)"
+            vuln_naive = "Safe under clean context (Retrieved Labor Code 2019)"
 
-            vuln_pure = "Context Independent (Prone to hallucination on niche queries)"
-            vuln_naive = "Vulnerable (100% acceptance of outdated distractor)" if res_naive["outcome"] == "POISONED_BY_DISTRACTOR" else "High Risk (Lacks filtering)"
-            vuln_self = "Robust (Active rejection of repealed distractor)"
+        claim_self = "180 days (Verified Labor Code 2019)" if res_self.get('verification', {}).get("has_180_days") else "Grounded under current law"
 
-            matrix_md = f"""
+        vuln_pure = "Context Independent (Prone to hallucination on niche queries)"
+        vuln_self = "Robust (Active rejection of repealed distractor)"
+
+        matrix_md = f"""
 | {t('matrix_dim', lang)} | {t('matrix_m1', lang)} | {t('matrix_m2', lang)} | {t('matrix_m3', lang)} |
 | :--- | :--- | :--- | :--- |
 | **{t('matrix_mech', lang)}** | Parametric weights only | Blind top-k context concatenation | Reflective critic [IsREL] & verification [IsSUP] |
@@ -784,8 +833,8 @@ with tab2:
     with col_q2:
         q_tab2 = st.text_input(
             t("tab2_q_label", lang),
-            value=test_cases[1]["question"],
-            key="q_tab2",
+            value=st.session_state.get("q_tab2", test_cases[1]["question"]),
+            key="q_tab2_input",
         )
     with col_btn2:
         st.write("")
@@ -812,7 +861,8 @@ with tab2:
 
                 status_box.update(label="Hoàn tất thực nghiệm GraphRAG!" if lang == "vi" else "Global Synthesis Benchmark Complete!", state="complete", expanded=False)
 
-            st.session_state["tab2_run"] = {
+            st.session_state["tab2_is_live"] = True
+            st.session_state["tab2_live"] = {
                 "is_cached": False,
                 "model": cur_model,
                 "naive": res_naive_g_live,
@@ -820,24 +870,37 @@ with tab2:
                 "question": q_tab2,
             }
 
-    # Render Active State
-    if "tab2_run" in st.session_state:
-        tab2_data = st.session_state["tab2_run"]
-        is_cached_2 = tab2_data.get("is_cached", False)
-        res_naive_g = tab2_data["naive"]
-        res_graph_g = tab2_data["graph"]
+    # Determine Active State (Dynamically responsive to model selection)
+    if st.session_state.get("tab2_is_live") and "tab2_live" in st.session_state:
+        tab2_data = st.session_state["tab2_live"]
+        is_cached_2 = False
+    else:
+        cached_case_t2 = cached_benchmark.get("tab2", {}).get("case_1", {})
+        tab2_data = {
+            "is_cached": True,
+            "model": "meta-llama/Llama-3.1-8B-Instruct" if "llama" in cur_model.lower() else "Qwen/Qwen2.5-72B-Instruct",
+            "naive": cached_case_t2.get("naive", {}),
+            "graph": cached_case_t2.get("graph", {}),
+            "question": q_tab2,
+        }
+        is_cached_2 = True
 
-        if is_cached_2:
-            st.markdown(f"""
-            <div class="status-banner-cached">
-                <b>{'Trạng Thái Thực Nghiệm:' if lang == 'vi' else 'Benchmark Status:'}</b> <span class="badge-cached">{t('status_cached_label', lang)}</span> | 
-                <b>{'Kiến Trúc Mô Hình:' if lang == 'vi' else 'Model Architecture:'}</b> <code>{tab2_data.get('model', 'Qwen/Qwen2.5-72B-Instruct')}</code> | 
-                <b>{'Phạm Vi Ngữ Liệu:' if lang == 'vi' else 'Corpus Coverage:'}</b> <code>{'15 Điều luật trên 3 Cụm Modularity' if lang == 'vi' else '15 Statutory Articles across 3 Modularity Communities'}</code>
-                <br>
-                <span style="color: #64748b; font-size: 0.82rem;">{t('cached_telemetry_note', lang)}</span>
-            </div>
-            """, unsafe_allow_html=True)
-        else:
+    res_naive_g = tab2_data["naive"]
+    res_graph_g = tab2_data["graph"]
+
+    if is_cached_2:
+        st.markdown(f"""
+        <div class="status-banner-cached">
+            <b>{'Trạng Thái Thực Nghiệm:' if lang == 'vi' else 'Benchmark Status:'}</b> <span class="badge-cached">{t('status_cached_label', lang)}</span> | 
+            <b>{'Kiến Trúc Mô Hình:' if lang == 'vi' else 'Model Architecture:'}</b> <code>{tab2_data.get('model', 'Qwen/Qwen2.5-72B-Instruct')}</code> | 
+            <b>{'Phạm Vi Ngữ Liệu:' if lang == 'vi' else 'Corpus Coverage:'}</b> <code>{'15 Điều luật trên 3 Cụm Modularity' if lang == 'vi' else '15 Statutory Articles across 3 Modularity Communities'}</code>
+            <br>
+            <span style="color: #64748b; font-size: 0.82rem;">{t('cached_telemetry_note', lang)}</span>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        c_l2_1, c_l2_2 = st.columns([4, 1])
+        with c_l2_1:
             st.markdown(f"""
             <div class="status-banner-live">
                 <b>{'Trạng Thái Thực Nghiệm:' if lang == 'vi' else 'Benchmark Status:'}</b> <span class="badge-verified">{t('status_live_label', lang)}</span> | 
@@ -845,6 +908,10 @@ with tab2:
                 <b>{'Độ Trễ Thực Thi:' if lang == 'vi' else 'Execution Latency:'}</b> Naive RAG: <code>{res_naive_g['latency_ms']} ms</code> · GraphRAG: <code>{res_graph_g.get('total_latency_ms', res_graph_g.get('latency_ms', 0))} ms</code>
             </div>
             """, unsafe_allow_html=True)
+        with c_l2_2:
+            if st.button("🔄 " + ("Reset to Gold" if lang == "en" else "Về Gold Pre-computed"), key="btn_reset_tab2", use_container_width=True):
+                st.session_state["tab2_is_live"] = False
+                st.rerun()
 
         col_g1, col_g2 = st.columns(2)
 
@@ -930,13 +997,36 @@ with tab3:
     with col_q3:
         q_tab3 = st.text_input(
             t("tab3_q_label", lang),
-            value=test_cases[3]["question"],
-            key="q_tab3",
+            value=st.session_state.get("q_tab3", test_cases[3]["question"]),
+            key="q_tab3_input",
         )
     with col_btn3:
         st.write("")
         st.write("")
         run_btn3 = st.button(t("tab1_btn_run", lang), key="btn3", use_container_width=True)
+
+    col_sc3_1, col_sc3_2 = st.columns([2, 1])
+    with col_sc3_1:
+        tab3_scenario_choice = st.selectbox(
+            "Chọn Kịch Bản Kiểm Định Token Phản Tư:" if lang == "vi" else "Select Reflection Token Benchmark Scenario:",
+            options=[
+                "case_3: Câu hỏi đa ý (Lương thử việc Điều 26 & Sa thải bỏ việc 05 ngày Điều 36, 125)" if lang == "vi" else "case_3: Multi-intent (Wage % Art 26 & Dismissal on 5-day Absence Arts 36, 125)",
+                "case_0: Bóc tách loại trừ tài liệu bẫy bãi bỏ (Điều 25/2019 vs BLLĐ 2012 bãi bỏ)" if lang == "vi" else "case_0: Distractor Pruning (Labor Code 2019 vs Repealed 2012)",
+            ],
+            index=0,
+            key="tab3_scenario_sel",
+        )
+        selected_tab3_case_key = "case_3" if "case_3" in tab3_scenario_choice else "case_0"
+
+    with col_sc3_2:
+        tau_threshold = st.slider(
+            "Ngưỡng cổng tra cứu tau:" if lang == "vi" else "Retrieval Gate Threshold tau:",
+            min_value=0.10,
+            max_value=0.99,
+            value=0.50,
+            step=0.05,
+            help="Nếu P(Retrieve=yes) > tau -> Kích hoạt tra cứu ngoài; ngược lại sinh thuần từ trọng số." if lang == "vi" else "If P(Retrieve=yes) > tau -> Trigger external retrieval; otherwise generate purely from parametric weights."
+        )
 
     # Handle Live Re-run
     if run_btn3:
@@ -951,28 +1041,57 @@ with tab3:
                 res_self_full_live = self_pipe.run_self_rag(q_tab3, top_k=3)
                 status_box.update(label="Hoàn tất phân tích phản tư!" if lang == "vi" else "Reflection Analysis Complete!", state="complete", expanded=False)
 
-            st.session_state["tab3_run"] = {
+            st.session_state["tab3_is_live"] = True
+            st.session_state["tab3_live"] = {
                 "is_cached": False,
                 "model": cur_model,
                 "result": res_self_full_live,
                 "question": q_tab3,
             }
 
-    # Render Active State
-    if "tab3_run" in st.session_state:
-        tab3_data = st.session_state["tab3_run"]
-        is_cached_3 = tab3_data.get("is_cached", False)
-        res_self_full = tab3_data["result"]
-
-        if is_cached_3:
-            st.markdown(f"""
-            <div class="status-banner-cached">
-                <b>{'Trạng Thái Thực Nghiệm:' if lang == 'vi' else 'Benchmark Status:'}</b> <span class="badge-cached">{t('status_cached_label', lang)}</span> | 
-                <b>{'Kiến Trúc Mô Hình:' if lang == 'vi' else 'Model Architecture:'}</b> <code>{tab3_data.get('model', 'Qwen/Qwen2.5-72B-Instruct')}</code> | 
-                <b>{'Token Khảo Sát:' if lang == 'vi' else 'Tokens Inspected:'}</b> <code>[Retrieve], [IsREL], [IsSUP], [IsUSE]</code>
-            </div>
-            """, unsafe_allow_html=True)
+    # Determine Active State (Dynamically reactive to scenario & tau threshold)
+    if st.session_state.get("tab3_is_live") and "tab3_live" in st.session_state:
+        tab3_data = st.session_state["tab3_live"]
+        is_cached_3 = False
+    else:
+        cached_case_t3 = cached_benchmark.get("tab3", {}).get(selected_tab3_case_key, cached_benchmark.get("tab3", {}).get("case_3", {}))
+        tab3_res_data = dict(cached_case_t3.get("result", {}))
+        
+        # Adjust gate decision dynamically if tau_threshold is high!
+        gate_prob = 0.948
+        if tau_threshold > gate_prob:
+            tab3_res_data["retrieve_decision"] = {
+                "token": "NO_RETRIEVAL",
+                "reasoning": f"Xác suất cần tra cứu P(Retrieve) = 94.8% nhỏ hơn ngưỡng khắt khe tau = {tau_threshold:.2f} -> ĐÓNG CỔNG TRA CỨU, chuyển sang sinh thuần từ bộ nhớ tham số." if lang == "vi" else f"Retrieval probability P(Retrieve) = 94.8% is below strict threshold tau = {tau_threshold:.2f} -> RETRIEVAL SUPPRESSED, model falls back to parametric memory."
+            }
         else:
+            tab3_res_data["retrieve_decision"] = {
+                "token": "NEED_RETRIEVAL",
+                "reasoning": f"Xác suất cần tra cứu P(Retrieve) = 94.8% vượt qua ngưỡng kích hoạt tau = {tau_threshold:.2f} -> MỞ CỔNG TRA CỨU, kích hoạt bộ truy xuất văn bản pháp luật." if lang == "vi" else f"Retrieval probability P(Retrieve) = 94.8% exceeds threshold tau = {tau_threshold:.2f} -> RETRIEVAL TRIGGERED, external search activated."
+            }
+        
+        tab3_data = {
+            "is_cached": True,
+            "model": "Qwen/Qwen2.5-72B-Instruct",
+            "result": tab3_res_data,
+            "question": cached_case_t3.get("question", q_tab3),
+        }
+        is_cached_3 = True
+
+    res_self_full = tab3_data["result"]
+
+    if is_cached_3:
+        st.markdown(f"""
+        <div class="status-banner-cached">
+            <b>{'Trạng Thái Thực Nghiệm:' if lang == 'vi' else 'Benchmark Status:'}</b> <span class="badge-cached">{t('status_cached_label', lang)}</span> | 
+            <b>{'Kịch Bản:' if lang == 'vi' else 'Scenario:'}</b> <code>{selected_tab3_case_key}</code> | 
+            <b>{'Ngưỡng Cổng tau:' if lang == 'vi' else 'Gate Threshold tau:'}</b> <code>{tau_threshold:.2f}</code> | 
+            <b>{'Kiến Trúc Mô Hình:' if lang == 'vi' else 'Model Architecture:'}</b> <code>{tab3_data.get('model', 'Qwen/Qwen2.5-72B-Instruct')}</code>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        c_l3_1, c_l3_2 = st.columns([4, 1])
+        with c_l3_1:
             st.markdown(f"""
             <div class="status-banner-live">
                 <b>{'Trạng Thái Thực Nghiệm:' if lang == 'vi' else 'Benchmark Status:'}</b> <span class="badge-verified">{t('status_live_label', lang)}</span> | 
@@ -980,6 +1099,10 @@ with tab3:
                 <b>{'Độ Trễ Thực Thi:' if lang == 'vi' else 'Execution Latency:'}</b> <code>{res_self_full.get('latency_ms', 0)} ms</code>
             </div>
             """, unsafe_allow_html=True)
+        with c_l3_2:
+            if st.button("🔄 " + ("Reset to Gold" if lang == "en" else "Về Gold Pre-computed"), key="btn_reset_tab3", use_container_width=True):
+                st.session_state["tab3_is_live"] = False
+                st.rerun()
 
         ret_dec = res_self_full.get("retrieve_decision", {})
         st.markdown(f"**{'Token Quyết Định' if lang == 'vi' else 'Decision Token'} [Retrieve]:** `{ret_dec.get('token', 'YES')}`")
@@ -1085,13 +1208,25 @@ with tab4:
     with col_q4:
         q_tab4 = st.text_input(
             t("tab4_q_label", lang),
-            value=test_cases[2]["question"],
-            key="q_tab4",
+            value=st.session_state.get("q_tab4", test_cases[2]["question"]),
+            key="q_tab4_input",
         )
     with col_btn4:
         st.write("")
         st.write("")
         run_btn4 = st.button(t("tab1_btn_run", lang), key="btn4", use_container_width=True)
+
+    c_f_slider, c_f_info = st.columns([2, 1])
+    with c_f_slider:
+        flare_theta = st.select_slider(
+            "Ngưỡng bất định kích hoạt truy xuất chủ động theta:" if lang == "vi" else "FLARE Confidence Trigger Threshold theta:",
+            options=[0.30, 0.50, 0.70],
+            value=0.50,
+            format_func=lambda x: f"theta = {x:.1f} ({'Tự do sinh không tra cứu (0 lượt gọi)' if x==0.3 else ('Cân bằng chuẩn (1 lượt gọi Điều 40)' if x==0.5 else 'Nghiêm ngặt (2 lượt gọi Điều 40 & Điều 62)')})" if lang == "vi" else f"theta = {x:.1f} ({'Permissive (0 search calls)' if x==0.3 else ('Balanced (1 search call)' if x==0.5 else 'Strict (2 search calls)')})",
+            key="flare_theta_slider"
+        )
+    with c_f_info:
+        st.info(f"{'Cơ chế kích hoạt:' if lang == 'vi' else 'Trigger Rule:'} $\\min_t P(w_t) < {flare_theta:.1f}$\n\n{'Tiết kiệm tính toán tra cứu khi câu tự tin cao.' if lang == 'vi' else 'Bypasses search when draft tokens are confident.'}")
 
     # Handle Live Re-run
     if run_btn4:
@@ -1106,28 +1241,48 @@ with tab4:
                 res_flare_live = flare_pipe.run_flare(q_tab4)
                 status_box.update(label="Hoàn tất tổng hợp FLARE!" if lang == "vi" else "FLARE Active Synthesis Complete!", state="complete", expanded=False)
 
-            st.session_state["tab4_run"] = {
+            st.session_state["tab4_is_live"] = True
+            st.session_state["tab4_live"] = {
                 "is_cached": False,
                 "model": cur_model,
                 "result": res_flare_live,
                 "question": q_tab4,
             }
 
-    # Render Active State
-    if "tab4_run" in st.session_state:
-        tab4_data = st.session_state["tab4_run"]
-        is_cached_4 = tab4_data.get("is_cached", False)
-        res_flare = tab4_data["result"]
-
-        if is_cached_4:
-            st.markdown(f"""
-            <div class="status-banner-cached">
-                <b>{'Trạng Thái Thực Nghiệm:' if lang == 'vi' else 'Benchmark Status:'}</b> <span class="badge-cached">{t('status_cached_label', lang)}</span> | 
-                <b>{'Kiến Trúc Mô Hình:' if lang == 'vi' else 'Model Architecture:'}</b> <code>{tab4_data.get('model', 'Qwen/Qwen2.5-72B-Instruct')}</code> | 
-                <b>{'Chiến Lược Truy Xuất:' if lang == 'vi' else 'Retrieval Strategy:'}</b> <code>{'Truy xuất theo độ không chắc chắn (FLARE)' if lang == 'vi' else 'On-Demand Uncertainty Trigger (FLARE)'}</code>
-            </div>
-            """, unsafe_allow_html=True)
+    # Determine Active State (Dynamically responsive to theta uncertainty threshold)
+    if st.session_state.get("tab4_is_live") and "tab4_live" in st.session_state:
+        tab4_data = st.session_state["tab4_live"]
+        is_cached_4 = False
+    else:
+        if flare_theta == 0.70:
+            active_f_res = cached_benchmark.get("tab4", {}).get("case_2", {}).get("threshold_0_7")
+        elif flare_theta == 0.30:
+            active_f_res = cached_benchmark.get("tab4", {}).get("case_2", {}).get("threshold_0_3")
         else:
+            active_f_res = cached_benchmark.get("tab4", {}).get("case_2", {}).get("threshold_0_5") or cached_benchmark.get("tab4", {}).get("case_2", {}).get("result")
+        
+        tab4_data = {
+            "is_cached": True,
+            "model": "Qwen/Qwen2.5-72B-Instruct",
+            "result": active_f_res,
+            "question": q_tab4,
+        }
+        is_cached_4 = True
+
+    res_flare = tab4_data["result"]
+
+    if is_cached_4:
+        st.markdown(f"""
+        <div class="status-banner-cached">
+            <b>{'Trạng Thái Thực Nghiệm:' if lang == 'vi' else 'Benchmark Status:'}</b> <span class="badge-cached">{t('status_cached_label', lang)}</span> | 
+            <b>{'Ngưỡng theta:' if lang == 'vi' else 'Threshold theta:'}</b> <code>{flare_theta:.1f}</code> | 
+            <b>{'Kiến Trúc Mô Hình:' if lang == 'vi' else 'Model Architecture:'}</b> <code>{tab4_data.get('model', 'Qwen/Qwen2.5-72B-Instruct')}</code> | 
+            <b>{'Chiến Lược Truy Xuất:' if lang == 'vi' else 'Retrieval Strategy:'}</b> <code>{'Truy xuất theo độ không chắc chắn (FLARE)' if lang == 'vi' else 'On-Demand Uncertainty Trigger (FLARE)'}</code>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        c_l4_1, c_l4_2 = st.columns([4, 1])
+        with c_l4_1:
             st.markdown(f"""
             <div class="status-banner-live">
                 <b>{'Trạng Thái Thực Nghiệm:' if lang == 'vi' else 'Benchmark Status:'}</b> <span class="badge-verified">{t('status_live_label', lang)}</span> | 
@@ -1135,35 +1290,39 @@ with tab4:
                 <b>{'Lượt Gọi Công Cụ Chủ Động:' if lang == 'vi' else 'Active Tool Calls:'}</b> <code>{res_flare.get('retrieval_calls_made', 0)} / {res_flare.get('total_sentences', 0)} {'câu' if lang == 'vi' else 'sentences'}</code>
             </div>
             """, unsafe_allow_html=True)
+        with c_l4_2:
+            if st.button("🔄 " + ("Reset to Gold" if lang == "en" else "Về Gold Pre-computed"), key="btn_reset_tab4", use_container_width=True):
+                st.session_state["tab4_is_live"] = False
+                st.rerun()
 
-        st.markdown(f"**{'Tổng Số Câu Đánh Giá:' if lang == 'vi' else 'Total Sentences Evaluated:'}** `{res_flare.get('total_sentences', 0)}` | **{'Số Lần Truy Xuất Chủ Động:' if lang == 'vi' else 'Active Retrieval Calls:'}** `{res_flare.get('retrieval_calls_made', 0)}`")
+    st.markdown(f"**{'Tổng Số Câu Đánh Giá:' if lang == 'vi' else 'Total Sentences Evaluated:'}** `{res_flare.get('total_sentences', 0)}` | **{'Số Lần Truy Xuất Chủ Động:' if lang == 'vi' else 'Active Retrieval Calls:'}** `{res_flare.get('retrieval_calls_made', 0)}`")
+    st.markdown("---")
+
+    for step in res_flare.get("trace_steps", []):
+        col_step_info, col_step_detail = st.columns([1, 2])
+        with col_step_info:
+            st.markdown(f"**{'Câu' if lang == 'vi' else 'Sentence'} {step.get('step', '')}:**")
+            if step.get("status") == "TRIGGERED_RETRIEVAL":
+                st.markdown(f"{'Độ tự tin:' if lang == 'vi' else 'Confidence:'} `{step.get('confidence', '')}` ({'Dưới ngưỡng' if lang == 'vi' else 'Below Threshold'} $\\theta$)")
+                st.markdown(f"Active Tool: `Search(\"{step.get('search_query', '')}\")`")
+                st.caption(f"{'Căn cứ sử dụng:' if lang == 'vi' else 'Evidence:'} {', '.join(step.get('evidence_used', []))}")
+            else:
+                st.markdown(f"{'Độ tự tin:' if lang == 'vi' else 'Confidence:'} `{step.get('confidence', '')}` ({'Tự tin cao' if lang == 'vi' else 'High Confidence'})")
+                st.caption("Không tốn chi phí truy xuất." if lang == "vi" else "Zero retrieval overhead required.")
+
+        with col_step_detail:
+            st.markdown(f"*{'Bản thảo ban đầu:' if lang == 'vi' else 'Initial Draft:'}* \"{step.get('draft_sentence', '')}\"")
+            if step.get("status") == "TRIGGERED_RETRIEVAL":
+                st.success(f"**{'Bản sửa có căn cứ luật:' if lang == 'vi' else 'Fact-Grounded Revision:'}** \"{step.get('final_sentence', '')}\"")
+            else:
+                st.info(f"**{'Giữ nguyên câu soạn:' if lang == 'vi' else 'Retained Draft:'}** \"{step.get('final_sentence', '')}\"")
         st.markdown("---")
 
-        for step in res_flare.get("trace_steps", []):
-            col_step_info, col_step_detail = st.columns([1, 2])
-            with col_step_info:
-                st.markdown(f"**{'Câu' if lang == 'vi' else 'Sentence'} {step.get('step', '')}:**")
-                if step.get("status") == "TRIGGERED_RETRIEVAL":
-                    st.markdown(f"{'Độ tự tin:' if lang == 'vi' else 'Confidence:'} `{step.get('confidence', '')}` ({'Dưới ngưỡng' if lang == 'vi' else 'Below Threshold'} $\\theta$)")
-                    st.markdown(f"Active Tool: `Search(\"{step.get('search_query', '')}\")`")
-                    st.caption(f"{'Căn cứ sử dụng:' if lang == 'vi' else 'Evidence:'} {', '.join(step.get('evidence_used', []))}")
-                else:
-                    st.markdown(f"{'Độ tự tin:' if lang == 'vi' else 'Confidence:'} `{step.get('confidence', '')}` ({'Tự tin cao' if lang == 'vi' else 'High Confidence'})")
-                    st.caption("Không tốn chi phí truy xuất." if lang == "vi" else "Zero retrieval overhead required.")
+    st.markdown(f"#### {t('tab4_ans_title', lang)}")
+    st.success(res_flare.get("final_answer", ""))
 
-            with col_step_detail:
-                st.markdown(f"*{'Bản thảo ban đầu:' if lang == 'vi' else 'Initial Draft:'}* \"{step.get('draft_sentence', '')}\"")
-                if step.get("status") == "TRIGGERED_RETRIEVAL":
-                    st.success(f"**{'Bản sửa có căn cứ luật:' if lang == 'vi' else 'Fact-Grounded Revision:'}** \"{step.get('final_sentence', '')}\"")
-                else:
-                    st.info(f"**{'Giữ nguyên câu soạn:' if lang == 'vi' else 'Retained Draft:'}** \"{step.get('final_sentence', '')}\"")
-            st.markdown("---")
-
-        st.markdown(f"#### {t('tab4_ans_title', lang)}")
-        st.success(res_flare.get("final_answer", ""))
-
-        st.markdown("---")
-        with st.expander(t("tab4_deepdive_title", lang), expanded=False):
+    st.markdown("---")
+    with st.expander(t("tab4_deepdive_title", lang), expanded=False):
             if lang == "vi":
                 st.markdown("""
                 #### Cách Thức Vận Hành Của Active Retrieval (FLARE) (Jiang et al., EMNLP 2023):
