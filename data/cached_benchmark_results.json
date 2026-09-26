@@ -20,7 +20,7 @@
           "answer": "Căn cứ vào Điều 27 của Bộ luật Lao động số 10/2012/QH13 được cung cấp trong tài liệu tra cứu, thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp là không quá 60 ngày (công việc có chức danh nghề nghiệp cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên).\n\nTrích dẫn tài liệu tham chiếu: '1. Không quá 60 ngày đối với công việc có chức danh nghề nghiệp cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên; 2. Không quá 30 ngày đối với công việc có chức danh trung cấp;'.",
           "latency_ms": 2180,
           "outcome": "POISONED_BY_DISTRACTOR",
-          "verdict_text": "❌ Bị ngộ độc: Mô hình bị tài liệu bẫy dẫn dụ và kết luận sai thành 60 ngày!",
+          "verdict_text": "❌ Bị nhiễm độc: Mô hình bị tài liệu gây nhiễu dẫn dụ và kết luận sai thành 60 ngày!",
           "has_180_days": false,
           "has_60_days": true,
           "retrieved_passages": [
@@ -52,7 +52,7 @@
               "title": "Điều 27. Thời gian thử việc - Bộ luật Lao động số 10/2012/QH13 (Hết hiệu lực từ 01/01/2021)",
               "content": "Thời gian thử việc căn cứ vào tính chất và mức độ phức tạp của công việc... 1. Không quá 60 ngày đối với công việc có chức danh nghề nghiệp cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên...",
               "is_rel_token": "IRRELEVANT",
-              "critique": "Đoạn văn bản này thuộc Bộ luật Lao động 2012 đã hết hiệu lực từ ngày 01/01/2021 và bị thay thế bởi BLLĐ 2019. Thông tin 60 ngày là lỗi thời và gây ngộ độc ngữ cảnh -> BÁC BỎ [IsREL: IRRELEVANT]."
+              "critique": "Đoạn văn bản này thuộc Bộ luật Lao động 2012 đã hết hiệu lực từ ngày 01/01/2021 và bị thay thế bởi BLLĐ 2019. Thông tin 60 ngày là lỗi thời và gây nhiễm độc ngữ cảnh -> BÁC BỎ [IsREL: IRRELEVANT]."
             },
             {
               "article_id": "Dieu_25",
@@ -66,7 +66,7 @@
             "is_sup_token": "FULLY_SUPPORTED",
             "is_use_score": 5,
             "has_180_days": true,
-            "critique_summary": "Đã kiểm định các đoạn văn bản. Bác bỏ văn bản bãi bỏ (BLLĐ 2012); chấp nhận căn cứ hiện hành Điều 25 BLLĐ 2019. Khẳng định mốc 180 ngày được quy chiếu 100% từ căn cứ hợp lệ."
+            "critique_summary": "Đã kiểm định các đoạn văn bản. Bác bỏ văn bản đã hết hiệu lực (BLLĐ 2012); chấp nhận căn cứ hiện hành Điều 25 BLLĐ 2019. Khẳng định mốc 180 ngày được quy chiếu 100% từ căn cứ hợp lệ."
           },
           "model": "Qwen/Qwen2.5-72B-Instruct"
         }
@@ -83,7 +83,7 @@
           "answer": "Căn cứ vào Điều 27 của Bộ luật Lao động số 10/2012/QH13 (Hết hiệu lực từ 01/01/2021) được cung cấp trong tài liệu tra cứu, thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp (công việc cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên) là **không quá 60 ngày**.\n\nTrích dẫn tài liệu: '1. Không quá 60 ngày đối với công việc có chức danh nghề nghiệp cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên; 2. Không quá 30 ngày đối với công việc có chức danh trung cấp;'.",
           "latency_ms": 2050,
           "outcome": "POISONED_BY_DISTRACTOR",
-          "verdict_text": "❌ Bị ngộ độc: Mô hình bị tài liệu bẫy dẫn dụ và kết luận sai thành 60 ngày!",
+          "verdict_text": "❌ Bị nhiễm độc: Mô hình bị tài liệu gây nhiễu dẫn dụ và kết luận sai thành 60 ngày!",
           "has_180_days": false,
           "has_60_days": true,
           "retrieved_passages": [
@@ -115,7 +115,7 @@
               "title": "Điều 27. Thời gian thử việc - Bộ luật Lao động số 10/2012/QH13 (Hết hiệu lực từ 01/01/2021)",
               "content": "Thời gian thử việc căn cứ vào tính chất và mức độ phức tạp của công việc... 1. Không quá 60 ngày đối với công việc có chức danh nghề nghiệp cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên...",
               "is_rel_token": "IRRELEVANT",
-              "critique": "Đoạn văn bản này thuộc Bộ luật Lao động 2012 đã hết hiệu lực từ ngày 01/01/2021 và bị thay thế bởi BLLĐ 2019. Thông tin 60 ngày là lỗi thời và gây ngộ độc ngữ cảnh -> BÁC BỎ [IsREL: IRRELEVANT]."
+              "critique": "Đoạn văn bản này thuộc Bộ luật Lao động 2012 đã hết hiệu lực từ ngày 01/01/2021 và bị thay thế bởi BLLĐ 2019. Thông tin 60 ngày là lỗi thời và gây nhiễm độc ngữ cảnh -> BÁC BỎ [IsREL: IRRELEVANT]."
             },
             {
               "article_id": "Dieu_25",
@@ -129,7 +129,7 @@
             "is_sup_token": "FULLY_SUPPORTED",
             "is_use_score": 5,
             "has_180_days": true,
-            "critique_summary": "Đã kiểm định 3 đoạn văn bản. Bác bỏ 1 văn bản bãi bỏ (BLLĐ 2012); chấp nhận căn cứ hiện hành Điều 25 BLLĐ 2019. Khẳng định 180 ngày được quy chiếu 100% từ căn cứ hợp lệ."
+            "critique_summary": "Đã kiểm định 3 đoạn văn bản. Bác bỏ 1 văn bản đã hết hiệu lực (BLLĐ 2012); chấp nhận căn cứ hiện hành Điều 25 BLLĐ 2019. Khẳng định 180 ngày được quy chiếu 100% từ căn cứ hợp lệ."
           },
           "model": "meta-llama/Llama-3.1-8B-Instruct"
         }
@@ -146,7 +146,7 @@
           "answer": "Căn cứ vào Điều 27 của Bộ luật Lao động số 10/2012/QH13 được cung cấp trong tài liệu tra cứu, thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp là không quá 60 ngày (công việc có chức danh nghề nghiệp cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên).\n\nTrích dẫn tài liệu tham chiếu: '1. Không quá 60 ngày đối với công việc có chức danh nghề nghiệp cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên; 2. Không quá 30 ngày đối với công việc có chức danh trung cấp;'.",
           "latency_ms": 1240,
           "outcome": "POISONED_BY_DISTRACTOR",
-          "verdict_text": "❌ Bị ngộ độc: Mô hình bị tài liệu bẫy dẫn dụ và kết luận sai thành 60 ngày!",
+          "verdict_text": "❌ Bị nhiễm độc: Mô hình bị tài liệu gây nhiễu dẫn dụ và kết luận sai thành 60 ngày!",
           "has_180_days": false,
           "has_60_days": true,
           "retrieved_passages": [
@@ -178,7 +178,7 @@
               "title": "Điều 27. Thời gian thử việc - Bộ luật Lao động số 10/2012/QH13 (Hết hiệu lực từ 01/01/2021)",
               "content": "Thời gian thử việc căn cứ vào tính chất và mức độ phức tạp của công việc... 1. Không quá 60 ngày đối với công việc có chức danh nghề nghiệp cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên...",
               "is_rel_token": "IRRELEVANT",
-              "critique": "Đoạn văn bản này thuộc Bộ luật Lao động 2012 đã hết hiệu lực từ ngày 01/01/2021 và bị thay thế bởi BLLĐ 2019. Thông tin 60 ngày là lỗi thời và gây ngộ độc ngữ cảnh -> BÁC BỎ [IsREL: IRRELEVANT]."
+              "critique": "Đoạn văn bản này thuộc Bộ luật Lao động 2012 đã hết hiệu lực từ ngày 01/01/2021 và bị thay thế bởi BLLĐ 2019. Thông tin 60 ngày là lỗi thời và gây nhiễm độc ngữ cảnh -> BÁC BỎ [IsREL: IRRELEVANT]."
             },
             {
               "article_id": "Dieu_25",
@@ -192,7 +192,7 @@
             "is_sup_token": "FULLY_SUPPORTED",
             "is_use_score": 5,
             "has_180_days": true,
-            "critique_summary": "Đã kiểm định các đoạn văn bản. Bác bỏ văn bản bãi bỏ (BLLĐ 2012); chấp nhận căn cứ hiện hành Điều 25 BLLĐ 2019. Khẳng định mốc 180 ngày được quy chiếu 100% từ căn cứ hợp lệ."
+            "critique_summary": "Đã kiểm định các đoạn văn bản. Bác bỏ văn bản đã hết hiệu lực (BLLĐ 2012); chấp nhận căn cứ hiện hành Điều 25 BLLĐ 2019. Khẳng định mốc 180 ngày được quy chiếu 100% từ căn cứ hợp lệ."
           },
           "model": "Qwen/Qwen3.5-9B"
         }
@@ -257,7 +257,7 @@
             "is_sup_token": "FULLY_SUPPORTED",
             "is_use_score": 5,
             "has_180_days": true,
-            "critique_summary": "Phân giải thành công xung đột ngữ cảnh. Bác bỏ tài liệu 2012 bãi bỏ; chấp nhận và quy chiếu 100% vào Điều 25 BLLĐ 2019."
+            "critique_summary": "Phân giải thành công xung đột ngữ cảnh. Bác bỏ tài liệu 2012 đã hết hiệu lực; chấp nhận và quy chiếu 100% vào Điều 25 BLLĐ 2019."
           },
           "model": "Qwen/Qwen2.5-72B-Instruct"
         }
@@ -294,7 +294,7 @@
           "model": "meta-llama/Llama-3.1-8B-Instruct"
         },
         "self": {
-          "answer": "Căn cứ theo quy định tại **Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14**, thời gian thử việc tối đa của người quản lý doanh nghiệp là **không quá 180 ngày**.\n\n*Loại bỏ bẫy:* Bộ lọc [IsREL] đã bác bỏ Điều 27 BLLĐ 2012 vì là luật bãi bỏ, chỉ giữ lại Điều 25 BLLĐ 2019 có hiệu lực.",
+          "answer": "Căn cứ theo quy định tại **Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14**, thời gian thử việc tối đa của người quản lý doanh nghiệp là **không quá 180 ngày**.\n\n*Loại trừ tài liệu gây nhiễu:* Bộ lọc [IsREL] đã bác bỏ Điều 27 BLLĐ 2012 vì là văn bản đã hết hiệu lực, chỉ giữ lại Điều 25 BLLĐ 2019 hiện hành.",
           "latency_ms": 3620,
           "retrieve_decision": {
             "token": "NEED_RETRIEVAL",
@@ -320,7 +320,7 @@
             "is_sup_token": "FULLY_SUPPORTED",
             "is_use_score": 5,
             "has_180_days": true,
-            "critique_summary": "Loại bỏ hoàn toàn tài liệu bãi bỏ, chỉ sử dụng căn cứ Điều 25 BLLĐ 2019."
+            "critique_summary": "Loại bỏ hoàn toàn tài liệu gây nhiễu đã hết hiệu lực, chỉ sử dụng căn cứ Điều 25 BLLĐ 2019."
           },
           "model": "meta-llama/Llama-3.1-8B-Instruct"
         }
@@ -383,7 +383,7 @@
             "is_sup_token": "FULLY_SUPPORTED",
             "is_use_score": 5,
             "has_180_days": true,
-            "critique_summary": "Phân giải thành công xung đột ngữ cảnh. Bác bỏ tài liệu 2012 bãi bỏ; chấp nhận và quy chiếu 100% vào Điều 25 BLLĐ 2019."
+            "critique_summary": "Phân giải thành công xung đột ngữ cảnh. Bác bỏ tài liệu 2012 đã hết hiệu lực; chấp nhận và quy chiếu 100% vào Điều 25 BLLĐ 2019."
           },
           "model": "Qwen/Qwen3.5-9B"
         }
@@ -402,7 +402,7 @@
           "answer": "Căn cứ theo quy định tại **Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14**, thời gian thử việc do hai bên thỏa thuận căn cứ vào tính chất và mức độ phức tạp của công việc nhưng chỉ được thử việc một lần đối với một công việc và bảo đảm điều kiện sau đây:\n\n**Không quá 180 ngày** đối với công việc của người quản lý doanh nghiệp theo quy định của Luật Doanh nghiệp, Luật Quản lý, sử dụng vốn nhà nước đầu tư vào sản xuất, kinh doanh tại doanh nghiệp.",
           "latency_ms": 1940,
           "outcome": "VERIFIED_CORRECT",
-          "verdict_text": "✅ Chính xác: Khi không có tài liệu bẫy làm nhiễu, Naive RAG truy xuất đúng Điều 25 BLLĐ 2019 và trả lời chuẩn xác 180 ngày!",
+          "verdict_text": "✅ Chính xác: Khi không có tài liệu gây nhiễu làm nhiễu, Naive RAG truy xuất đúng Điều 25 BLLĐ 2019 và trả lời chuẩn xác 180 ngày!",
           "has_180_days": true,
           "has_60_days": false,
           "retrieved_passages": [
@@ -521,7 +521,7 @@
           "answer": "Căn cứ theo quy định tại **Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14**, thời gian thử việc do hai bên thỏa thuận căn cứ vào tính chất và mức độ phức tạp của công việc nhưng chỉ được thử việc một lần đối với một công việc và bảo đảm điều kiện sau đây:\n\n**Không quá 180 ngày** đối với công việc của người quản lý doanh nghiệp theo quy định của Luật Doanh nghiệp, Luật Quản lý, sử dụng vốn nhà nước đầu tư vào sản xuất, kinh doanh tại doanh nghiệp.",
           "latency_ms": 1240,
           "outcome": "VERIFIED_CORRECT",
-          "verdict_text": "✅ Chính xác: Khi không có tài liệu bẫy làm nhiễu, Naive RAG truy xuất đúng Điều 25 BLLĐ 2019 và trả lời chuẩn xác 180 ngày!",
+          "verdict_text": "✅ Chính xác: Khi không có tài liệu gây nhiễu làm nhiễu, Naive RAG truy xuất đúng Điều 25 BLLĐ 2019 và trả lời chuẩn xác 180 ngày!",
           "has_180_days": true,
           "has_60_days": false,
           "retrieved_passages": [
@@ -591,7 +591,7 @@
         "answer": "Căn cứ vào Điều 27 của Bộ luật Lao động số 10/2012/QH13 được cung cấp trong tài liệu tra cứu, thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp là không quá 60 ngày (công việc có chức danh nghề nghiệp cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên).\n\nTrích dẫn tài liệu tham chiếu: '1. Không quá 60 ngày đối với công việc có chức danh nghề nghiệp cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên; 2. Không quá 30 ngày đối với công việc có chức danh trung cấp;'.",
         "latency_ms": 2180,
         "outcome": "POISONED_BY_DISTRACTOR",
-        "verdict_text": "❌ Bị ngộ độc: Mô hình bị tài liệu bẫy dẫn dụ và kết luận sai thành 60 ngày!",
+        "verdict_text": "❌ Bị nhiễm độc: Mô hình bị tài liệu gây nhiễu dẫn dụ và kết luận sai thành 60 ngày!",
         "has_180_days": false,
         "has_60_days": true,
         "retrieved_passages": [
@@ -623,7 +623,7 @@
             "title": "Điều 27. Thời gian thử việc - Bộ luật Lao động số 10/2012/QH13 (Hết hiệu lực từ 01/01/2021)",
             "content": "Thời gian thử việc căn cứ vào tính chất và mức độ phức tạp của công việc... 1. Không quá 60 ngày đối với công việc có chức danh nghề nghiệp cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên...",
             "is_rel_token": "IRRELEVANT",
-            "critique": "Đoạn văn bản này thuộc Bộ luật Lao động 2012 đã hết hiệu lực từ ngày 01/01/2021 và bị thay thế bởi BLLĐ 2019. Thông tin 60 ngày là lỗi thời và gây ngộ độc ngữ cảnh -> BÁC BỎ [IsREL: IRRELEVANT]."
+            "critique": "Đoạn văn bản này thuộc Bộ luật Lao động 2012 đã hết hiệu lực từ ngày 01/01/2021 và bị thay thế bởi BLLĐ 2019. Thông tin 60 ngày là lỗi thời và gây nhiễm độc ngữ cảnh -> BÁC BỎ [IsREL: IRRELEVANT]."
           },
           {
             "article_id": "Dieu_25",
@@ -637,7 +637,7 @@
           "is_sup_token": "FULLY_SUPPORTED",
           "is_use_score": 5,
           "has_180_days": true,
-          "critique_summary": "Đã kiểm định các đoạn văn bản. Bác bỏ văn bản bãi bỏ (BLLĐ 2012); chấp nhận căn cứ hiện hành Điều 25 BLLĐ 2019. Khẳng định mốc 180 ngày được quy chiếu 100% từ căn cứ hợp lệ."
+          "critique_summary": "Đã kiểm định các đoạn văn bản. Bác bỏ văn bản đã hết hiệu lực (BLLĐ 2012); chấp nhận căn cứ hiện hành Điều 25 BLLĐ 2019. Khẳng định mốc 180 ngày được quy chiếu 100% từ căn cứ hợp lệ."
         },
         "model": "Qwen/Qwen2.5-72B-Instruct"
       },
@@ -770,7 +770,7 @@
             "title": "Điều 27. Thời gian thử việc - BLLĐ 2012 (Hết hiệu lực từ 01/01/2021)",
             "content": "1. Không quá 60 ngày đối với công việc có chức danh nghề nghiệp cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên...",
             "is_rel_token": "IRRELEVANT",
-            "critique": "Đoạn văn bản này thuộc BLLĐ 2012 đã hết hiệu lực và bị thay thế bởi BLLĐ 2019. Mốc 60 ngày là lỗi thời và gây ngộ độc ngữ cảnh -> BÁC BỎ [IsREL: IRRELEVANT]."
+            "critique": "Đoạn văn bản này thuộc BLLĐ 2012 đã hết hiệu lực và bị thay thế bởi BLLĐ 2019. Mốc 60 ngày là lỗi thời và gây nhiễm độc ngữ cảnh -> BÁC BỎ [IsREL: IRRELEVANT]."
           },
           {
             "article_id": "Dieu_25",
@@ -783,9 +783,9 @@
         "verification": {
           "is_sup_token": "FULLY_SUPPORTED",
           "is_use_score": 5,
-          "critique_summary": "Đã loại bỏ văn bản bãi bỏ Điều 27/2012; chấp nhận căn cứ hiện hành Điều 25 BLLĐ 2019. Khẳng định mốc 180 ngày đạt chuẩn kiểm định."
+          "critique_summary": "Đã loại bỏ văn bản đã hết hiệu lực Điều 27/2012; chấp nhận căn cứ hiện hành Điều 25 BLLĐ 2019. Khẳng định mốc 180 ngày đạt chuẩn kiểm định."
         },
-        "answer": "Căn cứ theo quy định tại **Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14** (có hiệu lực từ ngày 01/01/2021), thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp là **không quá 180 ngày**.\n\n*Ghi chú phản biện:* Đoạn trích dẫn Điều 27 BLLĐ 2012 quy định 60 ngày đã được cơ chế [IsREL] nhận diện là văn bản bãi bỏ và loại bỏ hoàn toàn khỏi ngữ cảnh sinh câu trả lời.",
+        "answer": "Căn cứ theo quy định tại **Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14** (có hiệu lực từ ngày 01/01/2021), thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp là **không quá 180 ngày**.\n\n*Ghi chú kiểm định:* Đoạn trích dẫn Điều 27 BLLĐ 2012 quy định 60 ngày đã được bộ lọc [IsREL] nhận diện là văn bản đã hết hiệu lực và loại bỏ hoàn toàn khỏi ngữ cảnh sinh câu trả lời.",
         "latency_ms": 3620,
         "model": "Qwen/Qwen2.5-72B-Instruct"
       }

@@ -156,10 +156,10 @@ DIAGRAMS_VI = {
 flowchart LR
     Q["Câu hỏi của Người dùng"] --> RET["Bộ truy xuất lai<br/>(BM25 / BGE-M3)"]
     RET --> CHUNKS["Top-k Đoạn văn bản bốc được<br/>(Ngữ cảnh cục bộ)"]
-    CHUNKS --> CONCAT["Prompt nối ngữ cảnh thô<br/>(Không phản tư)"]
+    CHUNKS --> CONCAT["Prompt nối ngữ cảnh thô<br/>(Không tự đánh giá)"]
     Q --> CONCAT
     CONCAT --> LLM["Mô hình LLM sinh phản hồi<br/>(Instruct Model)"]
-    LLM --> ANS["Câu trả lời chưa kiểm chứng<br/>(Dễ bị ngộ độc tài liệu bẫy)"]
+    LLM --> ANS["Câu trả lời chưa kiểm định<br/>(Dễ bị nhiễm độc ngữ cảnh)"]
     
     style RET fill:#f1f5f9,stroke:#475569,stroke-width:2px
     style CHUNKS fill:#fef3c7,stroke:#d97706,stroke-width:2px
@@ -167,15 +167,15 @@ flowchart LR
 """,
     "self_rag": """
 flowchart LR
-    Q["Câu hỏi của Người dùng"] --> DECIDE{"Cổng [Retrieve]?<br/>Có cần tra cứu ngoài?"}
+    Q["Câu hỏi của Người dùng"] --> DECIDE{"Cổng [Retrieve]<br/>Có cần truy xuất ngoài?"}
     DECIDE -->|Không| PARAM["Sinh từ bộ nhớ trong<br/>(Parametric Weights)"]
     DECIDE -->|Có| RET["Truy xuất BGE-M3 + BM25<br/>(Đoạn luật ứng viên)"]
-    RET --> CRITIC{"Bộ phản tư [IsREL]<br/>Lọc đoạn văn bản"}
-    CRITIC -->|Hết hạn / Lỗi thời| REJECT["Loại bỏ văn bản bẫy<br/>(IsREL: IRRELEVANT)"]
+    RET --> CRITIC{"Bộ lọc tài liệu [IsREL]<br/>Đánh giá tính liên quan"}
+    CRITIC -->|Hết hạn / Gây nhiễu| REJECT["Loại bỏ tài liệu gây nhiễu<br/>(IsREL: IRRELEVANT)"]
     CRITIC -->|Hợp lệ| GROUNDED["Ngữ cảnh căn cứ chuẩn<br/>(IsREL: RELEVANT)"]
     GROUNDED --> GEN["Sinh phản hồi có căn cứ<br/>(Grounded Generation)"]
-    GEN --> SUP{"Bộ kiểm định [IsSUP]<br/>Đối chiếu chứng cứ"}
-    SUP --> OUT["Câu trả lời xác thực hoàn tất<br/>Độ hữu dụng: 5/5 [IsUSE]"]
+    GEN --> SUP{"Kiểm định căn cứ [IsSUP]<br/>Đối chiếu chứng cứ"}
+    SUP --> OUT["Câu trả lời đã kiểm định<br/>Độ hữu dụng: 5/5 [IsUSE]"]
     
     style DECIDE fill:#f8fafc,stroke:#64748b,stroke-width:2px
     style CRITIC fill:#ffedd5,stroke:#ea580c,stroke-width:2px
@@ -239,7 +239,7 @@ flowchart TD
         DOT_PROD --> RRF["Hợp nhất xếp hạng (RRF: k=60)"]
         BM25_SCORE --> RRF
         RRF --> TOPK["Top-k Đoạn văn bản phù hợp nhất"]
-        TOPK --> LLM_GEN["Mô hình LLM / Vòng phản tư Self-RAG"]
+        TOPK --> LLM_GEN["Mô hình LLM / Vòng tự đánh giá Self-RAG"]
         LLM_GEN --> FINAL_ANS["Câu trả lời xác thực chuẩn xác"]
     end
 

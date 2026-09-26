@@ -36,8 +36,8 @@ class NaiveRAGPipeline:
         """
         Baseline 2: Naive RAG.
         Simulates the two real-world failure modes of retrieval:
-        1. 'only_distractor': False Positive retrieval failure (Retriever bốc trúng văn bản bẫy và các điều không liên quan, rớt mất Điều 25).
-        2. 'mixed_conflict': Context chứa cả văn bản bẫy (60 ngày) và Điều 25 (180 ngày).
+        1. 'only_distractor': False Positive retrieval failure (Retriever bốc trúng văn bản gây nhiễu và các điều không liên quan, rớt mất Điều 25).
+        2. 'mixed_conflict': Context chứa cả văn bản gây nhiễu (60 ngày) và Điều 25 (180 ngày).
         """
         raw_retrieved = self.retriever.search_hybrid_rrf(query, top_k=top_k)
 
@@ -87,7 +87,7 @@ TRẢ LỜI CĂN CỨ VÀO TÀI LIỆU TRÊN:"""
 
         if has_60_days and not has_180_days:
             outcome = "POISONED_BY_DISTRACTOR"
-            verdict_text = "❌ Bị ngộ độc: Mô hình bị tài liệu bẫy dẫn dụ và kết luận sai thành 60 ngày!"
+            verdict_text = "❌ Bị nhiễm độc ngữ cảnh: Mô hình bị tài liệu gây nhiễu dẫn dụ và kết luận sai thành 60 ngày!"
         elif has_60_days and has_180_days:
             outcome = "CONFUSED_CONFLICT"
             verdict_text = "⚠️ Mâu thuẫn: Mô hình phát hiện cả 2 mốc 60 ngày và 180 ngày do context xung đột."

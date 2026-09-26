@@ -486,13 +486,13 @@ with st.expander(t("master_guide_expander", lang), expanded=False):
         st.markdown(r"""
 | Cơ Chế RAG | Cơ Chế Vận Hành Cốt Lõi | Công Thức Toán Học / Thuật Toán | Điểm Yếu Chính Được Khắc Phục | Khi Nào Nên Triển Khai Thực Tế |
 | :--- | :--- | :--- | :--- | :--- |
-| **1. Pure LLM** | Thuần tham số mô hình | $P(y \mid x; \theta)$ | Không tốn độ trễ tra cứu ngoài | Trò chuyện tổng quát, suy luận đời thường |
+| **1. Pure LLM** | Bộ nhớ tham số mô hình | $P(y \mid x; \theta)$ | Không tốn độ trễ tra cứu ngoài | Trò chuyện tổng quát, suy luận đời thường |
 | **2. Naive RAG** | Tìm kiếm tương đồng top-k + nối chuỗi thô | $\arg\max_y P(y \mid x, \text{TopK}(x))$ | Bổ sung tri thức thiếu trong pre-training | FAQ đơn giản trên tài liệu tĩnh, không xung đột |
-| **3. Self-RAG** | Token phản tư + Cổng xác suất logprob | $\text{Score} = \text{LLM} + w_{\text{rel}} \log P(\text{IsREL}) + w_{\text{sup}} \log P(\text{IsSUP})$ | **Ngộ độc tài liệu bẫy** (Luật hết hiệu lực/mâu thuẫn) | Lĩnh vực rủi ro cao (Pháp lý, Y tế, Kiểm toán tài chính) |
-| **4. GraphRAG** | Đồ thị tri thức + Phân cụm Modularity + Map-Reduce | $\text{Reduce}(\{\text{Map}(C_i)\}_{i=1}^M)$, $Q = \sum [e_{ii} - a_i^2]$ | **Điểm mù cục bộ** (Bỏ sót điều khoản liên chương) | Báo cáo chính sách toàn diện, tóm lược quy chế pháp luật |
-| **5. FLARE** | Soạn thảo dự phóng + Kích hoạt khi độ tự tin thấp | Kích hoạt truy xuất khi $\min_{t} P(w_t) < \theta$ | **Tốn kém chi phí & độ trễ truy xuất dư thừa** | Báo cáo sự kiện nhiều câu, văn bản pháp lý dài kỳ |
+| **3. Self-RAG** | Token tự đánh giá + Cổng xác suất logprob | $\text{Score} = \text{LLM} + w_{\text{rel}} \log P(\text{IsREL}) + w_{\text{sup}} \log P(\text{IsSUP})$ | **Nhiễm độc tài liệu gây nhiễu** (Luật hết hiệu lực/mâu thuẫn) | Lĩnh vực rủi ro cao (Pháp lý, Y tế, Kiểm toán tài chính) |
+| **4. GraphRAG** | Đồ thị tri thức + Phân cụm cộng đồng theo Modularity + Tổng hợp phân cấp Map-Reduce | $\text{Reduce}(\{\text{Map}(C_i)\}_{i=1}^M)$, $Q = \sum [e_{ii} - a_i^2]$ | **Điểm mù cục bộ của Vector Search** (Bỏ sót điều khoản liên chương) | Báo cáo chính sách toàn diện, tóm lược quy chế pháp luật |
+| **5. FLARE** | Sinh nháp dự phóng + Kích hoạt truy xuất chủ động theo độ bất định | Kích hoạt truy xuất khi $\min_{t} P(w_t) < \theta$ | **Tốn kém chi phí & độ trễ truy xuất dư thừa** | Báo cáo sự kiện nhiều câu, văn bản pháp lý dài kỳ |
 """)
-        st.caption("Thiết kế phục vụ học phần CO5151 Advanced Agentic AI (HCMUT). Giảng viên hướng dẫn: TS. Lê Xuân Bách. Đối chứng thực tế trên Bộ luật Lao động 2019 và bẫy BLLĐ 2012 bãi bỏ.")
+        st.caption("Thiết kế phục vụ học phần CO5151 Advanced Agentic AI (HCMUT). Đối chứng thực tế trên Bộ luật Lao động 2019 và tài liệu gây nhiễu BLLĐ 2012 (đã hết hiệu lực thi hành).")
     else:
         st.markdown(r"""
 | Paradigm | Core Operational Mechanism | Mathematical / Algorithmic Formulation | Primary Failure Mode Addressed | When to Select in Production |
@@ -503,7 +503,7 @@ with st.expander(t("master_guide_expander", lang), expanded=False):
 | **4. GraphRAG** | Knowledge Graph + Community Modularity + Map-Reduce | $\text{Reduce}(\{\text{Map}(C_i)\}_{i=1}^M)$, $Q = \sum [e_{ii} - a_i^2]$ | **Local Blindness** (Corpus-wide omission) | Holistic policy summaries, comprehensive legal digests |
 | **5. FLARE** | Forward drafting + on-demand confidence trigger | Trigger retrieval iff $\min_{t} P(w_t) < \theta$ | **Excessive Retrieval Latency & Overhead** | Long-form multi-sentence factual reports |
 """)
-        st.caption("Developed for HCMUT CO5151 Advanced Agentic AI (Instructor: Dr. Le Xuan Bach). Grounded on authentic Vietnamese Labor Law (BLLĐ 2019 vs 2012 distractor).")
+        st.caption("Developed for HCMUT CO5151 Advanced Agentic AI. Grounded on authentic Vietnamese Labor Law (BLLĐ 2019 vs 2012 distractor).")
 
 # Render Tabs (Bilingual)
 tab_names = [
@@ -543,11 +543,11 @@ with tab1:
     st.markdown(f"### {t('tab1_header', lang)}")
     st.markdown(t("tab1_desc", lang))
 
-    exp1_title = "Kiến Trúc Hệ Thống: Naive Linear RAG Tuyến Tính vs. Vòng Lặp Phản Tư Self-RAG" if lang == "vi" else "System Architecture: Naive Linear RAG vs. Self-RAG Reflective Rejection Loop"
+    exp1_title = "Kiến Trúc Hệ Thống: Naive Linear RAG Tuyến Tính vs. Vòng Tự Đánh Giá Self-RAG" if lang == "vi" else "System Architecture: Naive Linear RAG vs. Self-RAG Reflective Rejection Loop"
     with st.expander(exp1_title, expanded=False):
         d_tab1, d_tab2 = st.tabs([
             "1. Kiến Trúc Naive RAG Tuyến Tính" if lang == "vi" else "1. Naive Linear RAG Architecture",
-            "2. Vòng Phản Tư Self-RAG" if lang == "vi" else "2. Self-RAG Reflective Loop Architecture",
+            "2. Vòng Tự Đánh Giá Self-RAG" if lang == "vi" else "2. Self-RAG Reflective Loop Architecture",
         ])
         with d_tab1:
             render_mermaid(get_diagram("naive_rag", lang), height=220)
@@ -568,21 +568,21 @@ with tab1:
 
     c_dist_1, c_dist_2 = st.columns([1, 1])
     with c_dist_1:
-        dist_chk_label = "Chèn văn bản luật hết hiệu lực / bẫy xung đột vào ngữ cảnh truy xuất" if lang == "vi" else "Inject repealed / conflicting statutory text into retrieval context"
+        dist_chk_label = "Chèn văn bản luật hết hiệu lực / tài liệu gây nhiễu vào ngữ cảnh truy xuất" if lang == "vi" else "Inject repealed / conflicting statutory text into retrieval context"
         inject_distractor = st.checkbox(dist_chk_label, value=True)
     with c_dist_2:
-        dist_mode_label = "Chiến lược chèn tài liệu bẫy (Failure Mode):" if lang == "vi" else "Distractor Injection Strategy (Failure Mode):"
+        dist_mode_label = "Chiến lược chèn tài liệu gây nhiễu (Failure Mode):" if lang == "vi" else "Distractor Injection Strategy (Failure Mode):"
         dist_mode = st.radio(
             dist_mode_label,
             options=["only_distractor", "mixed_conflict"],
-            format_func=lambda x: ("Chế độ 1: Dương tính giả (Chỉ bốc được BLLĐ 2012 bãi bỏ; thiếu Điều 25/2019)" if lang == "vi" else "Mode 1: False Positive (Retrieves only repealed 2012 Code; Article 25/2019 omitted)") if x == "only_distractor" else ("Chế độ 2: Xung đột ngữ cảnh (Ngữ cảnh chứa cả luật 2012 và luật 2019)" if lang == "vi" else "Mode 2: Contextual Conflict (Context contains both 2012 and 2019 statutes)"),
+            format_func=lambda x: ("Chế độ 1: Dương tính giả (Chỉ bốc được BLLĐ 2012 lỗi thời; thiếu Điều 25/2019)" if lang == "vi" else "Mode 1: False Positive (Retrieves only repealed 2012 Code; Article 25/2019 omitted)") if x == "only_distractor" else ("Chế độ 2: Xung đột ngữ cảnh (Ngữ cảnh chứa cả luật 2012 và luật 2019)" if lang == "vi" else "Mode 2: Contextual Conflict (Context contains both 2012 and 2019 statutes)"),
             horizontal=False,
             disabled=not inject_distractor,
         )
 
     distractor_data = test_cases[0]["distractor_passage"] if inject_distractor else None
     if distractor_data:
-        warn_dist = f"**{'Tài liệu bẫy bãi bỏ thực tế được chèn:' if lang == 'vi' else 'Injected Real-World Repealed Provision:'}**\n*{'Tiêu đề:' if lang == 'vi' else 'Title:'}* {distractor_data['title']}\n*{'Trích dẫn điều luật:' if lang == 'vi' else 'Statutory Excerpt:'}* \"{distractor_data['content']}\""
+        warn_dist = f"**{'Tài liệu gây nhiễu thực tế được chèn:' if lang == 'vi' else 'Injected Real-World Repealed Provision:'}**\n*{'Tiêu đề:' if lang == 'vi' else 'Title:'}* {distractor_data['title']}\n*{'Trích dẫn điều luật:' if lang == 'vi' else 'Statutory Excerpt:'}* \"{distractor_data['content']}\""
         st.warning(warn_dist)
 
     # Handle Live Re-run Execution
@@ -592,9 +592,9 @@ with tab1:
         else:
             status_title = "Đang Chạy Kiểm Chứng Song Song Trực Tiếp 3 Mô Hình..." if lang == "vi" else "Executing Parallel Live Verification Across 3 Paradigms..."
             with st.status(status_title, expanded=True) as status_box:
-                st.write("Đang đánh giá Mô hình 1: Sinh thuần tham số từ trọng số mô hình..." if lang == "vi" else "Evaluating Model 1: Parametric generation from pre-trained weights...")
-                st.write("Đang đánh giá Mô hình 2: Truy xuất lai thụ động (BM25 + BGE-M3) kèm tài liệu bẫy..." if lang == "vi" else "Evaluating Model 2: Blind hybrid retrieval (BM25 + BGE-M3) with distractor injection...")
-                st.write("Đang đánh giá Mô hình 3: Cổng phản tư Self-RAG [Retrieve], bộ lọc [IsREL] và kiểm định [IsSUP]..." if lang == "vi" else "Evaluating Model 3: Self-RAG reflection gate [Retrieve], critic [IsREL], and attribution [IsSUP]...")
+                st.write("Đang đánh giá Mô hình 1: Sinh từ bộ nhớ tham số mô hình..." if lang == "vi" else "Evaluating Model 1: Parametric generation from pre-trained weights...")
+                st.write("Đang đánh giá Mô hình 2: Truy xuất lai thụ động (BM25 + BGE-M3) kèm tài liệu gây nhiễu..." if lang == "vi" else "Evaluating Model 2: Blind hybrid retrieval (BM25 + BGE-M3) with distractor injection...")
+                st.write("Đang đánh giá Mô hình 3: Cổng truy xuất Self-RAG [Retrieve], bộ lọc tài liệu liên quan [IsREL] và kiểm định căn cứ trích dẫn [IsSUP]..." if lang == "vi" else "Evaluating Model 3: Self-RAG reflection gate [Retrieve], critic [IsREL], and attribution [IsSUP]...")
 
                 with ThreadPoolExecutor(max_workers=3) as executor:
                     f_pure = executor.submit(naive_pipe.run_pure_llm, q_tab1)
@@ -714,7 +714,7 @@ with tab1:
             box2.caption(f"**{res_naive['verdict_text']}**")
 
         box2.markdown(f"**{'Độ trễ:' if lang == 'vi' else 'Latency:'}** `{res_naive['latency_ms']} ms`")
-        exp_chunks_title = "Các đoạn văn bản được nhồi vào prompt" if lang == "vi" else "Retrieved Passages Injected into Prompt"
+        exp_chunks_title = "Các đoạn trích trong ngữ cảnh đưa vào prompt" if lang == "vi" else "Retrieved Passages Injected into Prompt"
         with box2.expander(exp_chunks_title):
             for p in res_naive.get("retrieved_passages", []):
                 st.markdown(f"- **{p['title']}** (Score: `{p.get('rrf_score', 'N/A')}`)")
@@ -725,7 +725,7 @@ with tab1:
         box3.markdown(f'<div class="arena-header-3">{t("model3_title", lang)}</div>', unsafe_allow_html=True)
         box3.caption(t("model3_caption", lang))
         box3.success(res_self["answer"])
-        box3.caption("Đã xác thực căn cứ; bẫy pháp lý đã bị loại trừ." if lang == "vi" else "Attribution verified; distractor successfully pruned.")
+        box3.caption("Đã xác thực căn cứ; tài liệu gây nhiễu đã bị loại trừ." if lang == "vi" else "Attribution verified; distractor successfully pruned.")
         box3.markdown(f"**{'Độ trễ:' if lang == 'vi' else 'Latency:'}** `{res_self['latency_ms']} ms`")
         v_info = res_self.get("verification", {})
         box3.markdown(f"**Token [IsSUP]:** `{v_info.get('is_sup_token', 'SUPPORTED')}` | **{'Hữu dụng' if lang == 'vi' else 'Utility'} [IsUSE]:** `{v_info.get('is_use_score', 5)}/5`")
@@ -738,8 +738,8 @@ with tab1:
         claim_pure = "180 ngày (Hợp lệ)" if res_pure.get("has_180_days") else ("60 ngày (Lỗi thời)" if res_pure.get("has_60_days") else "Chung chung")
         
         if res_naive.get("outcome") == "POISONED_BY_DISTRACTOR":
-            claim_naive = "60 ngày (Bị ngộ độc luật bãi bỏ)"
-            vuln_naive = "Dễ tổn thương (100% tiếp nhận tài liệu bẫy bãi bỏ)"
+            claim_naive = "60 ngày (Bị nhiễm độc tài liệu gây nhiễu)"
+            vuln_naive = "Dễ tổn thương (100% tiếp nhận tài liệu gây nhiễu)"
         elif res_naive.get("outcome") == "CONFUSED_CONFLICT":
             claim_naive = "Mâu thuẫn (60 ngày vs 180 ngày)"
             vuln_naive = "Bối rối trước xung đột ngữ cảnh (Không có cơ chế trọng tài hiệu lực)"
@@ -750,16 +750,16 @@ with tab1:
         claim_self = "180 ngày (Xác thực BLLĐ 2019)" if res_self.get('verification', {}).get("has_180_days") else "Có căn cứ pháp luật hiện hành"
 
         vuln_pure = "Độc lập ngữ cảnh (Dễ bị ảo giác do cutoff)"
-        vuln_self = "Vững chắc (Chủ động phát hiện và loại bỏ tài liệu bãi bỏ)"
+        vuln_self = "Vững chắc (Chủ động phát hiện và loại bỏ tài liệu gây nhiễu)"
 
         matrix_md = f"""
 | {t('matrix_dim', lang)} | {t('matrix_m1', lang)} | {t('matrix_m2', lang)} | {t('matrix_m3', lang)} |
 | :--- | :--- | :--- | :--- |
-| **{t('matrix_mech', lang)}** | Thuần trọng số tham số mô hình | Nối thô top-k ngữ cảnh | Phản tư [IsREL] & Kiểm định [IsSUP] |
+| **{t('matrix_mech', lang)}** | Bộ nhớ tham số mô hình | Nối thô top-k các đoạn trích trong ngữ cảnh | Bộ lọc tài liệu liên quan [IsREL] & Kiểm định căn cứ trích dẫn [IsSUP] |
 | **{t('matrix_lat', lang)}** | `{res_pure['latency_ms']} ms` | `{res_naive['latency_ms']} ms` | `{res_self['latency_ms']} ms` |
 | **{t('matrix_claim', lang)}** | **{claim_pure}** | **{claim_naive}** | **{claim_self}** |
 | **{t('matrix_distractor', lang)}** | {vuln_pure} | {vuln_naive} | {vuln_self} |
-| **{t('matrix_domain', lang)}** | Trung bình (Dễ ảo giác) | Rất nguy hiểm (Dễ bị ngộ độc luật cũ) | Độ tin cậy cao (Được đối chiếu và xác thực) |
+| **{t('matrix_domain', lang)}** | Trung bình (Dễ ảo giác) | Rất nguy hiểm (Dễ bị nhiễm độc ngữ cảnh) | Độ tin cậy cao (Được đối chiếu và xác thực) |
 """
     else:
         claim_pure = "180 days (Valid)" if res_pure.get("has_180_days") else ("60 days (Outdated)" if res_pure.get("has_60_days") else "Generic")
@@ -790,30 +790,30 @@ with tab1:
 """
         st.markdown(matrix_md)
 
-        st.markdown(f"#### {'Bóc Tách Bộ Phản Tư Đoạn Văn Bản ([IsREL] Tokens):' if lang == 'vi' else 'Passage Critic Dissection ([IsREL] Tokens):'}")
+        st.markdown(f"#### {'Bóc Tách Bộ lọc tài liệu liên quan ([IsREL] Tokens):' if lang == 'vi' else 'Passage Critic Dissection ([IsREL] Tokens):'}")
         for p in res_self.get("all_candidates", []):
             if p.get("is_rel_token") == "RELEVANT":
                 st.markdown(f"""<div class="critique-pass">
                 <b>[IsREL: RELEVANT] - {p['title']}</b><br>
-                <i>{'Lập luận phản tư:' if lang == 'vi' else 'Critic Justification:'}</i> {p.get('critique', '')}<br>
+                <i>{'Lập luận tự đánh giá:' if lang == 'vi' else 'Critic Justification:'}</i> {p.get('critique', '')}<br>
                 <small>{'Trích đoạn:' if lang == 'vi' else 'Passage snippet:'} {p['content'][:150]}...</small>
                 </div>""", unsafe_allow_html=True)
             else:
                 st.markdown(f"""<div class="critique-fail">
                 <b>[IsREL: IRRELEVANT / REJECTED] - {p['title']}</b><br>
-                <i>{'Lập luận phản tư:' if lang == 'vi' else 'Critic Justification:'}</i> {p.get('critique', '')}<br>
+                <i>{'Lập luận tự đánh giá:' if lang == 'vi' else 'Critic Justification:'}</i> {p.get('critique', '')}<br>
                 <small>{'Trích đoạn:' if lang == 'vi' else 'Passage snippet:'} {p['content'][:150]}...</small>
                 </div>""", unsafe_allow_html=True)
 
         st.markdown("---")
-        exp_poison_title = "Phân Tích Cơ Chế Khoa Học Của Ngộ Độc Ngữ Cảnh (When Retrieval Hurts)" if lang == "vi" else "Scientific Anatomy of Context Poisoning (When Retrieval Hurts)"
+        exp_poison_title = "Phân Tích Cơ Chế Khoa Học Của Nhiễm Độc Ngữ Cảnh (When Retrieval Hurts)" if lang == "vi" else "Scientific Anatomy of Context Poisoning (When Retrieval Hurts)"
         with st.expander(exp_poison_title, expanded=False):
             if lang == "vi":
                 st.markdown("""
                 #### Vì sao tương đồng ngữ nghĩa (Semantic Similarity) không đồng nghĩa với chân lý pháp lý:
                 - **Cái bẫy ngữ nghĩa:** Điều 27 Bộ luật Lao động 2012 đã hết hiệu lực nhưng có độ tương đồng cosine rất cao (**0.78**) đối với các truy vấn về thử việc, do chứa cùng trường từ vựng (*thời gian thử việc*, *hợp đồng*, *ngày*).
-                - **Thất bại của Naive RAG:** Do chỉ xếp hạng thô theo độ tương đồng cosine và nối chuỗi vào prompt mà không phản tư, mô hình LLM bị tài liệu bãi bỏ dẫn dụ, kết luận sai thành tối đa **60 ngày**.
-                - **Lớp phòng vệ của Self-RAG:** Bộ phản tư `[IsREL]` kiểm định tính hợp lệ và thời hiệu, phát hiện Điều 27/2012 đã bị thay thế bởi BLLĐ 2019, lập tức loại bỏ khỏi ngữ cảnh và chỉ giữ lại Điều 25/2019 (không quá 180 ngày cho người quản lý doanh nghiệp).
+                - **Thất bại của Naive RAG:** Do chỉ xếp hạng thô theo độ tương đồng cosine và nối chuỗi vào prompt mà không tự đánh giá, mô hình LLM bị tài liệu gây nhiễu (văn bản hết hiệu lực) dẫn dụ, kết luận sai thành tối đa **60 ngày**.
+                - **Lớp phòng vệ của Self-RAG:** Bộ lọc tài liệu liên quan `[IsREL]` kiểm định tính hợp lệ và thời hiệu, phát hiện Điều 27/2012 đã bị thay thế bởi BLLĐ 2019, lập tức loại bỏ khỏi ngữ cảnh và chỉ giữ lại Điều 25/2019 (không quá 180 ngày cho người quản lý doanh nghiệp).
                 """)
             else:
                 st.markdown("""
@@ -1014,10 +1014,10 @@ with tab3:
     col_sc3_1, col_sc3_2 = st.columns([2, 1])
     with col_sc3_1:
         tab3_scenario_choice = st.selectbox(
-            "Chọn Kịch Bản Kiểm Định Token Phản Tư:" if lang == "vi" else "Select Reflection Token Benchmark Scenario:",
+            "Chọn Kịch Bản Kiểm Định Token Tự Đánh Giá:" if lang == "vi" else "Select Reflection Token Benchmark Scenario:",
             options=[
                 "case_3: Câu hỏi đa ý (Lương thử việc Điều 26 & Sa thải bỏ việc 05 ngày Điều 36, 125)" if lang == "vi" else "case_3: Multi-intent (Wage % Art 26 & Dismissal on 5-day Absence Arts 36, 125)",
-                "case_0: Bóc tách loại trừ tài liệu bẫy bãi bỏ (Điều 25/2019 vs BLLĐ 2012 bãi bỏ)" if lang == "vi" else "case_0: Distractor Pruning (Labor Code 2019 vs Repealed 2012)",
+                "case_0: Bóc tách loại trừ tài liệu gây nhiễu (Điều 25/2019 vs BLLĐ 2012 hết hiệu lực)" if lang == "vi" else "case_0: Distractor Pruning (Labor Code 2019 vs Repealed 2012)",
             ],
             index=0,
             key="tab3_scenario_sel",
@@ -1039,13 +1039,13 @@ with tab3:
         if cur_provider == "huggingface" and (not cur_api_key or cur_api_key.strip() in ("", "EMPTY")):
             request_token_ui("tab3")
         else:
-            status_t3_title = "Đang Kiểm Định Token Phản Tư Self-RAG Trực Tiếp..." if lang == "vi" else "Inspecting Self-RAG Reflection Tokens Live..."
+            status_t3_title = "Đang Kiểm Định Token Tự Đánh Giá Self-RAG Trực Tiếp..." if lang == "vi" else "Inspecting Self-RAG Reflection Tokens Live..."
             with st.status(status_t3_title, expanded=True) as status_box:
                 st.write("Đang đánh giá Cổng Quyết Định [Retrieve]..." if lang == "vi" else "Evaluating Reflection Gate [Retrieve]...")
-                st.write("Đang chạy bộ lọc phản tư đoạn văn bản [IsREL]..." if lang == "vi" else "Executing passage critic [IsREL] across candidate chunks...")
+                st.write("Đang chạy bộ lọc tài liệu liên quan [IsREL]..." if lang == "vi" else "Executing passage critic [IsREL] across candidate chunks...")
                 st.write("Đang kiểm định căn cứ [IsSUP] và độ hữu dụng [IsUSE]..." if lang == "vi" else "Evaluating attribution support [IsSUP] and utility [IsUSE]...")
                 res_self_full_live = self_pipe.run_self_rag(q_tab3, top_k=3)
-                status_box.update(label="Hoàn tất phân tích phản tư!" if lang == "vi" else "Reflection Analysis Complete!", state="complete", expanded=False)
+                status_box.update(label="Hoàn tất phân tích tự đánh giá!" if lang == "vi" else "Reflection Analysis Complete!", state="complete", expanded=False)
 
             st.session_state["tab3_is_live"] = True
             st.session_state["tab3_live"] = {
@@ -1120,7 +1120,7 @@ with tab3:
             badge_class = "critique-pass" if p.get("is_rel_token") == "RELEVANT" else "critique-fail"
             st.markdown(f"""<div class="{badge_class}">
             <b>[{p.get('is_rel_token', 'RELEVANT')}] - {p.get('title', '')}</b><br>
-            <i>{'Lập luận phản tư:' if lang == 'vi' else 'Critic:'}</i> {p.get('critique', '')}
+            <i>{'Lập luận tự đánh giá:' if lang == 'vi' else 'Critic:'}</i> {p.get('critique', '')}
             </div>""", unsafe_allow_html=True)
 
         st.markdown("---")
@@ -1155,7 +1155,7 @@ with tab3:
                 
                 #### 3. Mô hình Tinh chỉnh (Fine-tuned) vs. Mô hình Nền tảng (Llama-3.1 / Qwen-2.5):
                 - **Fine-tuned Self-RAG:** Token đặc biệt nằm trực tiếp trong bộ từ vựng tokenizer.
-                - **Foundation LLMs:** Áp dụng cơ chế **In-Context Reflection & Chain-of-Thought Critic**, mô hình sinh các token phản tư có cấu trúc (`[Retrieve: YES]`, `[IsREL: RELEVANT]`) kèm lập luận pháp lý rõ ràng.
+                - **Foundation LLMs:** Áp dụng cơ chế **In-Context Reflection & Chain-of-Thought Critic**, mô hình sinh các token tự đánh giá có cấu trúc (`[Retrieve: YES]`, `[IsREL: RELEVANT]`) kèm lập luận pháp lý rõ ràng.
                 """)
             else:
                 st.markdown("#### 1. Theoretical Formulation (Asai et al., ICLR 2024)")
@@ -1181,7 +1181,7 @@ with tab3:
                 """)
 
             # Interactive Probability Distribution Visualization
-            st.markdown(f"#### 4. {'Phân Phối Xác Suất Thực Nghiệm Của Token Phản Tư (Softmax):' if lang == 'vi' else 'Empirical Reflection Token Probability Distribution (Calculated Softmax):'}")
+            st.markdown(f"#### 4. {'Phân Phối Xác Suất Thực Nghiệm Của Token Tự Đánh Giá (Softmax):' if lang == 'vi' else 'Empirical Reflection Token Probability Distribution (Calculated Softmax):'}")
             col_p1, col_p2, col_p3 = st.columns(3)
             with col_p1:
                 st.markdown(f"**1. [Retrieve] {'Xác suất Cổng Tra Cứu' if lang == 'vi' else 'Gate Probability'}**")
@@ -1191,7 +1191,7 @@ with tab3:
                 st.markdown(f"**2. [IsREL] {'Lọc Đoạn Văn Bản (Điều 25 vs BLLĐ 2012)' if lang == 'vi' else 'Passage Critic (Art 25 vs Distractor)'}**")
                 st.progress(0.962, text="P(Art 25 = RELEVANT): 96.2%")
                 st.progress(0.085, text=f"P(Repealed 2012 = RELEVANT): 8.5% ({'BÁC BỎ' if lang == 'vi' else 'REJECTED'})")
-                st.caption("Đã loại trừ tài liệu bẫy dưới ngưỡng chấp nhận." if lang == "vi" else "Distractor successfully pruned below rejection threshold.")
+                st.caption("Đã loại trừ tài liệu gây nhiễu dưới ngưỡng chấp nhận." if lang == "vi" else "Distractor successfully pruned below rejection threshold.")
             with col_p3:
                 st.markdown(f"**3. [IsSUP] {'Căn Cứ' if lang == 'vi' else 'Attribution'} & [IsUSE] {'Hữu Dụng' if lang == 'vi' else 'Utility'}**")
                 st.progress(0.981, text="P(Attribution = SUPPORTED): 98.1%")
@@ -1422,7 +1422,7 @@ with tab5:
                 st.markdown("""
                 - **Tương đồng ngữ nghĩa:** Độ tương đồng cosine với truy vấn thời hạn thử việc lên tới **0.78** (cao hơn cả luật mới do chứa cùng từ khóa).
                 - **Điểm yếu của Naive RAG:** Bị tài liệu này dẫn dụ và kết luận sai thành tối đa **60 ngày**.
-                - **Khắc phục:** Bộ phản tư Self-RAG `[IsREL]` nhận diện văn bản bãi bỏ và chủ động loại trừ.
+                - **Khắc phục:** Bộ lọc tài liệu liên quan Self-RAG `[IsREL]` nhận diện văn bản hết hiệu lực và chủ động loại trừ.
                 """)
             else:
                 st.markdown("""

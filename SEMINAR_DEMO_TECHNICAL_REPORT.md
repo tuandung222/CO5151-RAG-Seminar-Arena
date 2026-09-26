@@ -28,7 +28,7 @@ While **Naive RAG** (Lewis et al., NeurIPS 2020) attempted to solve this by pair
 2. **Local Blindness:** On holistic, corpus-wide synthesis queries, Naive RAG retrieves only 2-3 isolated chunks, completely omitting 80% of relevant statutory articles across other chapters.
 3. **Retrieval Latency & Overhead:** Performing dense retrieval on every query or sentence indiscriminately wastes compute and slows down agentic response loops.
 
-To rigorously demonstrate and evaluate solutions to these challenges, we built an end-to-end scientific testbed benchmarking **5 distinct grounding paradigms** against authentic Vietnamese Labor Law (Bộ luật Lao động 2019 vs Bộ luật Lao động 2012 bãi bỏ).
+To rigorously demonstrate and evaluate solutions to these challenges, we built an end-to-end scientific testbed benchmarking **5 distinct grounding paradigms** against authentic Vietnamese Labor Law (Bộ luật Lao động 2019 vs Bộ luật Lao động 2012 đã hết hiệu lực).
 
 ---
 
