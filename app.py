@@ -377,10 +377,10 @@ with st.sidebar:
         hf_model_choice = st.selectbox(
             "Model Architecture:",
             options=[
-                "meta-llama/Llama-3.1-8B-Instruct",
-                "Qwen/Qwen2.5-7B-Instruct",
-                "mistralai/Mistral-7B-Instruct-v0.3",
-                "Qwen/Qwen2.5-72B-Instruct",
+                "Qwen/Qwen2.5-72B-Instruct (SOTA Flagship)",
+                "meta-llama/Llama-3.1-8B-Instruct (Academic Baseline)",
+                "Qwen/Qwen2.5-Coder-32B-Instruct (High-Precision Reasoning)",
+                "Qwen/Qwen2.5-Coder-7B-Instruct (Fast Edge)",
                 "Custom Model ID",
             ],
             index=0,
@@ -400,7 +400,8 @@ with st.sidebar:
             st.session_state["user_hf_token"] = user_hf_token
             retriever.update_api_key(user_hf_token)
         cur_api_key = user_hf_token
-        cur_model = st.text_input("Model ID:", value="meta-llama/Llama-3.1-8B-Instruct") if hf_model_choice == "Custom Model ID" else hf_model_choice
+        parsed_model = hf_model_choice.split(" ")[0]
+        cur_model = st.text_input("Model ID:", value="Qwen/Qwen2.5-72B-Instruct") if "Custom" in hf_model_choice else parsed_model
 
     elif provider_choice == "Local Ollama (Native REST API)":
         cur_provider = "ollama-native"
