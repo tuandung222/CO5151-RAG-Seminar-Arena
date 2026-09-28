@@ -457,9 +457,19 @@ with st.sidebar:
     st.markdown(f"**{t('sidebar_corpus_count', lang)}** `{len(retriever.corpus)} Articles` (RAM matrix)")
     st.markdown("---")
 
-    st.markdown(f"### {t('sidebar_knowledge_scope', lang)}")
-    st.caption(f"• {t('sidebar_active_law', lang)}")
-    st.caption(f"• {t('sidebar_distractor_law', lang)}")
+    st.markdown(f"### ⏱️ {t('sidebar_knowledge_scope', lang)}")
+    if lang == "vi":
+        st.info("""
+        **Mốc Thời Gian & Hiệu Lực Pháp Lý:**
+        - 🟢 **BLLĐ 2019 (Luật số 45/2019/QH14):** Hiệu lực từ **01/01/2021 đến nay (2026)**. Đây là Bộ luật Lao động **hiện hành cao nhất và mới nhất** tại Việt Nam (không có bộ luật nào mới hơn).
+        - 🔴 **BLLĐ 2012 (Luật số 10/2012/QH13):** Đã **hết hiệu lực từ 01/01/2021** (theo Điều 219 BLLĐ 2019). Đóng vai trò tài liệu gây nhiễu thực tế (*Repealed Distractor*) để kiểm thử khả năng nhận diện tài liệu bãi bỏ của RAG.
+        """)
+    else:
+        st.info("""
+        **Timeline & Statutory Baseline:**
+        - 🟢 **Labor Code 2019 (Law No. 45/2019/QH14):** In effect from **Jan 1, 2021 through 2026**. This is the **latest and sole active Labor Code** in Vietnam (no newer Labor Code enacted).
+        - 🔴 **Labor Code 2012 (Law No. 10/2012/QH13):** Fully **repealed on Jan 1, 2021** (per Art 219, Labor Code 2019). Serves as an authentic *Repealed Distractor* to test RAG's distractor pruning capability.
+        """)
     st.markdown("---")
 
     st.markdown("### Standard Benchmark Presets" if lang == "en" else "### Bộ Câu Hỏi Đánh Giá Chuẩn")
@@ -516,6 +526,12 @@ st.markdown(f'<div class="sub-header">{sub_text}</div>', unsafe_allow_html=True)
 
 with st.expander(t("master_guide_expander", lang), expanded=False):
     if lang == "vi":
+        st.info("""
+        ⏱️ **Mốc Thời Gian & Giả Định Khoa Học Về Hiệu Lực Pháp Lý:**
+        - **Luật Thực Tế Hiện Hành Duy Nhất:** **Bộ luật Lao động 2019 (Luật số 45/2019/QH14)** được Quốc hội thông qua ngày 20/11/2019, chính thức có hiệu lực thi hành từ ngày **01/01/2021 đến nay (2026)**. *Tính đến nay, chưa có bất kỳ Bộ luật Lao động nào mới hơn.*
+        - **Tài Liệu Gây Nhiễu Thực Tế (Repealed Distractor):** **Bộ luật Lao động 2012 (Luật số 10/2012/QH13)** đã **chính thức hết hiệu lực từ ngày 01/01/2021** (theo Điều 219 BLLĐ 2019).
+        - **Giả Định Thực Nghiệm:** Trong doanh nghiệp, kho dữ liệu nội bộ (SharePoint, Confluence) thường lưu trữ lẫn lộn cả văn bản cũ và mới. Khi người dùng tra cứu quy định *"hiện hành"*, hệ thống RAG lý tưởng bắt buộc phải có cơ chế nhận diện thời hiệu và bãi bỏ để loại trừ tài liệu cũ, thay vì nhồi nhét thụ động như Naive RAG.
+        """)
         st.markdown(r"""
 | Cơ Chế RAG | Cơ Chế Vận Hành Cốt Lõi | Công Thức Toán Học / Thuật Toán | Điểm Yếu Chính Được Khắc Phục | Khi Nào Nên Triển Khai Thực Tế |
 | :--- | :--- | :--- | :--- | :--- |
@@ -527,6 +543,12 @@ with st.expander(t("master_guide_expander", lang), expanded=False):
 """)
         st.caption("Thiết kế phục vụ seminar học viên cao học CO5151 Advanced Agentic AI (HCMUT). Học viên: Dung Vo. Đối chứng thực tế trên Bộ luật Lao động 2019 và tài liệu gây nhiễu BLLĐ 2012 (đã hết hiệu lực thi hành).")
     else:
+        st.info("""
+        ⏱️ **Statutory Timeline & Scientific Grounding Assumptions:**
+        - **Sole Active & Latest Statute:** The **Labor Code 2019 (Law No. 45/2019/QH14)** was enacted on Nov 20, 2019, and took effect on **Jan 1, 2021 through present 2026**. *To date, no newer Labor Code has been enacted.*
+        - **Authentic Repealed Distractor:** The **Labor Code 2012 (Law No. 10/2012/QH13)** was **fully repealed on Jan 1, 2021** (per Article 219 of Labor Code 2019).
+        - **Empirical Assumption:** Corporate repositories often store legacy drafts alongside current policies. When users ask for *"current statutory rules"*, a robust RAG architecture must actively verify temporal validity and prune repealed distractors rather than blindly concatenating them like Naive RAG.
+        """)
         st.markdown(r"""
 | Paradigm | Core Operational Mechanism | Mathematical / Algorithmic Formulation | Primary Failure Mode Addressed | When to Select in Production |
 | :--- | :--- | :--- | :--- | :--- |
@@ -603,6 +625,9 @@ with tab1:
                 <b>Kiểm chứng hiện tượng "When Retrieval Hurts" & Ngộ độc ngữ cảnh (Context Poisoning):</b> 
                 Khi retriever bốc phải điều luật <i>BLLĐ 2012 cũ đã hết hiệu lực</i> (do trùng khớp từ khóa cao - False Positive), <b>Naive RAG</b> tin tưởng mù quáng vào tài liệu nạp vào và đưa ra kết luận sai (khẳng định tối đa 60 ngày). Ngược lại, <b>Self-RAG</b> kích hoạt bộ lọc phản tư <code>[IsREL]</code> phát hiện văn bản bãi bỏ để loại trừ, bảo toàn câu trả lời chính xác <b>180 ngày</b> (Khoản 1 Điều 25 BLLĐ 2019).
             </div>
+            <div style="margin-top: 8px; padding-top: 6px; border-top: 1px dashed #cbd5e1; font-size: 0.84rem; color: #475569;">
+                ⏱️ <b>Mốc Thời Gian & Hiệu Lực Chuẩn:</b> Bộ luật Lao động 2019 (Luật số 45/2019/QH14) có hiệu lực từ ngày <b>01/01/2021 đến nay (2026)</b> và là Bộ luật Lao động <b>hiện hành duy nhất và mới nhất</b> tại Việt Nam (không có bộ luật nào mới hơn). Bộ luật Lao động 2012 cũ đã chính thức <b>hết hiệu lực từ 01/01/2021</b>.
+            </div>
         </div>
         """, unsafe_allow_html=True)
     else:
@@ -619,6 +644,9 @@ with tab1:
                 <span class="context-pill">🎯 CO5151 Seminar Objective</span>
                 <b>Demonstrating "When Retrieval Hurts" & Context Poisoning:</b> 
                 When a naive retriever fetches a <i>repealed 2012 statutory distractor</i> due to high lexical similarity (False Positive), <b>Naive RAG</b> uncritically relies on the poisoned context and issues false legal advice (capping at 60 days). In contrast, <b>Self-RAG</b> triggers the <code>[IsREL]</code> reflection critic to prune the expired statute, maintaining the ground-truth legal limit of <b>180 days</b> (Article 25, Labor Code 2019).
+            </div>
+            <div style="margin-top: 8px; padding-top: 6px; border-top: 1px dashed #cbd5e1; font-size: 0.84rem; color: #475569;">
+                ⏱️ <b>Statutory Timeline Baseline:</b> Labor Code 2019 (Law No. 45/2019/QH14) took effect on <b>Jan 1, 2021 and remains the latest active Labor Code in Vietnam through 2026</b> (no subsequent Labor Code exists). The former Labor Code 2012 was <b>formally repealed on Jan 1, 2021</b>.
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -1711,15 +1739,17 @@ with tab5:
             st.warning("Rủi ro đối kháng trong quy trình RAG:" if lang == "vi" else "Adversarial Risk in RAG Pipelines:")
             if lang == "vi":
                 st.markdown("""
-                - **Tương đồng ngữ nghĩa:** Độ tương đồng cosine với truy vấn thời hạn thử việc lên tới **0.78** (cao hơn cả luật mới do chứa cùng từ khóa).
+                - **Tương đồng ngữ nghĩa:** Độ tương đồng cosine dense BGE-M3 với truy vấn thử việc dao động **0.64 – 0.75** (rất cao do trùng trường từ vựng pháp lý).
                 - **Điểm yếu của Naive RAG:** Bị tài liệu này dẫn dụ và kết luận sai thành tối đa **60 ngày**.
                 - **Khắc phục:** Bộ lọc tài liệu liên quan Self-RAG `[IsREL]` nhận diện văn bản hết hiệu lực và chủ động loại trừ.
+                - **Mốc thời gian chuẩn:** Bộ luật Lao động 2019 (hiệu lực 01/01/2021 đến 2026) là Bộ luật Lao động hiện hành mới nhất và duy nhất. Bộ luật 2012 này đã bị bãi bỏ hoàn toàn từ 01/01/2021.
                 """)
             else:
                 st.markdown("""
-                - **Semantic Similarity:** Cosine similarity to probation duration queries reaches **0.78** (higher than valid statutes due to dense keyword overlap).
+                - **Semantic Similarity:** BGE-M3 dense cosine similarity to probation duration queries ranges between **0.64 – 0.75** (high lexical overlap).
                 - **Failure Mode:** Naive RAG injects this chunk blindly and falsely concludes probation is capped at **60 days**.
                 - **Mitigation:** Self-RAG Critic `[IsREL]` identifies statutory expiration conflict and actively discards it.
+                - **Timeline Baseline:** Labor Code 2019 (eff. Jan 1, 2021 through 2026) is the latest and sole active Labor Code in Vietnam. This 2012 statute was completely repealed on Jan 1, 2021.
                 """)
     else:
         sel_id = selected_doc_label.split(":")[0].strip()

@@ -8,6 +8,8 @@
     "real_world_context_en": "Dispute over a 5-month (150-day) probation contract for an incoming CEO. Labor union challenges based on repealed 2012 law capping at 60 days. HR must ascertain validity under current statute.",
     "pedagogical_objective_vi": "Kiểm chứng hiện tượng 'When Retrieval Hurts' & Ngộ độc ngữ cảnh: Naive RAG tin tưởng mù quáng vào luật cũ đã hết hiệu lực; Self-RAG kích hoạt [IsREL] phát hiện văn bản bãi bỏ và bảo vệ sự thật 180 ngày.",
     "pedagogical_objective_en": "Demonstrates 'When Retrieval Hurts' & Context Poisoning: Naive RAG succumbs to repealed distractor law; Self-RAG reflection critic [IsREL] actively prunes expired statutes.",
+    "statutory_timeline_note_vi": "Bộ luật Lao động 2019 (Luật số 45/2019/QH14) có hiệu lực từ ngày 01/01/2021 đến nay (2026) là Bộ luật Lao động hiện hành cao nhất và duy nhất tại Việt Nam (không có bộ luật nào mới hơn). Bộ luật Lao động 2012 cũ đã chính thức hết hiệu lực từ 01/01/2021.",
+    "statutory_timeline_note_en": "Labor Code 2019 (Law No. 45/2019/QH14) took effect on Jan 1, 2021 and remains the latest active Labor Code in Vietnam through 2026 (no subsequent Labor Code exists). The former Labor Code 2012 was formally repealed on Jan 1, 2021.",
     "distractor_passage": {
       "article_id": "BLLD_2012_Dieu_27",
       "title": "Điều 27. Thời gian thử việc - Bộ luật Lao động số 10/2012/QH13 (Hết hiệu lực từ 01/01/2021)",
@@ -24,6 +26,8 @@
     "real_world_context_en": "HR Director requests compliance checklist before restructuring: Exhaustive review of all statutory bans on unilateral firing and disciplinary dismissal to avert massive liability under Article 41.",
     "pedagogical_objective_vi": "Minh chứng Điểm Mù Cục Bộ (Local Blindness) của Vector Search: Quy định nằm ở Chương III (Điều 37) và Chương VIII (Điều 122). Naive RAG chỉ bốc được 1 chương; GraphRAG gom đủ 100% qua cầu nối đồ thị và Map-Reduce.",
     "pedagogical_objective_en": "Exposes Vector Search Local Blindness across scattered chapters (Ch. III Art 37 vs Ch. VIII Art 122). GraphRAG achieves 100% comprehensive recall via cross-chapter bridges and hierarchical Map-Reduce.",
+    "statutory_timeline_note_vi": "Bộ luật Lao động 2019 (Luật số 45/2019/QH14) có hiệu lực từ ngày 01/01/2021 đến nay (2026) là Bộ luật Lao động hiện hành cao nhất và duy nhất tại Việt Nam (không có bộ luật nào mới hơn). Bộ luật Lao động 2012 cũ đã chính thức hết hiệu lực từ 01/01/2021.",
+    "statutory_timeline_note_en": "Labor Code 2019 (Law No. 45/2019/QH14) took effect on Jan 1, 2021 and remains the latest active Labor Code in Vietnam through 2026 (no subsequent Labor Code exists). The former Labor Code 2012 was formally repealed on Jan 1, 2021.",
     "relevant_articles": ["Dieu_37", "Dieu_122", "Dieu_36"]
   },
   {
@@ -35,6 +39,8 @@
     "real_world_context_en": "Employee abruptly walks out after only 2 days' notice. Questions whether severance pay is retained and what exact statutory compensation liabilities apply.",
     "pedagogical_objective_vi": "Kiểm chứng Truy Xuất Chủ Động (FLARE): Tự do sinh từ bộ nhớ tham số cho mệnh đề nguyên tắc có độ tin cậy cao; chỉ kích hoạt truy xuất ngoài khi độ tự tin token giảm dưới ngưỡng theta đối với các định lượng chế tài.",
     "pedagogical_objective_en": "Demonstrates Active Forward-Looking Retrieval (FLARE): Generates high-confidence qualitative principles parametrically; triggers targeted retrieval only when token confidence drops below theta on exact quantitative damages.",
+    "statutory_timeline_note_vi": "Bộ luật Lao động 2019 (Luật số 45/2019/QH14) có hiệu lực từ ngày 01/01/2021 đến nay (2026) là Bộ luật Lao động hiện hành cao nhất và duy nhất tại Việt Nam (không có bộ luật nào mới hơn). Bộ luật Lao động 2012 cũ đã chính thức hết hiệu lực từ 01/01/2021.",
+    "statutory_timeline_note_en": "Labor Code 2019 (Law No. 45/2019/QH14) took effect on Jan 1, 2021 and remains the latest active Labor Code in Vietnam through 2026 (no subsequent Labor Code exists). The former Labor Code 2012 was formally repealed on Jan 1, 2021.",
     "relevant_articles": ["Dieu_40", "Dieu_46"]
   },
   {
@@ -46,6 +52,8 @@
     "real_world_context_en": "New recruit inquires regarding statutory minimum probation salary (Art 26) and legal consequences of 5 consecutive unauthorized absences (Arts 36 & 125).",
     "pedagogical_objective_vi": "Bóc tách chi tiết 4 Token Tự Đánh Giá (Reflection Tokens) trong câu hỏi đa ý: [Retrieve] kích hoạt theo ngưỡng tau, [IsREL] lọc đúng cả 2 vế điều luật, [IsSUP] kiểm định chống ảo giác, [IsUSE] đánh giá độ hữu ích.",
     "pedagogical_objective_en": "Detailed inspection of Self-RAG's 4 reflection tokens on a multi-intent query: [Retrieve] gate via tau, [IsREL] passage relevance critic, [IsSUP] citation attribution, [IsUSE] utility score.",
+    "statutory_timeline_note_vi": "Bộ luật Lao động 2019 (Luật số 45/2019/QH14) có hiệu lực từ ngày 01/01/2021 đến nay (2026) là Bộ luật Lao động hiện hành cao nhất và duy nhất tại Việt Nam (không có bộ luật nào mới hơn). Bộ luật Lao động 2012 cũ đã chính thức hết hiệu lực từ 01/01/2021.",
+    "statutory_timeline_note_en": "Labor Code 2019 (Law No. 45/2019/QH14) took effect on Jan 1, 2021 and remains the latest active Labor Code in Vietnam through 2026 (no subsequent Labor Code exists). The former Labor Code 2012 was formally repealed on Jan 1, 2021.",
     "relevant_articles": ["Dieu_26", "Dieu_36", "Dieu_125"]
   }
 ]
