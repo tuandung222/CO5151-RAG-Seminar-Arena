@@ -1,9 +1,8 @@
 # TECHNICAL REPORT & SLIDE AGENT BLUEPRINT
 ## Empirical Benchmarking Testbed for Retrieval-Augmented & Knowledge-Grounded Agents
 **Course:** CO5151 - Advanced Agentic AI (HCMUT)  
-**Seminar Topic:** S1-4: Retrieval-Augmented & Knowledge-Grounded Agents  
-**Academic Supervisor:** Dr. Lê Xuân Bách  
-**Researcher / Author:** tuandung222 (`tuandunghcmut`)  
+**Seminar Topic:** S1-4: Retrieval-Augmented & Knowledge-Grounded Agents (Master's Seminar)  
+**Author / Presenter:** Dung Vo ([@tuandung222](https://github.com/tuandung222))  
 **Publication Date:** September 2026  
 
 ---
@@ -151,8 +150,8 @@ Below is the structured slide deck blueprint designed for immediate consumption 
 ```
 Slide 1: Title & Seminar Context
   - Title: Retrieval-Augmented & Knowledge-Grounded Agents: Empirical Analysis of 5 Paradigms
-  - Subtitle: CO5151 Advanced Agentic AI | Seminar Topic S1-4 | HCMUT
-  - Presenter: tuandung222 | Academic Advisor: Dr. Lê Xuân Bách
+  - Subtitle: CO5151 Advanced Agentic AI | Seminar Topic S1-4 (Master's Seminar) | HCMUT
+  - Presenter: Dung Vo ([@tuandung222](https://github.com/tuandung222))
   - Key Links: GitHub (tuandung222/CO5151-RAG-Seminar-Arena), Hugging Face Space Live Testbed
 
 Slide 2: The Core Dilemma: When Retrieval Hurts
@@ -209,7 +208,7 @@ Slide 10: Conclusion, Live Demo & Academic Contributions
   - Summary: Moving from passive retrieval (Naive) to reflective (Self-RAG), structured (GraphRAG), and active (FLARE).
   - Open Source Assets: Public GitHub repo, Dockerfile, pre-computed tensor embeddings, live HF Space.
   - Live Demo Invitation: QR code / URL to tuandunghcmut-co5151-rag-seminar-arena.hf.space.
-  - Q&A Session: Ready for questions from Dr. Lê Xuân Bách and peers.
+  - Q&A Session: Discussion and technical Q&A with peers.
 ```
 
 ---

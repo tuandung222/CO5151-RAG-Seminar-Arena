@@ -468,7 +468,7 @@ with st.sidebar:
         st.rerun()
 
     st.markdown("---")
-    st.caption(f"CO5151: Advanced Agentic AI\n{t('sidebar_author', lang)} tuandung222")
+    st.caption(f"CO5151: Advanced Agentic AI (Master's Seminar)\n{t('sidebar_author', lang)} Dung Vo (tuandung222)")
 
 # Instantiate pipeline objects dynamically using current LLM
 naive_pipe = NaiveRAGPipeline(retriever, llm)
@@ -492,7 +492,7 @@ with st.expander(t("master_guide_expander", lang), expanded=False):
 | **4. GraphRAG** | Đồ thị tri thức + Phân cụm cộng đồng theo Modularity + Tổng hợp phân cấp Map-Reduce | $\text{Reduce}(\{\text{Map}(C_i)\}_{i=1}^M)$, $Q = \sum [e_{ii} - a_i^2]$ | **Điểm mù cục bộ của Vector Search** (Bỏ sót điều khoản liên chương) | Báo cáo chính sách toàn diện, tóm lược quy chế pháp luật |
 | **5. FLARE** | Sinh nháp dự phóng + Kích hoạt truy xuất chủ động theo độ bất định | Kích hoạt truy xuất khi $\min_{t} P(w_t) < \theta$ | **Tốn kém chi phí & độ trễ truy xuất dư thừa** | Báo cáo sự kiện nhiều câu, văn bản pháp lý dài kỳ |
 """)
-        st.caption("Thiết kế phục vụ học phần CO5151 Advanced Agentic AI (HCMUT). Đối chứng thực tế trên Bộ luật Lao động 2019 và tài liệu gây nhiễu BLLĐ 2012 (đã hết hiệu lực thi hành).")
+        st.caption("Thiết kế phục vụ seminar học viên cao học CO5151 Advanced Agentic AI (HCMUT). Học viên: Dung Vo. Đối chứng thực tế trên Bộ luật Lao động 2019 và tài liệu gây nhiễu BLLĐ 2012 (đã hết hiệu lực thi hành).")
     else:
         st.markdown(r"""
 | Paradigm | Core Operational Mechanism | Mathematical / Algorithmic Formulation | Primary Failure Mode Addressed | When to Select in Production |
@@ -503,7 +503,7 @@ with st.expander(t("master_guide_expander", lang), expanded=False):
 | **4. GraphRAG** | Knowledge Graph + Community Modularity + Map-Reduce | $\text{Reduce}(\{\text{Map}(C_i)\}_{i=1}^M)$, $Q = \sum [e_{ii} - a_i^2]$ | **Local Blindness** (Corpus-wide omission) | Holistic policy summaries, comprehensive legal digests |
 | **5. FLARE** | Forward drafting + on-demand confidence trigger | Trigger retrieval iff $\min_{t} P(w_t) < \theta$ | **Excessive Retrieval Latency & Overhead** | Long-form multi-sentence factual reports |
 """)
-        st.caption("Developed for HCMUT CO5151 Advanced Agentic AI. Grounded on authentic Vietnamese Labor Law (BLLĐ 2019 vs 2012 distractor).")
+        st.caption("Developed for Master's Seminar in HCMUT CO5151 Advanced Agentic AI (Presenter: Dung Vo). Grounded on authentic Vietnamese Labor Law (BLLĐ 2019 vs 2012 distractor).")
 
 # Render Tabs (Bilingual)
 tab_names = [
