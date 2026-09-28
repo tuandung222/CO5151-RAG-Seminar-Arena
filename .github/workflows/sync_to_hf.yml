@@ -1,0 +1,26 @@
+name: Sync to Hugging Face Space
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  sync-to-hub:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+
+      - name: Push to Hugging Face Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          if [ -n "$HF_TOKEN" ]; then
+            git push --force https://tuandunghcmut:$HF_TOKEN@huggingface.co/spaces/tuandunghcmut/CO5151-RAG-Seminar-Arena master
+          else
+            echo "HF_TOKEN not set in GitHub Secrets. Skipping automatic sync."
+          fi
