@@ -17,7 +17,7 @@ pinned: false
 
 Interactive empirical benchmark and diagnostic arena comparing **5 RAG paradigms** on authentic legal reasoning (Vietnamese Labor Code 2019 vs. obsolete 2012 distractors).
 
-Built for **CO5151 (Advanced Agentic AI)** at **HCMUT (ĐHBK ĐHQG-HCM)**.
+Built for a student seminar from **CO5151 (Advanced Agentic AI)** at **HCMUT (ĐHBK ĐHQG-HCM)**.
 
 ---
 
@@ -59,8 +59,3 @@ docker compose up -d
 Access the application at `http://localhost:8501`.
 
 ---
-
-## 👥 Credits
-
-- **Course**: CO5151 Advanced Agentic AI — Ho Chi Minh City University of Technology (HCMUT)
-- **Author**: Tuan-Dung Le ([@tuandung222](https://github.com/tuandung222))
