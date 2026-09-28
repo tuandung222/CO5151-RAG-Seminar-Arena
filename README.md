@@ -17,7 +17,8 @@ pinned: false
 An empirical testbed evaluating **5 scientific RAG paradigms** (Pure LLM, Naive RAG, Self-RAG, GraphRAG, FLARE) against authentic statutory reasoning (Vietnamese Labor Code 2019 vs. obsolete 2012 distractors).
 
 > **Master's Student Seminar Project** — Course **CO5151: Advanced Agentic AI**, Ho Chi Minh City University of Technology (HCMUT).  
-> **Presenter:** Dung Vo ([@tuandung222](https://github.com/tuandung222))
+> **Presenter:** Dung Vo ([@tuandung222](https://github.com/tuandung222))  
+> **Methodology Note:** Evaluates Foundation LLMs using In-Context Reflection surrogates (Self-RAG/FLARE) and controlled in-context knowledge conflicts (When Retrieval Hurts).
 
 ---
 

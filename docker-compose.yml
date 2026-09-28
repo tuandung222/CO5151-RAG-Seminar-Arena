@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     container_name: co5151-rag-inspector
     ports:
-      - "8501:8501"
+      - "8501:7860"
     environment:
       - LLM_PROVIDER=huggingface
       - HF_TOKEN=${HF_TOKEN}

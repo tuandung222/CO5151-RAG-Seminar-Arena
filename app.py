@@ -396,9 +396,9 @@ with st.sidebar:
 
     elif provider_choice == "OpenAI-Compatible Gateway":
         cur_provider = "openai-compatible"
-        cur_base_url = st.text_input("Base URL:", value="https://ai-gateway01.qualgo.ai/v1")
-        cur_api_key = st.text_input("API Key:", value="sk-x8qNKU7OZAz70PL7Urcnmg", type="password")
-        cur_model = st.text_input("Model Name:", value="openrouter/openai/gpt-4o-mini")
+        cur_base_url = st.text_input("Base URL:", value=os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1"))
+        cur_api_key = st.text_input("API Key:", value=os.environ.get("OPENAI_API_KEY", ""), type="password")
+        cur_model = st.text_input("Model Name:", value=os.environ.get("OPENAI_MODEL", "gpt-4o-mini"))
 
     else:
         cur_provider = "openai-compatible"
@@ -814,16 +814,16 @@ with tab1:
         if lang == "vi":
             st.markdown("""
             #### Vì sao tương đồng ngữ nghĩa (Semantic Similarity) không đồng nghĩa với chân lý pháp lý:
-            - **Cái bẫy ngữ nghĩa:** Điều 27 Bộ luật Lao động 2012 đã hết hiệu lực nhưng có độ tương đồng cosine rất cao (**0.78**) đối với các truy vấn về thử việc, do chứa cùng trường từ vựng (*thời gian thử việc*, *hợp đồng*, *ngày*).
-            - **Thất bại của Naive RAG:** Do chỉ xếp hạng thô theo độ tương đồng cosine và nối chuỗi vào prompt mà không tự đánh giá, mô hình LLM bị tài liệu gây nhiễu (văn bản hết hiệu lực) dẫn dụ, kết luận sai thành tối đa **60 ngày**.
-            - **Lớp phòng vệ của Self-RAG:** Bộ lọc tài liệu liên quan `[IsREL]` kiểm định tính hợp lệ và thời hiệu, phát hiện Điều 27/2012 đã bị thay thế bởi BLLĐ 2019, lập tức loại bỏ khỏi ngữ cảnh và chỉ giữ lại Điều 25/2019 (không quá 180 ngày cho người quản lý doanh nghiệp).
+            - **Cái bẫy tương đồng ngữ nghĩa:** Điều 27 Bộ luật Lao động 2012 (hết hiệu lực từ 01/01/2021) có độ tương đồng cosine dense BGE-M3 rất cao (**0.64 – 0.75**) đối với các truy vấn về thử việc, do chứa trùng trường từ vựng (*thời gian thử việc*, *hợp đồng*, *ngày*, *chức danh nghề nghiệp*).
+            - **Thất bại của Naive RAG (When Retrieval Hurts):** Dưới thiết kế kiểm thử xung đột tri thức có kiểm soát (*Controlled In-Context Conflict Stress Test* theo Neeman et al. 2023 & Wu et al. 2024), do chỉ nối chuỗi các đoạn văn bản mà không tự phản biện, mô hình LLM bị tài liệu bãi bỏ dẫn dụ và kết luận sai thành tối đa **60 ngày**.
+            - **Lớp phòng vệ của Self-RAG:** Bộ lọc tài liệu liên quan `[IsREL]` kiểm định tính hợp lệ và thời hiệu, phát hiện văn bản 2012 đã hết hiệu lực, loại bỏ khỏi ngữ cảnh để bảo vệ chân lý pháp lý (180 ngày theo Điều 25 BLLĐ 2019).
             """)
         else:
             st.markdown("""
             #### Why Semantic Similarity ≠ Statutory Truth:
-            - **The Semantic Trap:** The repealed Article 27 of Labor Code 2012 has a high cosine similarity of **0.78** to queries about probation durations, because it contains identical legal vocabulary (*thời gian thử việc*, *hợp đồng*, *ngày*).
-            - **The Naive RAG Failure:** Because Naive RAG blindly ranks by cosine similarity and concatenates chunks without reflection, the generator LLM is misled by the outdated text, falsely claiming probation is capped at **60 days**.
-            - **The Self-RAG Defense:** Self-RAG's passage critic `[IsREL]` checks validity and recency, recognizes that Article 27/2012 has been repealed by Labor Code 2019, prunes it immediately, and retains only Article 25/2019 (180 days for enterprise executives).
+            - **The Semantic Trap:** The repealed Article 27 of Labor Code 2012 yields a high dense BGE-M3 cosine similarity (**0.64 – 0.75**) to probation queries due to overlapping statutory vocabulary (*thời gian thử việc*, *hợp đồng*, *ngày*, *chức danh*).
+            - **The Naive RAG Failure (When Retrieval Hurts):** Under a *Controlled In-Context Conflict Stress Test* (Neeman et al. 2023, Wu et al. 2024), Naive RAG blindly concatenates retrieved text without reflection, causing the generator to succumb to context poisoning and claim a **60-day** cap.
+            - **The Self-RAG Defense:** Self-RAG's passage critic `[IsREL]` inspects statutory validity and recency, recognizes that the 2012 statute is repealed, prunes it immediately, and preserves ground truth (180 days under Article 25 Labor Code 2019).
             """)
 
 
@@ -1047,7 +1047,7 @@ with tab3:
                 st.write("Đang đánh giá Cổng Quyết Định [Retrieve]..." if lang == "vi" else "Evaluating Reflection Gate [Retrieve]...")
                 st.write("Đang chạy bộ lọc tài liệu liên quan [IsREL]..." if lang == "vi" else "Executing passage critic [IsREL] across candidate chunks...")
                 st.write("Đang kiểm định căn cứ [IsSUP] và độ hữu dụng [IsUSE]..." if lang == "vi" else "Evaluating attribution support [IsSUP] and utility [IsUSE]...")
-                res_self_full_live = self_pipe.run_self_rag(q_tab3, top_k=3)
+                res_self_full_live = self_pipe.run_self_rag(q_tab3, top_k=3, tau=tau_threshold)
                 status_box.update(label="Hoàn tất phân tích tự đánh giá!" if lang == "vi" else "Reflection Analysis Complete!", state="complete", expanded=False)
 
             st.session_state["tab3_is_live"] = True
@@ -1247,7 +1247,7 @@ with tab4:
                 st.write("Đang soạn thảo dự phóng từng câu..." if lang == "vi" else "Drafting candidate sentences forward...")
                 st.write("Đang đánh giá độ tự tin token so với ngưỡng theta..." if lang == "vi" else "Evaluating sentence confidence metrics vs threshold theta...")
                 st.write("Đang kích hoạt truy xuất chủ động cho câu có độ tự tin thấp..." if lang == "vi" else "Issuing active search queries for low-confidence assertions...")
-                res_flare_live = flare_pipe.run_flare(q_tab4)
+                res_flare_live = flare_pipe.run_flare(q_tab4, theta=flare_theta)
                 status_box.update(label="Hoàn tất tổng hợp FLARE!" if lang == "vi" else "FLARE Active Synthesis Complete!", state="complete", expanded=False)
 
             st.session_state["tab4_is_live"] = True

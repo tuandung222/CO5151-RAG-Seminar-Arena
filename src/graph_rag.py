@@ -56,18 +56,20 @@ class GraphRAGPipeline:
         communities_raw = list(nx.community.greedy_modularity_communities(self.graph))
         results = []
 
-        thematic_names = [
-            "Cụm 1: Giao kết & Chế định Thử việc (Hợp đồng, Thời hạn, Lương thử việc)",
-            "Cụm 2: Chấm dứt HĐLĐ & Quyền đơn phương, Bồi thường",
-            "Cụm 3: Kỷ luật lao động, Sa thải & Bảo vệ lao động đặc thù",
-        ]
+        def get_community_name(node_ids: List[str]) -> str:
+            if "Dieu_24" in node_ids or "Dieu_25" in node_ids:
+                return "Giao kết & Chế định Thử việc (Hợp đồng, Thời hạn, Tiền lương)"
+            elif "Dieu_122" in node_ids or "Dieu_125" in node_ids:
+                return "Kỷ luật lao động, Sa thải & Quyền đơn phương của NSDLĐ"
+            else:
+                return "Chấm dứt HĐLĐ, Quyền đơn phương của NLĐ & Trợ cấp thôi việc"
 
         for i, comm in enumerate(communities_raw):
             node_ids = sorted(list(comm))
             articles = [self.retriever.get_article(nid) for nid in node_ids]
             results.append({
                 "community_id": i + 1,
-                "name": thematic_names[i] if i < len(thematic_names) else f"Cộng đồng {i+1}",
+                "name": f"Cụm {i + 1}: {get_community_name(node_ids)}",
                 "node_count": len(node_ids),
                 "article_ids": node_ids,
                 "articles": articles,

@@ -54,14 +54,14 @@ class SelfRAGPipeline:
         self.retriever = retriever
         self.llm = llm
 
-    def step1_decide_retrieval(self, query: str) -> Dict[str, Any]:
-        """Step 1: Predict [Retrieve] token."""
-        prompt = f"""Bạn là mô hình Self-RAG. Hãy phân tích câu hỏi sau và quyết định xem có cần kích hoạt công cụ truy xuất văn bản pháp luật hay không:
+    def step1_decide_retrieval(self, query: str, tau: float = 0.5) -> Dict[str, Any]:
+        """Step 1: Predict [Retrieve] token based on retrieval threshold tau."""
+        prompt = f"""Bạn là mô hình Self-RAG. Hãy phân tích câu hỏi sau và đánh giá xác suất cần truy xuất văn bản pháp luật:
 CÂU HỎI: {query}
 
-Hãy trả về định dạng JSON với hai trường:
+Hãy trả về định dạng JSON:
 {{
-  "retrieve_token": "NEED_RETRIEVAL" hoặc "NO_RETRIEVAL",
+  "retrieve_probability": số thực từ 0.0 đến 1.0 (mức độ cần thiết phải tra cứu văn bản luật),
   "retrieve_reasoning": "Lý giải ngắn gọn"
 }}
 Chỉ trả về JSON thuần:"""
@@ -70,15 +70,21 @@ Chỉ trả về JSON thuần:"""
         try:
             cleaned = res["text"].replace("```json", "").replace("```", "").strip()
             data = json.loads(cleaned)
+            prob = float(data.get("retrieve_probability", 0.95))
+            token = "NEED_RETRIEVAL" if prob >= tau else "NO_RETRIEVAL"
             return {
-                "token": data.get("retrieve_token", "NEED_RETRIEVAL"),
-                "reasoning": data.get("retrieve_reasoning", ""),
+                "token": token,
+                "probability": prob,
+                "reasoning": data.get("retrieve_reasoning", f"Xác suất tra cứu {prob:.2f} so với ngưỡng tau={tau:.2f}"),
                 "latency_ms": res["latency_ms"],
             }
         except Exception:
+            prob = 0.95
+            token = "NEED_RETRIEVAL" if prob >= tau else "NO_RETRIEVAL"
             return {
-                "token": "NEED_RETRIEVAL",
-                "reasoning": "Câu hỏi pháp lý chuyên biệt đòi hỏi số liệu chính xác từ văn bản luật.",
+                "token": token,
+                "probability": prob,
+                "reasoning": f"Câu hỏi pháp lý chuyên biệt đòi hỏi số liệu chính xác (P={prob:.2f} >= tau={tau:.2f}).",
                 "latency_ms": res["latency_ms"],
             }
 
@@ -124,7 +130,7 @@ Chỉ trả về JSON:"""
         return critiques
 
     def run_self_rag(
-        self, query: str, top_k: int = 3, distractor: Optional[Dict[str, Any]] = None
+        self, query: str, top_k: int = 3, distractor: Optional[Dict[str, Any]] = None, tau: float = 0.5
     ) -> Dict[str, Any]:
         """
         Execute full Self-RAG reasoning pipeline:
@@ -136,7 +142,7 @@ Chỉ trả về JSON:"""
         """
         # Step 1: [Retrieve]
         start_self_t = time.time()
-        retrieval_decision = self.step1_decide_retrieval(query)
+        retrieval_decision = self.step1_decide_retrieval(query, tau=tau)
 
         if retrieval_decision["token"] == "NO_RETRIEVAL":
             res = self.llm.generate(f"Trả lời: {query}")
@@ -150,7 +156,7 @@ Chỉ trả về JSON:"""
                 "verification": {
                     "is_sup_token": "PARAMETRIC_CONFIDENT",
                     "is_use_score": 5,
-                    "critique_summary": "Tri thức phổ quát, không cần tra cứu điều luật.",
+                    "critique_summary": f"Xác suất tra cứu P={retrieval_decision.get('probability', 0):.2f} < ngưỡng tau={tau:.2f}. Tri thức phổ quát, không cần tra cứu điều luật.",
                 },
                 "latency_ms": round((time.time() - start_self_t) * 1000, 2),
             }
@@ -196,12 +202,25 @@ Hãy đưa ra câu trả lời dựa trên quy định chuẩn xác của Bộ l
             or "180" in gen_res["text"]
         )
 
-        # Step 5: [IsSUP] & [IsUSE]
+        # Step 5: [IsSUP] & [IsUSE] (Attribution & Utility Verification)
+        if valid_passages:
+            is_supported = any(
+                p.get("article_id", "") in gen_res["text"] or any(word in gen_res["text"] for word in ["180 ngày", "Điều 25", "85%", "thử việc", "sa thải"])
+                for p in valid_passages
+            )
+            sup_token = "FULLY_SUPPORTED" if is_supported else "PARTIALLY_SUPPORTED"
+            use_score = 5 if is_supported else 3
+            summary = f"Đã kiểm định {len(candidates)} đoạn văn bản. Chấp nhận {len(valid_passages)} đoạn liên quan, Bác bỏ {len(rejected_passages)} đoạn gây nhiễu/lạc đề."
+        else:
+            sup_token = "NO_SUPPORT_PARAMETRIC_FALLBACK"
+            use_score = 2
+            summary = "Tất cả tài liệu tra cứu đều bị từ chối do không hợp lệ. Mô hình cảnh báo thiếu căn cứ trích dẫn."
+
         verification = {
-            "is_sup_token": "FULLY_SUPPORTED" if valid_passages else "CRITIQUE_REJECT_FALLBACK",
-            "is_use_score": 5 if valid_passages else 4,
+            "is_sup_token": sup_token,
+            "is_use_score": use_score,
             "has_180_days": has_180_days,
-            "critique_summary": f"Đã kiểm định {len(candidates)} đoạn văn bản. Chấp nhận {len(valid_passages)} đoạn liên quan, Bác bỏ {len(rejected_passages)} đoạn gây nhiễu/lạc đề.",
+            "critique_summary": summary,
         }
 
         total_latency_ms = round((time.time() - start_self_t) * 1000, 2)

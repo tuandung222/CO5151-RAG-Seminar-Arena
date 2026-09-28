@@ -19,8 +19,8 @@ class FLARERAGPipeline:
         self.retriever = retriever
         self.llm = llm
 
-    def run_flare(self, query: str) -> Dict[str, Any]:
-        """Execute FLARE active retrieval loop on query."""
+    def run_flare(self, query: str, theta: float = 0.5) -> Dict[str, Any]:
+        """Execute FLARE active retrieval loop on query with confidence threshold theta."""
         start_flare_t = time.time()
         # Step 1: Generate initial draft sentences
         draft_prompt = f"""Hãy chia nhỏ câu trả lời cho câu hỏi sau thành 2-3 câu văn ngắn gọn:
@@ -60,7 +60,7 @@ Chỉ trả về JSON:"""
                 confidence = 0.6 if req_retrieval else 0.95
                 sub_query = query
 
-            if req_retrieval and confidence < 0.85:
+            if req_retrieval and confidence < theta:
                 # Active retrieval triggered!
                 retrieval_calls += 1
                 evidence_passages = self.retriever.search_hybrid_rrf(sub_query, top_k=2)
