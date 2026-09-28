@@ -25,7 +25,7 @@ if _env_file.exists():
 
 # Hugging Face Credentials (Loaded via Environment Variable or Space Secret)
 HF_TOKEN = os.environ.get("HF_TOKEN", "")
-HF_DEFAULT_MODEL = "Qwen/Qwen3.5-9B"
+HF_DEFAULT_MODEL = "Qwen/Qwen2.5-72B-Instruct"
 HF_EMBEDDING_MODEL = "BAAI/bge-m3"
 HF_ROUTER_URL = f"https://router.huggingface.co/hf-inference/models/{HF_EMBEDDING_MODEL}"
 
