@@ -117,7 +117,7 @@ I18N = {
         "lang_switch_label": "Display Language / Ngôn ngữ hiển thị:",
         
         # Sidebar
-        "sidebar_engine": "Động Cơ Suy Luận (Inference Engine)",
+        "sidebar_engine": "Inference Engine (Cấu hình mô hình)",
         "sidebar_provider": "Chọn Nhà Cung Cấp & Mô Hình:",
         "sidebar_token_label": "Hugging Face User Access Token (Tùy chọn):",
         "sidebar_token_help": "Bắt buộc khi chạy kiểm chứng TRỰC TIẾP trên cluster. Kết quả chuẩn tiền tính toán không cần nhập token.",

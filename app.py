@@ -483,7 +483,7 @@ with st.sidebar:
     ctx_text = selected_case.get(f"real_world_context_{lang}", selected_case["focus"])
     obj_text = selected_case.get(f"pedagogical_objective_{lang}", selected_case["focus"])
     st.caption(f"🏛️ **{'Tình huống thực tế:' if lang == 'vi' else 'Real-world Context:'}** {ctx_text}")
-    st.caption(f"🎯 **{'Mục tiêu sư phạm:' if lang == 'vi' else 'Pedagogical Goal:'}** {obj_text}")
+    st.caption(f"🎯 **{'Mục tiêu thực nghiệm (Pedagogical Objective):' if lang == 'vi' else 'Pedagogical Objective:'}** {obj_text}")
     
     preset_tab_map = {
         0: ("Tab 1: When Retrieval Hurts", 1),
@@ -614,7 +614,7 @@ with tab1:
         st.markdown("""
         <div class="context-card">
             <div class="context-card-title">
-                📌 <b>Bối Cảnh Tranh Chấp Thực Tiễn & Động Cơ Nghiên Cứu Sư Phạm (Case 1)</b>
+                📌 <b>Bối Cảnh Thực Tế & Mục Tiêu Thử Nghiệm (Case Study & Pedagogical Objective - Case 1)</b>
             </div>
             <div style="margin-bottom: 6px;">
                 <span class="context-pill">🏛️ Tình Huống Thực Tế Doanh Nghiệp</span>
@@ -623,7 +623,7 @@ with tab1:
             <div>
                 <span class="context-pill">🎯 Mục Tiêu Đào Tạo CO5151</span>
                 <b>Kiểm chứng hiện tượng "When Retrieval Hurts" & Ngộ độc ngữ cảnh (Context Poisoning):</b> 
-                Khi retriever bốc phải điều luật <i>BLLĐ 2012 cũ đã hết hiệu lực</i> (do trùng khớp từ khóa cao - False Positive), <b>Naive RAG</b> tin tưởng mù quáng vào tài liệu nạp vào và đưa ra kết luận sai (khẳng định tối đa 60 ngày). Ngược lại, <b>Self-RAG</b> kích hoạt bộ lọc phản tư <code>[IsREL]</code> phát hiện văn bản bãi bỏ để loại trừ, bảo toàn câu trả lời chính xác <b>180 ngày</b> (Khoản 1 Điều 25 BLLĐ 2019).
+                Khi retriever bốc phải điều luật <i>BLLĐ 2012 cũ đã hết hiệu lực</i> (do trùng khớp từ khóa cao - False Positive), <b>Naive RAG</b> tin tưởng mù quáng vào tài liệu nạp vào và đưa ra kết luận sai (khẳng định tối đa 60 ngày). Ngược lại, <b>Self-RAG</b> kích hoạt Reflection Critic token <code>[IsREL]</code> (thẩm định tính liên quan) phát hiện văn bản bãi bỏ để loại trừ, bảo toàn câu trả lời chính xác <b>180 ngày</b> (Khoản 1 Điều 25 BLLĐ 2019).
             </div>
             <div style="margin-top: 8px; padding-top: 6px; border-top: 1px dashed #cbd5e1; font-size: 0.84rem; color: #475569;">
                 ⏱️ <b>Mốc Thời Gian & Hiệu Lực Chuẩn:</b> Bộ luật Lao động 2019 (Luật số 45/2019/QH14) có hiệu lực từ ngày <b>01/01/2021 đến nay (2026)</b> và là Bộ luật Lao động <b>hiện hành duy nhất và mới nhất</b> tại Việt Nam (không có bộ luật nào mới hơn). Bộ luật Lao động 2012 cũ đã chính thức <b>hết hiệu lực từ 01/01/2021</b>.
@@ -1047,7 +1047,7 @@ with tab2:
         st.markdown("""
         <div class="context-card">
             <div class="context-card-title">
-                📌 <b>Bối Cảnh Tranh Chấp Thực Tiễn & Động Cơ Nghiên Cứu Sư Phạm (Case 2)</b>
+                📌 <b>Bối Cảnh Thực Tế & Mục Tiêu Thử Nghiệm (Case Study & Pedagogical Objective - Case 2)</b>
             </div>
             <div style="margin-bottom: 6px;">
                 <span class="context-pill">🏛️ Nhu Cầu Tuân Thủ Doanh Nghiệp</span>
@@ -1251,7 +1251,7 @@ with tab3:
         st.markdown("""
         <div class="context-card">
             <div class="context-card-title">
-                📌 <b>Bối Cảnh Tranh Chấp Thực Tiễn & Động Cơ Nghiên Cứu Sư Phạm (Case 4)</b>
+                📌 <b>Bối Cảnh Thực Tế & Mục Tiêu Thử Nghiệm (Case Study & Pedagogical Objective - Case 4)</b>
             </div>
             <div style="margin-bottom: 6px;">
                 <span class="context-pill">🏛️ Tình Huống Pháp Lý Đa Ý (Multi-Intent)</span>
@@ -1259,7 +1259,7 @@ with tab3:
             </div>
             <div>
                 <span class="context-pill">🎯 Mục Tiêu Đào Tạo CO5151</span>
-                <b>Mổ xẻ cơ chế điều phối của 4 Token Tự Đánh Giá (Reflection Tokens):</b> 
+                <b>Mổ xẻ cơ chế điều phối của 4 Reflection Tokens (Critic Tokens):</b> 
                 Khảo sát quy trình kiểm định đa tầng của Self-RAG: <code>[Retrieve]</code> (kích hoạt tra cứu ngoài theo ngưỡng $\\tau$), <code>[IsREL]</code> (thẩm định tính liên quan của từng đoạn văn bản đối với cả 2 ý: Điều 26 về lương thử việc 85% và Điều 36/125 về tự ý bỏ việc 05 ngày), <code>[IsSUP]</code> (kiểm định căn cứ trích dẫn để chống ảo giác), và <code>[IsUSE]</code> (đánh giá mức độ hữu ích thực tế của câu trả lời).
             </div>
         </div>
@@ -1498,7 +1498,7 @@ with tab4:
         st.markdown("""
         <div class="context-card">
             <div class="context-card-title">
-                📌 <b>Bối Cảnh Tranh Chấp Thực Tiễn & Động Cơ Nghiên Cứu Sư Phạm (Case 3)</b>
+                📌 <b>Bối Cảnh Thực Tế & Mục Tiêu Thử Nghiệm (Case Study & Pedagogical Objective - Case 3)</b>
             </div>
             <div style="margin-bottom: 6px;">
                 <span class="context-pill">🏛️ Tranh Chấp Nghĩa Vụ Đơn Phương Trái Luật</span>
