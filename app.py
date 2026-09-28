@@ -157,6 +157,36 @@ st.markdown("""
         font-size: 0.8rem;
         font-weight: 600;
     }
+    .context-card {
+        background-color: #f8fafc;
+        border-left: 4px solid #0284c7;
+        border-radius: 0 8px 8px 0;
+        padding: 12px 16px;
+        margin-top: 10px;
+        margin-bottom: 16px;
+        font-size: 0.9rem;
+        line-height: 1.55;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .context-card-title {
+        font-weight: 700;
+        color: #0369a1;
+        font-size: 0.95rem;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .context-pill {
+        background-color: #e0f2fe;
+        color: #0369a1;
+        font-size: 0.78rem;
+        font-weight: 600;
+        padding: 2px 9px;
+        border-radius: 9999px;
+        display: inline-block;
+        margin-right: 6px;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -440,7 +470,10 @@ with st.sidebar:
         format_func=lambda i: preset_names[i],
     )
     selected_case = test_cases[selected_preset_idx]
-    st.caption(f"**{'Evaluation Focus' if lang == 'en' else 'Mục tiêu kiểm định'}:** {selected_case['focus']}")
+    ctx_text = selected_case.get(f"real_world_context_{lang}", selected_case["focus"])
+    obj_text = selected_case.get(f"pedagogical_objective_{lang}", selected_case["focus"])
+    st.caption(f"🏛️ **{'Tình huống thực tế:' if lang == 'vi' else 'Real-world Context:'}** {ctx_text}")
+    st.caption(f"🎯 **{'Mục tiêu sư phạm:' if lang == 'vi' else 'Pedagogical Goal:'}** {obj_text}")
     
     preset_tab_map = {
         0: ("Tab 1: When Retrieval Hurts", 1),
@@ -553,6 +586,42 @@ with tab1:
             render_mermaid(get_diagram("naive_rag", lang), height=220)
         with d_tab2:
             render_mermaid(get_diagram("self_rag", lang), height=320)
+
+    # Pedagogical & Dispute Context Card (Case 1)
+    if lang == "vi":
+        st.markdown("""
+        <div class="context-card">
+            <div class="context-card-title">
+                📌 <b>Bối Cảnh Tranh Chấp Thực Tiễn & Động Cơ Nghiên Cứu Sư Phạm (Case 1)</b>
+            </div>
+            <div style="margin-bottom: 6px;">
+                <span class="context-pill">🏛️ Tình Huống Thực Tế Doanh Nghiệp</span>
+                Một tập đoàn ký hợp đồng thử việc <b>05 tháng (150 ngày)</b> với một Tổng Giám đốc điều hành (CEO). Sau đó công đoàn nội bộ khiếu nại thỏa thuận này vi phạm pháp luật, viện dẫn Bộ luật Lao động 2012 cũ (vốn giới hạn tối đa chỉ 60 ngày đối với mọi chức danh yêu cầu trình độ đại học trở lên). Doanh nghiệp cần xác định chính xác thời hạn 150 ngày này có hợp pháp theo quy định hiện hành hay không.
+            </div>
+            <div>
+                <span class="context-pill">🎯 Mục Tiêu Đào Tạo CO5151</span>
+                <b>Kiểm chứng hiện tượng "When Retrieval Hurts" & Ngộ độc ngữ cảnh (Context Poisoning):</b> 
+                Khi retriever bốc phải điều luật <i>BLLĐ 2012 cũ đã hết hiệu lực</i> (do trùng khớp từ khóa cao - False Positive), <b>Naive RAG</b> tin tưởng mù quáng vào tài liệu nạp vào và đưa ra kết luận sai (khẳng định tối đa 60 ngày). Ngược lại, <b>Self-RAG</b> kích hoạt bộ lọc phản tư <code>[IsREL]</code> phát hiện văn bản bãi bỏ để loại trừ, bảo toàn câu trả lời chính xác <b>180 ngày</b> (Khoản 1 Điều 25 BLLĐ 2019).
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.markdown("""
+        <div class="context-card">
+            <div class="context-card-title">
+                📌 <b>Real-World Dispute Context & Pedagogical Grounding (Case 1)</b>
+            </div>
+            <div style="margin-bottom: 6px;">
+                <span class="context-pill">🏛️ Corporate Dispute Scenario</span>
+                A corporation executes a <b>5-month (150-day) probation contract</b> with an incoming Chief Executive Officer (CEO). The internal labor union disputes this clause, citing the former Labor Code 2012 which strictly capped probation at 60 days for all executive/degree-level roles. Corporate compliance must determine whether 150 days is lawful under current law.
+            </div>
+            <div>
+                <span class="context-pill">🎯 CO5151 Seminar Objective</span>
+                <b>Demonstrating "When Retrieval Hurts" & Context Poisoning:</b> 
+                When a naive retriever fetches a <i>repealed 2012 statutory distractor</i> due to high lexical similarity (False Positive), <b>Naive RAG</b> uncritically relies on the poisoned context and issues false legal advice (capping at 60 days). In contrast, <b>Self-RAG</b> triggers the <code>[IsREL]</code> reflection critic to prune the expired statute, maintaining the ground-truth legal limit of <b>180 days</b> (Article 25, Labor Code 2019).
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
     col_q, col_btn = st.columns([3, 1])
     with col_q:
@@ -834,9 +903,152 @@ with tab2:
     st.markdown(f"### {t('tab2_header', lang)}")
     st.markdown(t("tab2_desc", lang))
 
-    exp2_title = "Kiến Trúc Hệ Thống: Cụm Modularity Đồ Thị & Chu Trình Map-Reduce GraphRAG" if lang == "vi" else "System Architecture: GraphRAG Community Modularity & Map-Reduce Pipeline"
+    exp2_title = "🕸️ Thiết Kế Đồ Thị Tri Thức & Cơ Chế Map-Reduce GraphRAG (Knowledge Graph & Architecture)" if lang == "vi" else "🕸️ Knowledge Graph Design & Hierarchical Map-Reduce Architecture"
     with st.expander(exp2_title, expanded=False):
-        render_mermaid(get_diagram("graphrag", lang), height=540)
+        d_tab2_1, d_tab2_2, d_tab2_3 = st.tabs([
+            "1. Sơ Đồ Mạng Lưới Đồ Thị (Knowledge Graph Topology)" if lang == "vi" else "1. Knowledge Graph Network Topology",
+            "2. Thiết Kế Bản Thể Luận & Cầu Nối Liên Chương" if lang == "vi" else "2. Graph Ontology & Cross-Chapter Bridges",
+            "3. Chu Trình Tổng Hợp Phân Cấp Map-Reduce" if lang == "vi" else "3. Hierarchical Map-Reduce Workflow",
+        ])
+        with d_tab2_1:
+            st.markdown(
+                "**Mạng Lưới Tri Thức Pháp Luật 15 Điều Luật Trên 3 Cụm Modularity:**" if lang == "vi" else
+                "**15-Article Statutory Knowledge Graph Partitioned across 3 Modularity Communities:**"
+            )
+            render_mermaid(get_diagram("knowledge_graph_full", lang), height=580)
+            st.caption(
+                "💡 **Chú thích đồ thị:** Các mũi tên nét liền biểu thị quan hệ nội cụm. Các mũi tên nét đứt (`-.->`) là **Cầu Nối Liên Chương (Cross-Chapter Bridges)** – đây chính là liên kết tri thức then chốt giúp GraphRAG khắc phục triệt để điểm mù cục bộ (Local Blindness) của Vector Search." if lang == "vi" else
+                "💡 **Graph Legend:** Solid arrows denote intra-community relationships. Dashed arrows (`-.->`) represent **Cross-Chapter Bridges** – the pivotal structural links enabling GraphRAG to overcome Vector Search's Local Blindness."
+            )
+        with d_tab2_2:
+            if lang == "vi":
+                st.markdown("""
+                #### 1. Nguyên Lý Thiết Kế Đồ Thị Pháp Luật (Statutory Graph Design):
+                - **Thực thể (Nodes - 15 Điều luật tiêu biểu BLLĐ 2019):** Mỗi nút đại diện cho một điều luật được chuẩn hóa mã định danh (`Dieu_13` đến `Dieu_125`), chứa toàn văn và tiêu đề pháp lý chính thức.
+                - **Phân cụm cộng đồng Modularity ($Q = 0.42$):** Sử dụng thuật toán *Newman's Greedy Modularity* để tự động phân rã 15 điều luật thành 3 cộng đồng chuyên đề độc lập:
+                  - 🔵 **Cụm 1 (Chương II): Giao kết & Chế định Thử việc** (`Điều 13, 20, 24, 25, 26, 27`)
+                  - 🟠 **Cụm 2 (Chương III): Chấm dứt HĐLĐ & Trợ cấp bồi thường** (`Điều 34, 35, 36, 37, 40, 41, 46`)
+                  - 🟣 **Cụm 3 (Chương VIII): Kỷ luật lao động & Bảo vệ đặc thù** (`Điều 122, 125`)
+                
+                #### 2. Cầu Nối Liên Chương (Cross-Chapter Bridges) – Điểm Tựa Khắc Phục Local Blindness:
+                - **Cầu nối 1: `Điều 37 (Chương III) -.-> Điều 122 (Chương VIII)` (Bảo vệ thai sản & ốm đau):**
+                  - *Quy định Chương III (Điều 37):* Cấm NSDLĐ đơn phương chấm dứt HĐLĐ khi lao động ốm đau hoặc nghỉ thai sản.
+                  - *Quy định Chương VIII (Điều 122):* Cấm NSDLĐ xử lý kỷ luật sa thải lao động mang thai hoặc nuôi con nhỏ dưới 12 tháng.
+                  - *Vì sao Naive RAG thất bại?* Hai điều luật này nằm cách nhau **85 điều** trong văn bản luật. Vector Search tìm kiếm bằng cosine embedding chỉ gom được Điều 37 vì từ khóa "chấm dứt HĐLĐ", bỏ sót hoàn toàn Điều 122 vì khoảng cách từ vựng "sa thải/kỷ luật" quá xa trong embedding space!
+                  - *GraphRAG giải quyết ra sao?* Đồ thị thiết lập cạnh dẫn chiếu chuyên đề nối Điều 37 với Điều 122. Nhờ đó, cả hai điều luật đều được đưa vào báo cáo tóm tắt cộng đồng.
+                - **Cầu nối 2: `Điều 36 (Chương III) -.-> Điều 125 (Chương VIII)` (Tự ý bỏ việc 05 ngày):**
+                  - NSDLĐ có quyền đơn phương chấm dứt ngay lập tức (Điều 36.1.e) đồng thời có quyền áp dụng hình thức kỷ luật sa thải (Điều 125.4).
+                - **Cầu nối 3: `Điều 20 (Chương II) -.-> Điều 34 (Chương III)` (Hết hạn hợp đồng):**
+                  - Hết hạn HĐLĐ xác định thời hạn là căn cứ pháp lý để chấm dứt hợp đồng lao động.
+
+                #### 3. Bảng Ma Trận 15 Cạnh Quan Hệ (Edge Topology Matrix):
+                | Nguồn (Source) | Đích (Target) | Mã quan hệ (Edge Relation) | Phân loại liên kết | Ý nghĩa pháp lý |
+                |---|---|---|---|---|
+                | Điều 13 | Điều 20 | `quy_dinh_loai_hop_dong` | Nội cụm C1 | HĐLĐ quy định các loại hợp đồng có/không xác định thời hạn |
+                | Điều 13 | Điều 24 | `thoa_thuan_thu_viec` | Nội cụm C1 | Giao kết HĐLĐ bao gồm thỏa thuận thử việc |
+                | Điều 24 | Điều 25 | `quy_dinh_thoi_gian_thu_viec` | Nội cụm C1 | Thỏa thuận thử việc bị giới hạn thời gian tối đa (180 ngày) |
+                | Điều 24 | Điều 26 | `quy_dinh_tien_luong_thu_viec` | Nội cụm C1 | Tiền lương thử việc phải đạt tối thiểu 85% lương chính thức |
+                | Điều 24 | Điều 27 | `ket_thuc_thu_viec` | Nội cụm C1 | Kết quả thử việc quyết định giao kết tiếp HĐLĐ |
+                | Điều 20 | Điều 34 | `het_han_va_cham_dut` | **Liên cụm C1 ➜ C2** | Hết hạn HĐLĐ là một căn cứ chấm dứt hợp đồng hợp pháp |
+                | Điều 34 | Điều 35 | `nld_don_phuong` | Nội cụm C2 | Quyền đơn phương chấm dứt hợp đồng của NLĐ |
+                | Điều 34 | Điều 36 | `nsdld_don_phuong` | Nội cụm C2 | Quyền đơn phương chấm dứt hợp đồng của NSDLĐ |
+                | Điều 36 | Điều 37 | `han_che_quyen_don_phuong` | Nội cụm C2 | Các trường hợp NSDLĐ bị cấm thực hiện quyền đơn phương |
+                | Điều 35 | Điều 40 | `don_phuong_trai_phap_luat` | Nội cụm C2 | Nghĩa vụ bồi thường của NLĐ khi vi phạm thời hạn báo trước |
+                | Điều 36 | Điều 41 | `boi_thuong_trai_phap_luat` | Nội cụm C2 | Nghĩa vụ bồi thường thiệt hại của NSDLĐ khi đơn phương trái luật |
+                | Điều 34 | Điều 46 | `huong_tro_cap_thoi_viec` | Nội cụm C2 | Điều kiện và mức chi trả trợ cấp thôi việc |
+                | **Điều 37** | **Điều 122** | `bao_ve_lao_dong_nu_va_om_dau` | **Cầu nối C2 ➜ C3** | **Cấm đơn phương (Đ.37) và Cấm sa thải kỷ luật (Đ.122) bảo vệ thai sản** |
+                | Điều 122 | Điều 125 | `hinh_thuc_sa_thai` | Nội cụm C3 | Nguyên tắc xử lý kỷ luật dẫn chiếu các trường hợp sa thải |
+                | **Điều 36** | **Điều 125** | `hanh_vi_tu_y_bo_viec` | **Cầu nối C2 ➜ C3** | **Tự ý bỏ việc 05 ngày: vừa quyền đơn phương (Đ.36) vừa kỷ luật sa thải (Đ.125)** |
+                """)
+            else:
+                st.markdown("""
+                #### 1. Statutory Knowledge Graph Design Principles:
+                - **Entities (Nodes - 15 Canonical Articles of Labor Code 2019):** Each node is a standardized statutory identifier (`Dieu_13` to `Dieu_125`), encompassing official article titles and full legal definitions.
+                - **Modularity Community Detection ($Q = 0.42$):** Employs *Newman's Greedy Modularity* to automatically partition the 15 statutory articles into 3 distinct thematic communities:
+                  - 🔵 **Community 1 (Chapter II): Labor Contracts & Probation** (`Articles 13, 20, 24, 25, 26, 27`)
+                  - 🟠 **Community 2 (Chapter III): Contract Termination & Damages** (`Articles 34, 35, 36, 37, 40, 41, 46`)
+                  - 🟣 **Community 3 (Chapter VIII): Disciplinary Dismissal & Protected Status** (`Articles 122, 125`)
+                
+                #### 2. Cross-Chapter Bridges – The Structural Solution to Local Blindness:
+                - **Bridge 1: `Art 37 (Chapter III) -.-> Art 122 (Chapter VIII)` (Maternity & Illness Protection):**
+                  - *Chapter III Provision (Art 37):* Prohibits employer from unilaterally terminating contracts during employee illness or maternity leave.
+                  - *Chapter VIII Provision (Art 122):* Prohibits employer from taking disciplinary dismissal actions against pregnant employees or those raising infants under 12 months.
+                  - *Why Naive Vector Search Fails:* These provisions are separated by **85 articles** in statutory text. Vector search retrieves only Art 37 due to semantic proximity to "termination", entirely omitting Art 122 because disciplinary terms ("dismissal", "disciplinary sanction") reside far away in embedding space!
+                  - *How GraphRAG Resolves It:* The graph establishes an explicit cross-chapter bridge edge connecting Art 37 to Art 122, ensuring both protective regimes are incorporated into intermediate community summaries.
+                - **Bridge 2: `Art 36 (Chapter III) -.-> Art 125 (Chapter VIII)` (5-Day Unauthorized Absence):**
+                  - Employer may unilaterally terminate immediately without notice (Art 36.1.e) and also apply disciplinary dismissal (Art 125.4).
+                - **Bridge 3: `Art 20 (Chapter II) -.-> Art 34 (Chapter III)` (Contract Expiration):**
+                  - Expiration of fixed-term contracts constitutes statutory grounds for employment termination.
+
+                #### 3. 15-Edge Topology Matrix:
+                | Source | Target | Edge Relation Key | Topology Type | Legal Rationale |
+                |---|---|---|---|---|
+                | Art 13 | Art 20 | `quy_dinh_loai_hop_dong` | Intra-C1 | Contract execution specifies contract duration types |
+                | Art 13 | Art 24 | `thoa_thuan_thu_viec` | Intra-C1 | Contract execution incorporates probation terms |
+                | Art 24 | Art 25 | `quy_dinh_thoi_gian_thu_viec` | Intra-C1 | Probation agreement bounded by maximum duration (180 days) |
+                | Art 24 | Art 26 | `quy_dinh_tien_luong_thu_viec` | Intra-C1 | Probation salary must reach at least 85% of official wage |
+                | Art 24 | Art 27 | `ket_thuc_thu_viec` | Intra-C1 | Probation outcome governs official contract signing |
+                | Art 20 | Art 34 | `het_han_va_cham_dut` | **Inter C1 ➜ C2** | Fixed-term contract expiry serves as legal grounds for termination |
+                | Art 34 | Art 35 | `nld_don_phuong` | Intra-C2 | Statutory right of employee unilateral termination |
+                | Art 34 | Art 36 | `nsdld_don_phuong` | Intra-C2 | Statutory right of employer unilateral termination |
+                | Art 36 | Art 37 | `han_che_quyen_don_phuong` | Intra-C2 | Statutory restrictions barring employer unilateral termination |
+                | Art 35 | Art 40 | `don_phuong_trai_phap_luat` | Intra-C2 | Employee damages liability upon unlawful termination |
+                | Art 36 | Art 41 | `boi_thuong_trai_phap_luat` | Intra-C2 | Employer damages compensation liability for unlawful termination |
+                | Art 34 | Art 46 | `huong_tro_cap_thoi_viec` | Intra-C2 | Severance allowance eligibility and calculation formula |
+                | **Art 37** | **Art 122** | `bao_ve_lao_dong_nu_va_om_dau` | **Bridge C2 ➜ C3** | **Prohibits unilateral firing (Art 37) & disciplinary dismissal (Art 122) for maternity** |
+                | Art 122 | Art 125 | `hinh_thuc_sa_thai` | Intra-C3 | Disciplinary principles governing extreme dismissal measures |
+                | **Art 36** | **Art 125** | `hanh_vi_tu_y_bo_viec` | **Bridge C2 ➜ C3** | **5-day unauthorized absence: triggers unilateral exit (Art 36) & dismissal (Art 125)** |
+                """)
+        with d_tab2_3:
+            render_mermaid(get_diagram("graphrag", lang), height=540)
+            if lang == "vi":
+                st.info("""
+                **Cơ chế 2 bước của Hierarchical Map-Reduce GraphRAG:**
+                1. **Pha Map (Tóm tắt cục bộ song song):** Với mỗi Cụm Modularity $C_i$, LLM trích xuất các điều khoản liên quan và tạo bản tóm tắt cộng đồng (Community Summary). Nhờ các cầu nối liên chương, các điều khoản bảo vệ rải rác đều được gom vào cụm tương ứng.
+                2. **Pha Reduce (Tổng hợp toàn cục):** LLM hợp nhất các bản tóm tắt từ tất cả các cụm thành câu trả lời bao quát toàn diện, không bỏ sót bất kỳ chế định nào.
+                """)
+            else:
+                st.info("""
+                **Two-Stage Hierarchical Map-Reduce Operational Principle:**
+                1. **Map Phase (Parallel Community Extraction):** For each Modularity Community $C_i$, an LLM extracts relevant statutory rules and drafts a localized Community Summary. Cross-chapter bridges ensure that scattered protective articles are captured in intermediate outputs.
+                2. **Reduce Phase (Global Hierarchical Synthesis):** The master LLM consolidates all intermediate community summaries into a unified, non-redundant synthesis that leaves zero statutory gaps.
+                """)
+
+    # Pedagogical & Dispute Context Card (Case 2)
+    if lang == "vi":
+        st.markdown("""
+        <div class="context-card">
+            <div class="context-card-title">
+                📌 <b>Bối Cảnh Tranh Chấp Thực Tiễn & Động Cơ Nghiên Cứu Sư Phạm (Case 2)</b>
+            </div>
+            <div style="margin-bottom: 6px;">
+                <span class="context-pill">🏛️ Nhu Cầu Tuân Thủ Doanh Nghiệp</span>
+                Giám đốc Nhân sự (HR Director) chuẩn bị cho kế hoạch tái cấu trúc nhân sự quy mô lớn và yêu cầu Phòng Pháp chế: <i>"Lập danh mục rà soát toàn diện tất cả các trường hợp công ty KHÔNG ĐƯỢC hoặc BỊ HẠN CHẾ quyền đơn phương chấm dứt hợp đồng và kỷ luật sa thải người lao động?"</i> Nếu công ty sơ suất sa thải nhân sự nữ đang mang thai hoặc người lao động đang điều trị tai nạn lao động, công ty sẽ đối mặt với rủi ro bồi thường thiệt hại rất lớn theo Điều 41.
+            </div>
+            <div>
+                <span class="context-pill">🎯 Mục Tiêu Đào Tạo CO5151</span>
+                <b>Kiểm chứng Điểm Mù Cục Bộ (Local Blindness) của Vector Search:</b> 
+                Trong Bộ luật Lao động 2019, các chế định bảo vệ lao động nằm rải rác ở hai chương hoàn toàn tách biệt: <b>Chương III</b> (Điều 37: Hạn chế quyền đơn phương chấm dứt khi ốm đau, thai sản) và <b>Chương VIII</b> (Điều 122: Nguyên tắc cấm kỷ luật sa thải lao động mang thai, nuôi con nhỏ dưới 12 tháng). <b>Naive RAG</b> chỉ bốc được Điều 37 và bỏ sót Điều 122 do khoảng cách embedding xa. <b>GraphRAG</b> thông qua cạnh dẫn chiếu liên chương và tổng hợp phân cấp Map-Reduce bao quát đủ 100% hai chế định.
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.markdown("""
+        <div class="context-card">
+            <div class="context-card-title">
+                📌 <b>Real-World Dispute Context & Pedagogical Grounding (Case 2)</b>
+            </div>
+            <div style="margin-bottom: 6px;">
+                <span class="context-pill">🏛️ Enterprise Compliance Scenario</span>
+                An HR Director preparing an enterprise restructuring instructs Corporate Legal: <i>"Compile an exhaustive review of all statutory circumstances where the employer CANNOT or is RESTRICTED from unilaterally terminating contracts or dismissing employees?"</i> Unlawful dismissal of pregnant or medical-leave employees exposes the firm to severe damages under Article 41.
+            </div>
+            <div>
+                <span class="context-pill">🎯 CO5151 Seminar Objective</span>
+                <b>Exposing Vector Search's Local Blindness:</b> 
+                Statutory protections are scattered across distinct chapters: <b>Chapter III</b> (Art 37: Restrictions on unilateral termination during medical/maternity leave) and <b>Chapter VIII</b> (Art 122: Statutory prohibition on disciplinary dismissal for pregnant employees). <b>Naive RAG</b> captures only Art 37 and misses Art 122 entirely. <b>GraphRAG</b> bridges cross-chapter edges and uses Map-Reduce to achieve 100% comprehensive coverage.
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
     col_q2, col_btn2 = st.columns([3, 1])
     with col_q2:
@@ -1001,6 +1213,46 @@ with tab2:
 with tab3:
     st.markdown(f"### {t('tab3_header', lang)}")
     st.markdown(t("tab3_desc", lang))
+
+    exp3_title = "Kiến Trúc Hệ Thống: Vòng Tự Đánh Giá 4 Token Phản Tư Self-RAG" if lang == "vi" else "System Architecture: Self-RAG 4 Reflection Tokens Critic Loop"
+    with st.expander(exp3_title, expanded=False):
+        render_mermaid(get_diagram("self_rag", lang), height=340)
+
+    # Pedagogical & Dispute Context Card (Case 4)
+    if lang == "vi":
+        st.markdown("""
+        <div class="context-card">
+            <div class="context-card-title">
+                📌 <b>Bối Cảnh Tranh Chấp Thực Tiễn & Động Cơ Nghiên Cứu Sư Phạm (Case 4)</b>
+            </div>
+            <div style="margin-bottom: 6px;">
+                <span class="context-pill">🏛️ Tình Huống Pháp Lý Đa Ý (Multi-Intent)</span>
+                Một nhân sự mới ký hợp đồng thử việc đặt ra 2 câu hỏi pháp lý cốt lõi: <i>(1) Tiền lương thử việc tối thiểu pháp luật bắt buộc bằng bao nhiêu phần trăm lương chính thức?</i> và <i>(2) Nếu trong quá trình làm việc vì lý do cá nhân mà tự ý bỏ việc 05 ngày làm việc liên tục không báo trước thì công ty có quyền đơn phương chấm dứt và sa thải ngay không?</i>
+            </div>
+            <div>
+                <span class="context-pill">🎯 Mục Tiêu Đào Tạo CO5151</span>
+                <b>Mổ xẻ cơ chế điều phối của 4 Token Tự Đánh Giá (Reflection Tokens):</b> 
+                Khảo sát quy trình kiểm định đa tầng của Self-RAG: <code>[Retrieve]</code> (kích hoạt tra cứu ngoài theo ngưỡng $\\tau$), <code>[IsREL]</code> (thẩm định tính liên quan của từng đoạn văn bản đối với cả 2 ý: Điều 26 về lương thử việc 85% và Điều 36/125 về tự ý bỏ việc 05 ngày), <code>[IsSUP]</code> (kiểm định căn cứ trích dẫn để chống ảo giác), và <code>[IsUSE]</code> (đánh giá mức độ hữu ích thực tế của câu trả lời).
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.markdown("""
+        <div class="context-card">
+            <div class="context-card-title">
+                📌 <b>Real-World Dispute Context & Pedagogical Grounding (Case 4)</b>
+            </div>
+            <div style="margin-bottom: 6px;">
+                <span class="context-pill">🏛️ Multi-Intent Employee Inquiry</span>
+                A newly recruited professional raises two crucial labor questions: <i>(1) What is the statutory minimum probation wage percentage relative to official salary?</i> and <i>(2) If the employee takes 5 consecutive working days off without justification or notice, can the employer immediately terminate or dismiss them?</i>
+            </div>
+            <div>
+                <span class="context-pill">🎯 CO5151 Seminar Objective</span>
+                <b>Dissecting the 4 Discrete Reflection Tokens of Self-RAG:</b> 
+                Demonstrating multi-intent reasoning and verification: <code>[Retrieve]</code> (threshold-gated external search), <code>[IsREL]</code> (relevance critic scoring passages against both intents: Art 26 on 85% wage and Arts 36/125 on 5-day unauthorized absence), <code>[IsSUP]</code> (strict attribution and citation grounding to eliminate hallucinations), and <code>[IsUSE]</code> (overall utility rating).
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
     col_q3, col_btn3 = st.columns([3, 1])
     with col_q3:
@@ -1212,6 +1464,42 @@ with tab4:
     exp4_title = "Kiến Trúc Hệ Thống: Truy Xuất Chủ Động Dự Phóng Từng Câu (FLARE)" if lang == "vi" else "System Architecture: Forward-Looking Uncertainty Trigger (FLARE)"
     with st.expander(exp4_title, expanded=False):
         render_mermaid(get_diagram("flare", lang), height=280)
+
+    # Pedagogical & Dispute Context Card (Case 3)
+    if lang == "vi":
+        st.markdown("""
+        <div class="context-card">
+            <div class="context-card-title">
+                📌 <b>Bối Cảnh Tranh Chấp Thực Tiễn & Động Cơ Nghiên Cứu Sư Phạm (Case 3)</b>
+            </div>
+            <div style="margin-bottom: 6px;">
+                <span class="context-pill">🏛️ Tranh Chấp Nghĩa Vụ Đơn Phương Trái Luật</span>
+                Một kỹ sư phần mềm cao cấp nộp đơn xin thôi việc và tự ý nghỉ việc chỉ sau 02 ngày làm việc (vi phạm nghiêm trọng nghĩa vụ báo trước 30-45 ngày). Người lao động này thắc mắc: <i>Liệu có được thanh toán tiền trợ cấp thôi việc cho những năm đã cống hiến không, và người sử dụng lao động có quyền yêu cầu bồi thường những khoản tiền cụ thể nào theo quy định pháp luật?</i>
+            </div>
+            <div>
+                <span class="context-pill">🎯 Mục Tiêu Đào Tạo CO5151</span>
+                <b>Kiểm chứng Truy Xuất Chủ Động Theo Độ Bất Định Token (FLARE):</b> 
+                Đối chiếu giữa truy xuất thụ động nạp toàn bộ (Naive RAG lãng phí chi phí) và truy xuất chủ động dự phóng từng câu (FLARE). Đối với nguyên tắc định tính chung (<i>"đơn phương trái luật thì không được trợ cấp thôi việc"</i>), mô hình sinh trực tiếp từ bộ nhớ tham số vì độ tự tin token cao ($\\min P(w) \\ge \\theta$). Khi chuyển sang các chế tài định lượng bắt buộc (<i>"bồi thường nửa tháng tiền lương", "tiền lương ngày không báo trước", "chi phí đào tạo theo Điều 40"</i>), độ tự tin giảm xuống dưới ngưỡng $\\theta$, kích hoạt truy xuất tại chỗ. Tiết kiệm từ <b>60% đến 80%</b> số lần gọi retrieval không cần thiết!
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.markdown("""
+        <div class="context-card">
+            <div class="context-card-title">
+                📌 <b>Real-World Dispute Context & Pedagogical Grounding (Case 3)</b>
+            </div>
+            <div style="margin-bottom: 6px;">
+                <span class="context-pill">🏛️ Unlawful Resignation Liability Dispute</span>
+                A senior software engineer abruptly submits a resignation letter and leaves after only 2 days of work (violating the mandatory 30-45 day statutory notice period). The employee inquires: <i>Are they still eligible to receive severance pay for prior service years, and what specific monetary liabilities can the employer lawfully claim?</i>
+            </div>
+            <div>
+                <span class="context-pill">🎯 CO5151 Seminar Objective</span>
+                <b>Demonstrating Forward-Looking Active Retrieval (FLARE):</b> 
+                Benchmarking upfront passive retrieval against on-demand active retrieval driven by token uncertainty. For high-confidence general principles (<i>"unlawful termination forfeits severance pay"</i>), the LLM confidence is high ($\\min P(w) \\ge \\theta$), generating directly from parametric weights with zero retrieval overhead. When formulating quantitative legal damages (<i>"half-month salary damages", "unnoticed days salary compensation", "training costs under Art 40"</i>), token confidence drops below threshold $\\theta$, triggering targeted retrieval. Bypasses <b>60% to 80%</b> of redundant retrieval calls!
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
     col_q4, col_btn4 = st.columns([3, 1])
     with col_q4:

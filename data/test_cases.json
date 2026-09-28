@@ -4,6 +4,10 @@
     "name": "Case 1: When Retrieval Hurts (Outdated BLLĐ 2012 vs Current BLLĐ 2019)",
     "question": "Thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp (người quản lý doanh nghiệp) theo pháp luật hiện hành là bao nhiêu ngày?",
     "focus": "Thực tế pháp lý: BLLĐ 2012 cũ tối đa chỉ 60 ngày; BLLĐ 2019 mới nâng lên 180 ngày. Khi retriever vớt phải điều luật 2012 cũ trong kho dữ liệu, Naive RAG bị lừa trả lời sai; Self-RAG nhận diện văn bản hết hiệu lực để bác bỏ.",
+    "real_world_context_vi": "Tranh chấp hợp đồng thử việc 05 tháng (150 ngày) đối với Tổng Giám đốc điều hành (CEO). Công đoàn khiếu nại viện dẫn luật cũ chỉ cho phép tối đa 60 ngày. Doanh nghiệp cần xác định tính hợp pháp.",
+    "real_world_context_en": "Dispute over a 5-month (150-day) probation contract for an incoming CEO. Labor union challenges based on repealed 2012 law capping at 60 days. HR must ascertain validity under current statute.",
+    "pedagogical_objective_vi": "Kiểm chứng hiện tượng 'When Retrieval Hurts' & Ngộ độc ngữ cảnh: Naive RAG tin tưởng mù quáng vào luật cũ đã hết hiệu lực; Self-RAG kích hoạt [IsREL] phát hiện văn bản bãi bỏ và bảo vệ sự thật 180 ngày.",
+    "pedagogical_objective_en": "Demonstrates 'When Retrieval Hurts' & Context Poisoning: Naive RAG succumbs to repealed distractor law; Self-RAG reflection critic [IsREL] actively prunes expired statutes.",
     "distractor_passage": {
       "article_id": "BLLD_2012_Dieu_27",
       "title": "Điều 27. Thời gian thử việc - Bộ luật Lao động số 10/2012/QH13 (Hết hiệu lực từ 01/01/2021)",
@@ -16,6 +20,10 @@
     "name": "Case 2: Global Question (Naive RAG vs GraphRAG Community Summary)",
     "question": "Tổng hợp toàn diện các trường hợp Người sử dụng lao động KHÔNG ĐƯỢC hoặc BỊ HẠN CHẾ quyền chấm dứt hợp đồng và xử lý kỷ luật đối với người lao động?",
     "focus": "Thực tế pháp lý: Quy định bảo vệ lao động nằm rải rác ở 2 chương khác nhau: Chương III về Đơn phương chấm dứt (Điều 37) và Chương VIII về Kỷ luật sa thải (Điều 122). Naive RAG vector search chỉ bốc được 1 chương; GraphRAG kết nối đồ thị gom đủ cả 2 chế định.",
+    "real_world_context_vi": "Giám đốc Nhân sự yêu cầu Phòng Pháp chế lập danh mục kiểm tra toàn diện trước đợt tái cấu trúc: Mọi trường hợp cấm đơn phương chấm dứt hoặc cấm kỷ luật sa thải để tránh rủi ro bồi thường theo Điều 41.",
+    "real_world_context_en": "HR Director requests compliance checklist before restructuring: Exhaustive review of all statutory bans on unilateral firing and disciplinary dismissal to avert massive liability under Article 41.",
+    "pedagogical_objective_vi": "Minh chứng Điểm Mù Cục Bộ (Local Blindness) của Vector Search: Quy định nằm ở Chương III (Điều 37) và Chương VIII (Điều 122). Naive RAG chỉ bốc được 1 chương; GraphRAG gom đủ 100% qua cầu nối đồ thị và Map-Reduce.",
+    "pedagogical_objective_en": "Exposes Vector Search Local Blindness across scattered chapters (Ch. III Art 37 vs Ch. VIII Art 122). GraphRAG achieves 100% comprehensive recall via cross-chapter bridges and hierarchical Map-Reduce.",
     "relevant_articles": ["Dieu_37", "Dieu_122", "Dieu_36"]
   },
   {
@@ -23,6 +31,10 @@
     "name": "Case 3: Active Retrieval / FLARE (Forward-Looking Retrieval on Demand)",
     "question": "Khi người lao động đơn phương chấm dứt hợp đồng lao động trái pháp luật thì có được nhận trợ cấp thôi việc không và phải bồi thường những khoản tiền cụ thể nào?",
     "focus": "Thực tế pháp lý: Nguyên tắc chung không được trợ cấp thì LLM tự nhớ được với độ tự tin cao; nhưng các định lượng chế tài chính xác (nửa tháng tiền lương, tiền lương ngày không báo trước, chi phí đào tạo theo Điều 40) kích hoạt truy xuất tại chỗ.",
+    "real_world_context_vi": "Nhân viên nghỉ việc đột ngột chỉ sau 02 ngày báo trước (vi phạm thời hạn luật định). Người này hỏi về trợ cấp thôi việc và các khoản tiền bồi thường thiệt hại phải gánh chịu.",
+    "real_world_context_en": "Employee abruptly walks out after only 2 days' notice. Questions whether severance pay is retained and what exact statutory compensation liabilities apply.",
+    "pedagogical_objective_vi": "Kiểm chứng Truy Xuất Chủ Động (FLARE): Tự do sinh từ bộ nhớ tham số cho mệnh đề nguyên tắc có độ tin cậy cao; chỉ kích hoạt truy xuất ngoài khi độ tự tin token giảm dưới ngưỡng theta đối với các định lượng chế tài.",
+    "pedagogical_objective_en": "Demonstrates Active Forward-Looking Retrieval (FLARE): Generates high-confidence qualitative principles parametrically; triggers targeted retrieval only when token confidence drops below theta on exact quantitative damages.",
     "relevant_articles": ["Dieu_40", "Dieu_46"]
   },
   {
@@ -30,6 +42,10 @@
     "name": "Case 4: Self-RAG Reflection Tokens Inspector ([Retrieve], [IsREL], [IsSUP])",
     "question": "Mức tiền lương thử việc tối thiểu bằng bao nhiêu phần trăm lương chính thức, và nếu người lao động tự ý bỏ việc 05 ngày liên tục thì bị xử lý ra sao?",
     "focus": "Thực tế pháp lý: Câu hỏi đa ý (multi-intent) đòi hỏi tích hợp Điều 26 (85% lương thử việc) và Điều 36/125 (đơn phương chấm dứt và sa thải do bỏ việc 05 ngày). Minh chứng vai trò lọc tài liệu rác của [IsREL] và xác thực chứng cứ [IsSUP].",
+    "real_world_context_vi": "Người lao động mới hỏi về chế độ lương thử việc tối thiểu (Điều 26) và hậu quả pháp lý kỷ luật nếu tự ý nghỉ việc 05 ngày liên tục vì lý do cá nhân (Điều 36 & 125).",
+    "real_world_context_en": "New recruit inquires regarding statutory minimum probation salary (Art 26) and legal consequences of 5 consecutive unauthorized absences (Arts 36 & 125).",
+    "pedagogical_objective_vi": "Bóc tách chi tiết 4 Token Tự Đánh Giá (Reflection Tokens) trong câu hỏi đa ý: [Retrieve] kích hoạt theo ngưỡng tau, [IsREL] lọc đúng cả 2 vế điều luật, [IsSUP] kiểm định chống ảo giác, [IsUSE] đánh giá độ hữu ích.",
+    "pedagogical_objective_en": "Detailed inspection of Self-RAG's 4 reflection tokens on a multi-intent query: [Retrieve] gate via tau, [IsREL] passage relevance critic, [IsSUP] citation attribution, [IsUSE] utility score.",
     "relevant_articles": ["Dieu_26", "Dieu_36", "Dieu_125"]
   }
 ]
