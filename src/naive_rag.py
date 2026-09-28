@@ -36,7 +36,7 @@ class NaiveRAGPipeline:
         """
         Baseline 2: Naive RAG.
         Simulates the two real-world failure modes of retrieval:
-        1. 'only_distractor': False Positive retrieval failure (Retriever bốc trúng văn bản gây nhiễu và các điều không liên quan, rớt mất Điều 25).
+        1. 'only_distractor': False Positive retrieval failure (Retriever truy xuất nhầm văn bản gây nhiễu và các điều không liên quan, bỏ sót Điều 25).
         2. 'mixed_conflict': Context chứa cả văn bản gây nhiễu (60 ngày) và Điều 25 (180 ngày).
         """
         raw_retrieved = self.retriever.search_hybrid_rrf(query, top_k=top_k)

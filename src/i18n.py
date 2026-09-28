@@ -111,7 +111,7 @@ I18N = {
     
     "vi": {
         "page_title": "Phòng Thí Nghiệm Đánh Giá RAG: Đối Chứng Các Cơ Chế Khoa Học",
-        "main_header": "CO5151: Đấu Trường Đánh Giá Các Cơ Chế RAG Khoa Học",
+        "main_header": "CO5151: So Sánh Thực Nghiệm Các Cơ Chế RAG Khoa Học",
         "sub_header": "Thực nghiệm đối chứng: Pure LLM vs. Naive RAG vs. Self-RAG vs. GraphRAG vs. FLARE trên dữ liệu thực tế Bộ luật Lao động 2019 (Luật 45/2019/QH14 đối chứng tài liệu lỗi thời Luật 10/2012/QH13).",
         "lang_switch_label": "Display Language / Ngôn ngữ hiển thị:",
         
@@ -135,23 +135,23 @@ I18N = {
         "master_guide_header": "Phân Tích Kiến Trúc Khoa Học & Cơ Chế Hoạt Động (ICLR, NeurIPS, EMNLP)",
         "master_guide_intro": "Phòng thực nghiệm này được thiết kế phục vụ môn học Cao học **CO5151 - Advanced Agentic AI** (Chủ đề S1-4: Retrieval-Augmented & Knowledge-Grounded Agents). Dưới đây là phân tích toán học và cơ chế chi tiết của từng phương pháp:",
         "master_guide_tbl_header": "PHÂN LOẠI 5 CƠ CHẾ RAG KHOA HỌC",
-        "paradigm_pure_title": "1. Pure Parametric LLM (Baseline Bộ nhớ tham số mô hình)",
+        "paradigm_pure_title": "1. Pure Parametric LLM (Baseline Bộ nhớ tham số)",
         "paradigm_pure_desc": "Sinh văn bản hoàn toàn dựa trên xác suất từ trọng số đã đóng băng, không tra cứu ngữ cảnh ngoài.",
         "paradigm_naive_title": "2. Naive RAG (Lewis et al., NeurIPS 2020)",
-        "paradigm_naive_desc": "Nối trực tiếp top-k các đoạn trích trong ngữ cảnh có độ tương đồng cosine cao nhất vào prompt mà không qua khâu tự đánh giá hay kiểm chứng.",
+        "paradigm_naive_desc": "Nối trực tiếp top-k các đoạn trích ngữ cảnh có độ tương đồng cosine cao nhất vào prompt mà không qua khâu thẩm định hay kiểm chứng.",
         "paradigm_self_title": "3. Self-RAG (Asai et al., ICLR 2024)",
-        "paradigm_self_desc": "Sử dụng vòng lặp tự đánh giá với các token đặc biệt ([Retrieve], [IsREL], [IsSUP], [IsUSE]) để chủ động phát hiện và loại bỏ tài liệu gây nhiễu hoặc sai lệch.",
+        "paradigm_self_desc": "Sử dụng vòng lặp kiểm định với các Reflection Critic tokens ([Retrieve], [IsREL], [IsSUP], [IsUSE]) để chủ động phát hiện và loại bỏ tài liệu gây nhiễu hoặc sai lệch.",
         "paradigm_graph_title": "4. GraphRAG (Edge et al., Microsoft Research 2024)",
         "paradigm_graph_desc": "Xây dựng đồ thị tri thức pháp lý, Phân cụm cộng đồng theo Modularity Q và chạy Tổng hợp phân cấp Map-Reduce để khắc phục Điểm mù cục bộ của Vector Search.",
         "paradigm_flare_title": "5. Active Retrieval / FLARE (Jiang et al., EMNLP 2023)",
         "paradigm_flare_desc": "Sinh nháp dự phóng từng câu liên tiếp. Chỉ kích hoạt truy xuất chủ động theo độ bất định token tại chỗ khi độ tự tin rơi xuống dưới ngưỡng θ, tiết kiệm tới 67% chi phí tính toán.",
 
         # Tabs
-        "tab1_title": "1. Đấu Trường 3 Cơ Chế (Tài Liệu Gây Nhiễu)",
-        "tab2_title": "2. GraphRAG vs. Naive (Điểm Mù Cục Bộ)",
-        "tab3_title": "3. Kính Hiển Vi Self-RAG (Reflection Inspector)",
-        "tab4_title": "4. Truy Xuất Chủ Động (FLARE)",
-        "tab5_title": "5. Topo Dữ Liệu & Đồ Thị Tri Thức",
+        "tab1_title": "1. When Retrieval Hurts (Đối Chứng Thực Nghiệm)",
+        "tab2_title": "2. GraphRAG vs. Naive RAG (Điểm Mù Cục Bộ)",
+        "tab3_title": "3. Self-RAG (Reflection Inspector)",
+        "tab4_title": "4. FLARE (Truy Xuất Chủ Động)",
+        "tab5_title": "5. Corpus Explorer & Không Gian Vector",
 
         # Tab 1
         "tab1_header": "Thực Nghiệm Đối Chứng: Pure LLM vs. Naive RAG vs. Self-RAG",
@@ -183,10 +183,10 @@ I18N = {
 
         # Tab 2
         "tab2_header": "GraphRAG Phân Cấp vs. Naive RAG (Khắc Phục Điểm Mù Cục Bộ Của Vector Search)",
-        "tab2_desc": "**Cơ sở khoa học:** Naive RAG chỉ bốc được top-k các đoạn trích trong ngữ cảnh gần nhất, dẫn đến hiện tượng **Điểm mù cục bộ của Vector Search** khi gặp câu hỏi tổng hợp toàn diện trải dài qua nhiều chương luật. GraphRAG phân hoạch đồ thị thành các cụm cộng đồng thông qua **Phân cụm cộng đồng theo Modularity ($Q$)** và chạy **Tổng hợp phân cấp Map-Reduce** để bao quát 100% ngữ liệu.",
+        "tab2_desc": "**Cơ sở khoa học:** Naive RAG chỉ truy xuất top-k các đoạn trích trong ngữ cảnh gần nhất, dẫn đến hiện tượng **Điểm mù cục bộ của Vector Search** khi gặp câu hỏi tổng hợp toàn diện trải dài qua nhiều chương luật. GraphRAG phân hoạch đồ thị thành các cụm cộng đồng thông qua **Phân cụm cộng đồng theo Modularity ($Q$)** và chạy **Tổng hợp phân cấp Map-Reduce** để bao quát 100% ngữ liệu.",
         "tab2_q_label": "Câu hỏi tổng hợp toàn diện trải dài qua các chương luật lao động:",
         "tab2_naive_col": "Naive RAG (Điểm Mù Đoạn Cục Bộ)",
-        "tab2_naive_caption": "Lưu ý: Naive RAG chỉ bốc được 1-2 điều luật cục bộ, bỏ sót hoàn toàn các chế định quan trọng khác trong bộ luật.",
+        "tab2_naive_caption": "Lưu ý: Naive RAG chỉ truy xuất được 1-2 điều luật cục bộ, bỏ sót hoàn toàn các chế định quan trọng khác trong bộ luật.",
         "tab2_graph_col": "GraphRAG (Tổng Hợp Toàn Cục Phân Cấp)",
         "tab2_map_summaries_title": "Báo Cáo Tóm Tắt Từng Cụm Cộng Đồng (Pha Map):",
 

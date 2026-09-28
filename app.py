@@ -483,7 +483,7 @@ with st.sidebar:
     ctx_text = selected_case.get(f"real_world_context_{lang}", selected_case["focus"])
     obj_text = selected_case.get(f"pedagogical_objective_{lang}", selected_case["focus"])
     st.caption(f"🏛️ **{'Tình huống thực tế:' if lang == 'vi' else 'Real-world Context:'}** {ctx_text}")
-    st.caption(f"🎯 **{'Mục tiêu thực nghiệm (Pedagogical Objective):' if lang == 'vi' else 'Pedagogical Objective:'}** {obj_text}")
+    st.caption(f"🎯 **{'Mục tiêu thực nghiệm:' if lang == 'vi' else 'Experimental Objective:'}** {obj_text}")
     
     preset_tab_map = {
         0: ("Tab 1: When Retrieval Hurts", 1),
@@ -614,16 +614,16 @@ with tab1:
         st.markdown("""
         <div class="context-card">
             <div class="context-card-title">
-                📌 <b>Bối Cảnh Thực Tế & Mục Tiêu Thử Nghiệm (Case Study & Pedagogical Objective - Case 1)</b>
+                📌 <b>Bối Cảnh Thực Tế & Mục Tiêu Khảo Nghiệm (Case Study & Experimental Objective - Case 1)</b>
             </div>
             <div style="margin-bottom: 6px;">
                 <span class="context-pill">🏛️ Tình Huống Thực Tế Doanh Nghiệp</span>
                 Một tập đoàn ký hợp đồng thử việc <b>05 tháng (150 ngày)</b> với một Tổng Giám đốc điều hành (CEO). Sau đó công đoàn nội bộ khiếu nại thỏa thuận này vi phạm pháp luật, viện dẫn Bộ luật Lao động 2012 cũ (vốn giới hạn tối đa chỉ 60 ngày đối với mọi chức danh yêu cầu trình độ đại học trở lên). Doanh nghiệp cần xác định chính xác thời hạn 150 ngày này có hợp pháp theo quy định hiện hành hay không.
             </div>
             <div>
-                <span class="context-pill">🎯 Mục Tiêu Đào Tạo CO5151</span>
+                <span class="context-pill">🎯 Mục Tiêu Khảo Nghiệm CO5151</span>
                 <b>Kiểm chứng hiện tượng "When Retrieval Hurts" & Ngộ độc ngữ cảnh (Context Poisoning):</b> 
-                Khi retriever bốc phải điều luật <i>BLLĐ 2012 cũ đã hết hiệu lực</i> (do trùng khớp từ khóa cao - False Positive), <b>Naive RAG</b> tin tưởng mù quáng vào tài liệu nạp vào và đưa ra kết luận sai (khẳng định tối đa 60 ngày). Ngược lại, <b>Self-RAG</b> kích hoạt Reflection Critic token <code>[IsREL]</code> (thẩm định tính liên quan) phát hiện văn bản bãi bỏ để loại trừ, bảo toàn câu trả lời chính xác <b>180 ngày</b> (Khoản 1 Điều 25 BLLĐ 2019).
+                Khi retriever truy xuất phải điều luật <i>BLLĐ 2012 cũ đã hết hiệu lực</i> (do trùng khớp từ khóa cao - False Positive), <b>Naive RAG</b> tiếp nhận thụ động tài liệu nạp vào mà không qua khâu thẩm định hiệu lực văn bản, dẫn đến kết luận sai (khẳng định tối đa 60 ngày). Ngược lại, <b>Self-RAG</b> kích hoạt Reflection Critic token <code>[IsREL]</code> (thẩm định tính liên quan) phát hiện văn bản bãi bỏ để loại trừ, bảo toàn câu trả lời chính xác <b>180 ngày</b> (Khoản 1 Điều 25 BLLĐ 2019).
             </div>
             <div style="margin-top: 8px; padding-top: 6px; border-top: 1px dashed #cbd5e1; font-size: 0.84rem; color: #475569;">
                 ⏱️ <b>Mốc Thời Gian & Hiệu Lực Chuẩn:</b> Bộ luật Lao động 2019 (Luật số 45/2019/QH14) có hiệu lực từ ngày <b>01/01/2021 đến nay (2026)</b> và là Bộ luật Lao động <b>hiện hành duy nhất và mới nhất</b> tại Việt Nam (không có bộ luật nào mới hơn). Bộ luật Lao động 2012 cũ đã chính thức <b>hết hiệu lực từ 01/01/2021</b>.
@@ -672,7 +672,7 @@ with tab1:
         dist_mode = st.radio(
             dist_mode_label,
             options=["only_distractor", "mixed_conflict"],
-            format_func=lambda x: ("Chế độ 1: Dương tính giả (Chỉ bốc được BLLĐ 2012 lỗi thời; thiếu Điều 25/2019)" if lang == "vi" else "Mode 1: False Positive (Retrieves only repealed 2012 Code; Article 25/2019 omitted)") if x == "only_distractor" else ("Chế độ 2: Xung đột ngữ cảnh (Ngữ cảnh chứa cả luật 2012 và luật 2019)" if lang == "vi" else "Mode 2: Contextual Conflict (Context contains both 2012 and 2019 statutes)"),
+            format_func=lambda x: ("Chế độ 1: Dương tính giả (Chỉ truy xuất BLLĐ 2012 lỗi thời; thiếu Điều 25/2019)" if lang == "vi" else "Mode 1: False Positive (Retrieves only repealed 2012 Code; Article 25/2019 omitted)") if x == "only_distractor" else ("Chế độ 2: Xung đột ngữ cảnh (Ngữ cảnh chứa cả luật 2012 và luật 2019)" if lang == "vi" else "Mode 2: Contextual Conflict (Context contains both 2012 and 2019 statutes)"),
             horizontal=False,
             disabled=not inject_distractor,
         )
@@ -724,13 +724,13 @@ with tab1:
 
     if not inject_distractor:
         scenario_key = "clean_context"
-        scenario_desc = "Ngữ Cảnh Sạch (Không Bẫy Nhiễu)" if lang == "vi" else "Clean Context (No Distractor)"
+        scenario_desc = "Ngữ Cảnh Chuẩn (Không Chèn Nhiễu)" if lang == "vi" else "Clean Context (No Distractor)"
     elif dist_mode == "mixed_conflict":
         scenario_key = "mixed_conflict"
         scenario_desc = "Xung Đột Ngữ Cảnh (Chứa Cả Luật 2012 và 2019)" if lang == "vi" else "Contextual Conflict (2012 & 2019 Statutes)"
     else:
         scenario_key = "only_distractor"
-        scenario_desc = "Dương Tính Giả (Chỉ Bốc BLLĐ 2012 Hết Hiệu Lực)" if lang == "vi" else "False Positive (Repealed 2012 Only)"
+        scenario_desc = "Dương Tính Giả (Chỉ Truy Xuất BLLĐ 2012 Hết Hiệu Lực)" if lang == "vi" else "False Positive (Repealed 2012 Only)"
 
     if st.session_state.get("tab1_is_live") and "tab1_live" in st.session_state:
         tab1_data = st.session_state["tab1_live"]
@@ -911,9 +911,9 @@ with tab1:
         if lang == "vi":
             st.markdown("""
             #### Vì sao tương đồng ngữ nghĩa (Semantic Similarity) không đồng nghĩa với chân lý pháp lý:
-            - **Cái bẫy tương đồng ngữ nghĩa:** Điều 27 Bộ luật Lao động 2012 (hết hiệu lực từ 01/01/2021) có độ tương đồng cosine dense BGE-M3 rất cao (**0.64 – 0.75**) đối với các truy vấn về thử việc, do chứa trùng trường từ vựng (*thời gian thử việc*, *hợp đồng*, *ngày*, *chức danh nghề nghiệp*).
-            - **Thất bại của Naive RAG (When Retrieval Hurts):** Dưới thiết kế kiểm thử xung đột tri thức có kiểm soát (*Controlled In-Context Conflict Stress Test* theo Neeman et al. 2023 & Wu et al. 2024), do chỉ nối chuỗi các đoạn văn bản mà không tự phản biện, mô hình LLM bị tài liệu bãi bỏ dẫn dụ và kết luận sai thành tối đa **60 ngày**.
-            - **Lớp phòng vệ của Self-RAG:** Bộ lọc tài liệu liên quan `[IsREL]` kiểm định tính hợp lệ và thời hiệu, phát hiện văn bản 2012 đã hết hiệu lực, loại bỏ khỏi ngữ cảnh để bảo vệ chân lý pháp lý (180 ngày theo Điều 25 BLLĐ 2019).
+            - **Giới hạn của tương đồng ngữ nghĩa (Semantic Similarity Trap):** Điều 27 Bộ luật Lao động 2012 (hết hiệu lực từ 01/01/2021) có độ tương đồng cosine dense BGE-M3 rất cao (**0.64 – 0.75**) đối với các truy vấn về thử việc, do chứa trùng trường từ vựng (*thời gian thử việc*, *hợp đồng*, *ngày*, *chức danh nghề nghiệp*).
+            - **Thất bại của Naive RAG (When Retrieval Hurts):** Dưới thiết kế kiểm thử xung đột tri thức có kiểm soát (*Controlled In-Context Conflict Stress Test* theo Neeman et al. 2023 & Wu et al. 2024), do chỉ ghép nối thụ động các đoạn văn bản mà không qua khâu thẩm định hiệu lực, mô hình LLM bị tài liệu bãi bỏ gây nhiễu và kết luận sai thành tối đa **60 ngày**.
+            - **Lớp phòng vệ của Self-RAG:** Reflection Critic token `[IsREL]` kiểm định tính hợp lệ và thời hiệu, phát hiện văn bản 2012 đã hết hiệu lực, loại bỏ khỏi ngữ cảnh để bảo toàn chân lý pháp lý (180 ngày theo Điều 25 BLLĐ 2019).
             """)
         else:
             st.markdown("""
@@ -1047,16 +1047,16 @@ with tab2:
         st.markdown("""
         <div class="context-card">
             <div class="context-card-title">
-                📌 <b>Bối Cảnh Thực Tế & Mục Tiêu Thử Nghiệm (Case Study & Pedagogical Objective - Case 2)</b>
+                📌 <b>Bối Cảnh Thực Tế & Mục Tiêu Khảo Nghiệm (Case Study & Experimental Objective - Case 2)</b>
             </div>
             <div style="margin-bottom: 6px;">
                 <span class="context-pill">🏛️ Nhu Cầu Tuân Thủ Doanh Nghiệp</span>
                 Giám đốc Nhân sự (HR Director) chuẩn bị cho kế hoạch tái cấu trúc nhân sự quy mô lớn và yêu cầu Phòng Pháp chế: <i>"Lập danh mục rà soát toàn diện tất cả các trường hợp công ty KHÔNG ĐƯỢC hoặc BỊ HẠN CHẾ quyền đơn phương chấm dứt hợp đồng và kỷ luật sa thải người lao động?"</i> Nếu công ty sơ suất sa thải nhân sự nữ đang mang thai hoặc người lao động đang điều trị tai nạn lao động, công ty sẽ đối mặt với rủi ro bồi thường thiệt hại rất lớn theo Điều 41.
             </div>
             <div>
-                <span class="context-pill">🎯 Mục Tiêu Đào Tạo CO5151</span>
+                <span class="context-pill">🎯 Mục Tiêu Khảo Nghiệm CO5151</span>
                 <b>Kiểm chứng Điểm Mù Cục Bộ (Local Blindness) của Vector Search:</b> 
-                Trong Bộ luật Lao động 2019, các chế định bảo vệ lao động nằm rải rác ở hai chương hoàn toàn tách biệt: <b>Chương III</b> (Điều 37: Hạn chế quyền đơn phương chấm dứt khi ốm đau, thai sản) và <b>Chương VIII</b> (Điều 122: Nguyên tắc cấm kỷ luật sa thải lao động mang thai, nuôi con nhỏ dưới 12 tháng). <b>Naive RAG</b> chỉ bốc được Điều 37 và bỏ sót Điều 122 do khoảng cách embedding xa. <b>GraphRAG</b> thông qua cạnh dẫn chiếu liên chương và tổng hợp phân cấp Map-Reduce bao quát đủ 100% hai chế định.
+                Trong Bộ luật Lao động 2019, các chế định bảo vệ lao động nằm rải rác ở hai chương hoàn toàn tách biệt: <b>Chương III</b> (Điều 37: Hạn chế quyền đơn phương chấm dứt khi ốm đau, thai sản) và <b>Chương VIII</b> (Điều 122: Nguyên tắc cấm kỷ luật sa thải lao động mang thai, nuôi con nhỏ dưới 12 tháng). <b>Naive RAG</b> chỉ truy xuất được Điều 37 và bỏ sót Điều 122 do khoảng cách embedding xa. <b>GraphRAG</b> thông qua cạnh liên kết tri thức liên chương và tổng hợp phân cấp Map-Reduce bao quát đầy đủ 100% cả hai chế định.
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -1198,7 +1198,7 @@ with tab2:
         if lang == "vi":
             st.markdown("""
             #### Cách GraphRAG Khắc Phục 'Điểm Mù Cục Bộ' (Edge et al., Microsoft Research 2024):
-            Phương pháp truyền thống **Naive RAG** chỉ truy xuất các đoạn top-k gần nhất trong không gian embedding. Khi người dùng đặt câu hỏi tổng hợp mang tính toàn cục (ví dụ: *"Tổng hợp các trường hợp Người sử dụng lao động không được chấm dứt hợp đồng và xử lý kỷ luật"*), Naive RAG bộc lộ **Điểm mù cục bộ**—nó chỉ bốc được 2-3 điều thuộc Chương III, bỏ sót 100% các điều luật liên quan tại Chương VIII!
+            Phương pháp truyền thống **Naive RAG** chỉ truy xuất các đoạn top-k gần nhất trong không gian embedding. Khi người dùng đặt câu hỏi tổng hợp mang tính toàn cục (ví dụ: *"Tổng hợp các trường hợp Người sử dụng lao động không được chấm dứt hợp đồng và xử lý kỷ luật"*), Naive RAG bộc lộ **Điểm mù cục bộ**—hệ thống chỉ truy xuất được 2-3 điều thuộc Chương III, bỏ sót hoàn toàn các điều luật liên quan tại Chương VIII!
 
             **Thuật toán GraphRAG:**
             1. **Xây dựng Đồ thị Tri thức:** Trích xuất thực thể và các dẫn chiếu chéo thành đồ thị $G = (V, E)$.
@@ -1251,15 +1251,15 @@ with tab3:
         st.markdown("""
         <div class="context-card">
             <div class="context-card-title">
-                📌 <b>Bối Cảnh Thực Tế & Mục Tiêu Thử Nghiệm (Case Study & Pedagogical Objective - Case 4)</b>
+                📌 <b>Bối Cảnh Thực Tế & Mục Tiêu Khảo Nghiệm (Case Study & Experimental Objective - Case 4)</b>
             </div>
             <div style="margin-bottom: 6px;">
                 <span class="context-pill">🏛️ Tình Huống Pháp Lý Đa Ý (Multi-Intent)</span>
                 Một nhân sự mới ký hợp đồng thử việc đặt ra 2 câu hỏi pháp lý cốt lõi: <i>(1) Tiền lương thử việc tối thiểu pháp luật bắt buộc bằng bao nhiêu phần trăm lương chính thức?</i> và <i>(2) Nếu trong quá trình làm việc vì lý do cá nhân mà tự ý bỏ việc 05 ngày làm việc liên tục không báo trước thì công ty có quyền đơn phương chấm dứt và sa thải ngay không?</i>
             </div>
             <div>
-                <span class="context-pill">🎯 Mục Tiêu Đào Tạo CO5151</span>
-                <b>Mổ xẻ cơ chế điều phối của 4 Reflection Tokens (Critic Tokens):</b> 
+                <span class="context-pill">🎯 Mục Tiêu Khảo Nghiệm CO5151</span>
+                <b>Phân tích cơ chế điều phối của 4 Reflection Tokens (Critic Tokens):</b> 
                 Khảo sát quy trình kiểm định đa tầng của Self-RAG: <code>[Retrieve]</code> (kích hoạt tra cứu ngoài theo ngưỡng $\\tau$), <code>[IsREL]</code> (thẩm định tính liên quan của từng đoạn văn bản đối với cả 2 ý: Điều 26 về lương thử việc 85% và Điều 36/125 về tự ý bỏ việc 05 ngày), <code>[IsSUP]</code> (kiểm định căn cứ trích dẫn để chống ảo giác), và <code>[IsUSE]</code> (đánh giá mức độ hữu ích thực tế của câu trả lời).
             </div>
         </div>
@@ -1297,10 +1297,10 @@ with tab3:
     col_sc3_1, col_sc3_2 = st.columns([2, 1])
     with col_sc3_1:
         tab3_scenario_choice = st.selectbox(
-            "Chọn Kịch Bản Kiểm Định Token Tự Đánh Giá:" if lang == "vi" else "Select Reflection Token Benchmark Scenario:",
+            "Chọn Kịch Bản Kiểm Định Reflection Tokens:" if lang == "vi" else "Select Reflection Token Benchmark Scenario:",
             options=[
                 "case_3: Câu hỏi đa ý (Lương thử việc Điều 26 & Sa thải bỏ việc 05 ngày Điều 36, 125)" if lang == "vi" else "case_3: Multi-intent (Wage % Art 26 & Dismissal on 5-day Absence Arts 36, 125)",
-                "case_0: Bóc tách loại trừ tài liệu gây nhiễu (Điều 25/2019 vs BLLĐ 2012 hết hiệu lực)" if lang == "vi" else "case_0: Distractor Pruning (Labor Code 2019 vs Repealed 2012)",
+                "case_0: Loại trừ tài liệu gây nhiễu và hết hiệu lực (Điều 25/2019 vs BLLĐ 2012 hết hiệu lực)" if lang == "vi" else "case_0: Distractor Pruning (Labor Code 2019 vs Repealed 2012)",
             ],
             index=0,
             key="tab3_scenario_sel",
@@ -1322,7 +1322,7 @@ with tab3:
         if cur_provider == "huggingface" and (not cur_api_key or cur_api_key.strip() in ("", "EMPTY")):
             request_token_ui("tab3")
         else:
-            status_t3_title = "Đang Kiểm Định Token Tự Đánh Giá Self-RAG Trực Tiếp..." if lang == "vi" else "Inspecting Self-RAG Reflection Tokens Live..."
+            status_t3_title = "Đang Kiểm Định Reflection Tokens (Self-RAG) Trực Tiếp..." if lang == "vi" else "Inspecting Self-RAG Reflection Tokens Live..."
             with st.status(status_t3_title, expanded=True) as status_box:
                 st.write("Đang đánh giá Cổng Quyết Định [Retrieve]..." if lang == "vi" else "Evaluating Reflection Gate [Retrieve]...")
                 st.write("Đang chạy bộ lọc tài liệu liên quan [IsREL]..." if lang == "vi" else "Executing passage critic [IsREL] across candidate chunks...")
@@ -1498,14 +1498,14 @@ with tab4:
         st.markdown("""
         <div class="context-card">
             <div class="context-card-title">
-                📌 <b>Bối Cảnh Thực Tế & Mục Tiêu Thử Nghiệm (Case Study & Pedagogical Objective - Case 3)</b>
+                📌 <b>Bối Cảnh Thực Tế & Mục Tiêu Khảo Nghiệm (Case Study & Experimental Objective - Case 3)</b>
             </div>
             <div style="margin-bottom: 6px;">
                 <span class="context-pill">🏛️ Tranh Chấp Nghĩa Vụ Đơn Phương Trái Luật</span>
                 Một kỹ sư phần mềm cao cấp nộp đơn xin thôi việc và tự ý nghỉ việc chỉ sau 02 ngày làm việc (vi phạm nghiêm trọng nghĩa vụ báo trước 30-45 ngày). Người lao động này thắc mắc: <i>Liệu có được thanh toán tiền trợ cấp thôi việc cho những năm đã cống hiến không, và người sử dụng lao động có quyền yêu cầu bồi thường những khoản tiền cụ thể nào theo quy định pháp luật?</i>
             </div>
             <div>
-                <span class="context-pill">🎯 Mục Tiêu Đào Tạo CO5151</span>
+                <span class="context-pill">🎯 Mục Tiêu Khảo Nghiệm CO5151</span>
                 <b>Kiểm chứng Truy Xuất Chủ Động Theo Độ Bất Định Token (FLARE):</b> 
                 Đối chiếu giữa truy xuất thụ động nạp toàn bộ (Naive RAG lãng phí chi phí) và truy xuất chủ động dự phóng từng câu (FLARE). Đối với nguyên tắc định tính chung (<i>"đơn phương trái luật thì không được trợ cấp thôi việc"</i>), mô hình sinh trực tiếp từ bộ nhớ tham số vì độ tự tin token cao ($\\min P(w) \\ge \\theta$). Khi chuyển sang các chế tài định lượng bắt buộc (<i>"bồi thường nửa tháng tiền lương", "tiền lương ngày không báo trước", "chi phí đào tạo theo Điều 40"</i>), độ tự tin giảm xuống dưới ngưỡng $\\theta$, kích hoạt truy xuất tại chỗ. Tiết kiệm từ <b>60% đến 80%</b> số lần gọi retrieval không cần thiết!
             </div>
@@ -1858,7 +1858,7 @@ with tab5:
         if lang == "vi":
             st.markdown("""
             **Trả lời:**
-            - **Vấn đề Điểm Mù Cục Bộ:** Đối với câu hỏi tổng hợp toàn diện (ví dụ: "Tổng hợp các trường hợp người lao động bị sa thải hoặc người sử dụng lao động bị hạn chế quyền chấm dứt"), Naive RAG chỉ bốc được 3-5 đoạn cục bộ, bỏ sót 80% điều luật liên quan nằm rải rác ở các chương khác.
+            - **Vấn đề Điểm Mù Cục Bộ:** Đối với câu hỏi tổng hợp toàn diện (ví dụ: "Tổng hợp các trường hợp người lao động bị sa thải hoặc người sử dụng lao động bị hạn chế quyền chấm dứt"), Naive RAG chỉ truy xuất được 3-5 đoạn cục bộ, bỏ sót phần lớn điều luật liên quan nằm rải rác ở các chương khác.
             - **Giải pháp GraphRAG (Microsoft Research 2024):**
               1. Xây dựng đồ thị liên kết thực thể pháp lý.
               2. Áp dụng thuật toán **Tối đa hóa Modularity (Newman, 2004)** để phân cụm các điều luật thành các cộng đồng chủ đề.

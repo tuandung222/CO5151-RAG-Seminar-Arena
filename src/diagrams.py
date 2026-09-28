@@ -155,8 +155,8 @@ DIAGRAMS_VI = {
     "naive_rag": """
 flowchart LR
     Q["Câu hỏi của Người dùng"] --> RET["Bộ truy xuất lai<br/>(BM25 / BGE-M3)"]
-    RET --> CHUNKS["Top-k Đoạn văn bản bốc được<br/>(Ngữ cảnh cục bộ)"]
-    CHUNKS --> CONCAT["Prompt nối ngữ cảnh thô<br/>(Không tự đánh giá)"]
+    RET --> CHUNKS["Top-k Đoạn văn bản truy xuất<br/>(Ngữ cảnh cục bộ)"]
+    CHUNKS --> CONCAT["Prompt ghép nối ngữ cảnh thô<br/>(Không có cơ chế thẩm định)"]
     Q --> CONCAT
     CONCAT --> LLM["Mô hình LLM sinh phản hồi<br/>(Instruct Model)"]
     LLM --> ANS["Câu trả lời chưa kiểm định<br/>(Dễ bị nhiễm độc ngữ cảnh)"]
