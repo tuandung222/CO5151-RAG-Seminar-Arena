@@ -51,7 +51,7 @@ I18N = {
         # Tab 1
         "tab1_header": "Comparative Benchmark: Pure LLM vs. Naive RAG vs. Self-RAG",
         "tab1_desc": "**Scientific Premise:** Naive RAG uncritically accepts retrieved chunks based solely on semantic embedding similarity. When outdated or repealed statutory passages enter the context, Naive RAG gets **poisoned** and produces authoritative false legal advice. Self-RAG uses an active `[IsREL]` critic to detect and prune expired statutes.",
-        "tab1_q_label": "Probing Question (Executive Probation Limit under Current Law):",
+        "tab1_q_label": "🔍 Benchmark Evaluation Query (Executive Probation Limit under Active Law):",
         "tab1_btn_run": "Run Live Verification Benchmark",
         "status_cached_label": "Pre-computed Gold Run (Cached)",
         "status_live_label": "Live Cluster Execution (Verified)",
@@ -79,7 +79,7 @@ I18N = {
         # Tab 2
         "tab2_header": "Hierarchical GraphRAG vs. Naive RAG (Overcoming Local Blindness)",
         "tab2_desc": "**Scientific Premise:** Naive RAG retrieves only top-k nearest semantic chunks, suffering from **Local Blindness** on holistic synthesis queries across multiple legal chapters. GraphRAG partitions the statutory corpus into thematic communities via **Newman's Modularity ($Q$)** and executes a **Hierarchical Map-Reduce** to achieve 100% comprehensive coverage.",
-        "tab2_q_label": "Global Synthesis Question across Labor Code Chapters:",
+        "tab2_q_label": "🔍 Global Synthesis Query (Comprehensive statutory protections across chapters):",
         "tab2_naive_col": "Naive RAG (Local Chunk Blindness)",
         "tab2_naive_caption": "Notice how Naive RAG captures only 1-2 local articles, missing broader statutory provisions across the corpus.",
         "tab2_graph_col": "GraphRAG (Hierarchical Global Synthesis)",
@@ -88,7 +88,7 @@ I18N = {
         # Tab 3
         "tab3_header": "Dissection of Self-RAG Special Reflection Tokens",
         "tab3_desc": "**Scientific Premise:** Self-RAG (Asai et al., ICLR 2024) introduces four discrete reflection tokens to control the entire generation lifecycle: `[Retrieve]`, `[IsREL]` (Relevance), `[IsSUP]` (Support/Attribution), and `[IsUSE]` (Utility).",
-        "tab3_q_label": "Probe Question for Reflection Gate:",
+        "tab3_q_label": "🔍 Multi-Intent Query (Evaluating Self-RAG Reflection Tokens Critic Loop):",
         "tab3_gate_title": "Passage Filtering Gate [IsREL]:",
         "tab3_verif_title": "Attribution & Grounding Verification [IsSUP]:",
         "tab3_ans_title": "Final Grounded Response:",
@@ -97,7 +97,7 @@ I18N = {
         # Tab 4
         "tab4_header": "Forward-Looking Active Retrieval (FLARE on-demand)",
         "tab4_desc": "**Scientific Premise:** Instead of passive retrieval upfront, FLARE (Jiang et al., EMNLP 2023) drafts sentence-by-sentence. When generation confidence drops below a threshold ($Confidence < \\theta$) or factual claims emerge, the system actively issues a targeted search query and rewrites the sentence with exact citations.",
-        "tab4_q_label": "Multi-Faceted Statutory Probe Question:",
+        "tab4_q_label": "🔍 Statutory Liability Query (Evaluating FLARE Active Forward-Looking Retrieval):",
         "tab4_ans_title": "Final Synthesized Output:",
         "tab4_deepdive_title": "FLARE Uncertainty Trigger & Token Confidence Math",
 
@@ -156,7 +156,7 @@ I18N = {
         # Tab 1
         "tab1_header": "Thực Nghiệm Đối Chứng: Pure LLM vs. Naive RAG vs. Self-RAG",
         "tab1_desc": "**Cơ sở khoa học:** Naive RAG tiếp nhận tài liệu thụ động chỉ dựa trên độ tương đồng ngữ nghĩa. Khi kho dữ liệu chứa văn bản hết hiệu lực hoặc tài liệu gây nhiễu, Naive RAG bị **Context Poisoning (Nhiễm độc ngữ cảnh)** và đưa ra kết luận hoàn toàn sai lệch. Self-RAG sử dụng Reflection Critic token `[IsREL]` để phát hiện và loại trừ tài liệu gây nhiễu hoặc hết hiệu lực.",
-        "tab1_q_label": "Câu hỏi kiểm chứng (Thời gian thử việc tối đa của Giám đốc điều hành theo luật hiện hành):",
+        "tab1_q_label": "🔍 Câu Hỏi Thực Nghiệm Đối Chứng (Thời hạn thử việc CEO theo luật hiện hành):",
         "tab1_btn_run": "Chạy Thực Nghiệm Kiểm Chứng Trực Tiếp",
         "status_cached_label": "Kết Quả Tiền Tính Toán (Cached)",
         "status_live_label": "Thực Nghiệm Cluster Trực Tiếp (Verified)",
@@ -184,7 +184,7 @@ I18N = {
         # Tab 2
         "tab2_header": "GraphRAG Phân Cấp vs. Naive RAG (Khắc Phục Điểm Mù Cục Bộ Của Vector Search)",
         "tab2_desc": "**Cơ sở khoa học:** Naive RAG chỉ truy xuất top-k các đoạn trích trong ngữ cảnh gần nhất, dẫn đến hiện tượng **Điểm mù cục bộ (Local Blindness)** của Vector Search khi gặp câu hỏi tổng hợp toàn diện trải dài qua nhiều chương luật. GraphRAG phân hoạch đồ thị thành các cụm cộng đồng thông qua **Phân cụm cộng đồng theo Modularity ($Q$)** và chạy **Tổng hợp phân cấp Map-Reduce** để bao quát 100% ngữ liệu.",
-        "tab2_q_label": "Câu hỏi tổng hợp toàn diện trải dài qua các chương luật lao động:",
+        "tab2_q_label": "🔍 Câu Hỏi Thực Nghiệm Toàn Cục (Tổng hợp chế định bảo vệ lao động liên chương):",
         "tab2_naive_col": "Naive RAG (Điểm Mù Đoạn Cục Bộ)",
         "tab2_naive_caption": "Lưu ý: Naive RAG chỉ truy xuất được 1-2 điều luật cục bộ, bỏ sót hoàn toàn các chế định quan trọng khác trong bộ luật.",
         "tab2_graph_col": "GraphRAG (Tổng Hợp Toàn Cục Phân Cấp)",
@@ -193,7 +193,7 @@ I18N = {
         # Tab 3
         "tab3_header": "Bóc Tách Chi Tiết Reflection Tokens Của Self-RAG",
         "tab3_desc": "**Cơ sở khoa học:** Self-RAG (Asai et al., ICLR 2024) đưa vào 4 Reflection Tokens (Critic Tokens) chuyên biệt để kiểm soát toàn bộ chu trình sinh: `[Retrieve]` (Cổng truy xuất), `[IsREL]` (Relevance Critic / Thẩm định tính liên quan), `[IsSUP]` (Grounding Critic / Kiểm định căn cứ trích dẫn), và `[IsUSE]` (Utility Critic / Đánh giá mức độ hữu dụng).",
-        "tab3_q_label": "Câu hỏi đa ý kiểm chứng Cổng truy xuất:",
+        "tab3_q_label": "🔍 Câu Hỏi Thực Nghiệm Đa Ý (Kiểm định chu trình Reflection Tokens):",
         "tab3_gate_title": "Thẩm định tính liên quan [IsREL] (Relevance Critic):",
         "tab3_verif_title": "Kiểm định căn cứ trích dẫn [IsSUP] (Grounding Critic):",
         "tab3_ans_title": "Câu Trả Lời Xác Thực Cuối Cùng:",
@@ -202,7 +202,7 @@ I18N = {
         # Tab 4
         "tab4_header": "Truy Xuất Chủ Động Theo Nhu Cầu (FLARE Active Retrieval)",
         "tab4_desc": "**Cơ sở khoa học:** Thay vì truy xuất thụ động ngay từ đầu, FLARE (Jiang et al., EMNLP 2023) sinh nháp dự phóng từng câu một. Khi độ tự tin của câu rơi xuống dưới ngưỡng ($Confidence < \\theta$), hệ thống mới kích hoạt truy xuất chủ động theo độ bất định của token (Token Uncertainty) đúng trọng tâm và viết lại câu chuẩn xác theo điều luật.",
-        "tab4_q_label": "Câu hỏi đa khía cạnh về chế tài pháp lý:",
+        "tab4_q_label": "🔍 Câu Hỏi Thực Nghiệm Chế Tài (Kích hoạt truy xuất chủ động FLARE):",
         "tab4_ans_title": "Kết Quả Tổng Hợp Hoàn Chỉnh:",
         "tab4_deepdive_title": "Cơ Chế Kích Hoạt Độ Không Chắc Chắn & Toán Học Tự Tin Token Của FLARE",
 

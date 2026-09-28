@@ -187,6 +187,67 @@ st.markdown("""
         display: inline-block;
         margin-right: 6px;
     }
+    /* High-Visibility Executive Query Box Styling */
+    section[data-testid="stMain"] div[data-testid="stTextInput"] {
+        background: linear-gradient(180deg, #ffffff 0%, #f0f9ff 100%);
+        border: 2px solid #0284c7;
+        border-radius: 12px;
+        padding: 12px 16px;
+        box-shadow: 0 4px 18px -2px rgba(2, 132, 199, 0.16), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+        margin-bottom: 6px;
+        transition: all 0.25s ease-in-out;
+    }
+    section[data-testid="stMain"] div[data-testid="stTextInput"]:hover {
+        border-color: #0369a1;
+        box-shadow: 0 6px 22px -2px rgba(2, 132, 199, 0.25);
+    }
+    section[data-testid="stMain"] div[data-testid="stTextInput"]:focus-within {
+        border-color: #0284c7;
+        background: #ffffff;
+        box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.2), 0 6px 24px -2px rgba(2, 132, 199, 0.25);
+    }
+    section[data-testid="stMain"] div[data-testid="stTextInput"] label {
+        font-size: 0.98rem !important;
+        font-weight: 700 !important;
+        color: #0369a1 !important;
+        letter-spacing: -0.01em !important;
+        margin-bottom: 8px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+    }
+    section[data-testid="stMain"] div[data-testid="stTextInput"] input {
+        font-size: 1.08rem !important;
+        font-weight: 600 !important;
+        color: #0f172a !important;
+        background-color: #ffffff !important;
+        border: 1.5px solid #94a3b8 !important;
+        border-radius: 8px !important;
+        padding: 10px 14px !important;
+        line-height: 1.5 !important;
+    }
+    section[data-testid="stMain"] div[data-testid="stTextInput"] input:focus {
+        border-color: #0284c7 !important;
+        box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.25) !important;
+    }
+    /* Executive Primary Button Styling for Run Actions */
+    section[data-testid="stMain"] button[kind="primary"] {
+        background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        font-size: 0.95rem !important;
+        border: none !important;
+        border-radius: 10px !important;
+        padding: 12px 18px !important;
+        box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35) !important;
+        transition: all 0.2s ease !important;
+        min-height: 48px !important;
+    }
+    section[data-testid="stMain"] button[kind="primary"]:hover {
+        background: linear-gradient(135deg, #0369a1 0%, #075985 100%) !important;
+        box-shadow: 0 6px 20px rgba(2, 132, 199, 0.45) !important;
+        transform: translateY(-1px) !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -651,7 +712,7 @@ with tab1:
         </div>
         """, unsafe_allow_html=True)
 
-    col_q, col_btn = st.columns([3, 1])
+    col_q, col_btn = st.columns([3.2, 1.2], vertical_alignment="bottom")
     with col_q:
         q_tab1 = st.text_input(
             t("tab1_q_label", lang),
@@ -659,9 +720,7 @@ with tab1:
             key="q_tab1_input",
         )
     with col_btn:
-        st.write("")
-        st.write("")
-        run_btn1 = st.button(t("tab1_btn_run", lang), key="btn1", use_container_width=True)
+        run_btn1 = st.button("🚀 " + t("tab1_btn_run", lang), key="btn1", use_container_width=True, type="primary")
 
     c_dist_1, c_dist_2 = st.columns([1, 1])
     with c_dist_1:
@@ -1078,7 +1137,7 @@ with tab2:
         </div>
         """, unsafe_allow_html=True)
 
-    col_q2, col_btn2 = st.columns([3, 1])
+    col_q2, col_btn2 = st.columns([3.2, 1.2], vertical_alignment="bottom")
     with col_q2:
         q_tab2 = st.text_input(
             t("tab2_q_label", lang),
@@ -1086,9 +1145,7 @@ with tab2:
             key="q_tab2_input",
         )
     with col_btn2:
-        st.write("")
-        st.write("")
-        run_btn2 = st.button(t("tab1_btn_run", lang), key="btn2", use_container_width=True)
+        run_btn2 = st.button("🚀 " + t("tab1_btn_run", lang), key="btn2", use_container_width=True, type="primary")
 
     # Handle Live Re-run
     if run_btn2:
@@ -1282,7 +1339,7 @@ with tab3:
         </div>
         """, unsafe_allow_html=True)
 
-    col_q3, col_btn3 = st.columns([3, 1])
+    col_q3, col_btn3 = st.columns([3.2, 1.2], vertical_alignment="bottom")
     with col_q3:
         q_tab3 = st.text_input(
             t("tab3_q_label", lang),
@@ -1290,9 +1347,7 @@ with tab3:
             key="q_tab3_input",
         )
     with col_btn3:
-        st.write("")
-        st.write("")
-        run_btn3 = st.button(t("tab1_btn_run", lang), key="btn3", use_container_width=True)
+        run_btn3 = st.button("🚀 " + t("tab1_btn_run", lang), key="btn3", use_container_width=True, type="primary")
 
     col_sc3_1, col_sc3_2 = st.columns([2, 1])
     with col_sc3_1:
@@ -1529,7 +1584,7 @@ with tab4:
         </div>
         """, unsafe_allow_html=True)
 
-    col_q4, col_btn4 = st.columns([3, 1])
+    col_q4, col_btn4 = st.columns([3.2, 1.2], vertical_alignment="bottom")
     with col_q4:
         q_tab4 = st.text_input(
             t("tab4_q_label", lang),
@@ -1537,9 +1592,7 @@ with tab4:
             key="q_tab4_input",
         )
     with col_btn4:
-        st.write("")
-        st.write("")
-        run_btn4 = st.button(t("tab1_btn_run", lang), key="btn4", use_container_width=True)
+        run_btn4 = st.button("🚀 " + t("tab1_btn_run", lang), key="btn4", use_container_width=True, type="primary")
 
     c_f_slider, c_f_info = st.columns([2, 1])
     with c_f_slider:
