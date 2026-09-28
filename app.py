@@ -890,18 +890,18 @@ with tab1:
 
     st.markdown(matrix_md)
 
-    st.markdown(f"#### {'Bóc Tách Bộ lọc tài liệu liên quan ([IsREL] Tokens):' if lang == 'vi' else 'Passage Critic Dissection ([IsREL] Tokens):'}")
+    st.markdown(f"#### {'Bóc Tách Reflection Critic ([IsREL] Tokens):' if lang == 'vi' else 'Passage Critic Dissection ([IsREL] Tokens):'}")
     for p in res_self.get("all_candidates", []):
         if p.get("is_rel_token") == "RELEVANT":
             st.markdown(f"""<div class="critique-pass">
             <b>[IsREL: RELEVANT] - {p['title']}</b><br>
-            <i>{'Lập luận tự đánh giá:' if lang == 'vi' else 'Critic Justification:'}</i> {p.get('critique', '')}<br>
+            <i>{'Lập luận thẩm định (Critic Justification):' if lang == 'vi' else 'Critic Justification:'}</i> {p.get('critique', '')}<br>
             <small>{'Trích đoạn:' if lang == 'vi' else 'Passage snippet:'} {p['content'][:150]}...</small>
             </div>""", unsafe_allow_html=True)
         else:
             st.markdown(f"""<div class="critique-fail">
             <b>[IsREL: IRRELEVANT / REJECTED] - {p['title']}</b><br>
-            <i>{'Lập luận tự đánh giá:' if lang == 'vi' else 'Critic Justification:'}</i> {p.get('critique', '')}<br>
+            <i>{'Lập luận thẩm định (Critic Justification):' if lang == 'vi' else 'Critic Justification:'}</i> {p.get('critique', '')}<br>
             <small>{'Trích đoạn:' if lang == 'vi' else 'Passage snippet:'} {p['content'][:150]}...</small>
             </div>""", unsafe_allow_html=True)
 
@@ -1242,7 +1242,7 @@ with tab3:
     st.markdown(f"### {t('tab3_header', lang)}")
     st.markdown(t("tab3_desc", lang))
 
-    exp3_title = "Kiến Trúc Hệ Thống: Vòng Tự Đánh Giá 4 Token Phản Tư Self-RAG" if lang == "vi" else "System Architecture: Self-RAG 4 Reflection Tokens Critic Loop"
+    exp3_title = "Kiến Trúc Hệ Thống: Vòng Lặp 4 Reflection Tokens (Critic Tokens) Của Self-RAG" if lang == "vi" else "System Architecture: Self-RAG 4 Reflection Tokens Critic Loop"
     with st.expander(exp3_title, expanded=False):
         render_mermaid(get_diagram("self_rag", lang), height=340)
 
@@ -1328,7 +1328,7 @@ with tab3:
                 st.write("Đang chạy bộ lọc tài liệu liên quan [IsREL]..." if lang == "vi" else "Executing passage critic [IsREL] across candidate chunks...")
                 st.write("Đang kiểm định căn cứ [IsSUP] và độ hữu dụng [IsUSE]..." if lang == "vi" else "Evaluating attribution support [IsSUP] and utility [IsUSE]...")
                 res_self_full_live = self_pipe.run_self_rag(q_tab3, top_k=3, tau=tau_threshold)
-                status_box.update(label="Hoàn tất phân tích tự đánh giá!" if lang == "vi" else "Reflection Analysis Complete!", state="complete", expanded=False)
+                status_box.update(label="Hoàn tất phân tích Reflection Critic!" if lang == "vi" else "Reflection Analysis Complete!", state="complete", expanded=False)
 
             st.session_state["tab3_is_live"] = True
             st.session_state["tab3_live"] = {
@@ -1403,7 +1403,7 @@ with tab3:
         badge_class = "critique-pass" if p.get("is_rel_token") == "RELEVANT" else "critique-fail"
         st.markdown(f"""<div class="{badge_class}">
         <b>[{p.get('is_rel_token', 'RELEVANT')}] - {p.get('title', '')}</b><br>
-        <i>{'Lập luận tự đánh giá:' if lang == 'vi' else 'Critic:'}</i> {p.get('critique', '')}
+        <i>{'Lập luận thẩm định (Critic Justification):' if lang == 'vi' else 'Critic Justification:'}</i> {p.get('critique', '')}
         </div>""", unsafe_allow_html=True)
 
     st.markdown("---")
@@ -1438,7 +1438,7 @@ with tab3:
             
             #### 3. Mô hình Tinh chỉnh (Fine-tuned) vs. Mô hình Nền tảng (Llama-3.1 / Qwen-2.5):
             - **Fine-tuned Self-RAG:** Token đặc biệt nằm trực tiếp trong bộ từ vựng tokenizer.
-            - **Foundation LLMs:** Áp dụng cơ chế **In-Context Reflection & Chain-of-Thought Critic**, mô hình sinh các token tự đánh giá có cấu trúc (`[Retrieve: YES]`, `[IsREL: RELEVANT]`) kèm lập luận pháp lý rõ ràng.
+            - **Foundation LLMs:** Áp dụng cơ chế **In-Context Reflection & Chain-of-Thought Critic**, mô hình sinh các Reflection Critic tokens có cấu trúc (`[Retrieve: YES]`, `[IsREL: RELEVANT]`) kèm lập luận pháp lý rõ ràng.
             """)
         else:
             st.markdown("#### 1. Theoretical Formulation (Asai et al., ICLR 2024)")

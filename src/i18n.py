@@ -24,7 +24,6 @@ I18N = {
         "sidebar_active_law": "Active Statute: Labor Code 2019 (No. 45/2019/QH14, eff. Jan 1, 2021 to present 2026 - latest active law, no newer code exists)",
         "sidebar_distractor_law": "Repealed Distractor: Labor Code 2012 (No. 10/2012/QH13, repealed Jan 1, 2021 per Art 219)",
         "sidebar_author": "Researcher / Presenter:",
-        "sidebar_supervisor": "Academic Supervisor:",
         
         # Master Educational Guide
         "master_guide_expander": "Master Educational & Visual Guide: How the 5 Grounding Paradigms Actually Work",
@@ -130,7 +129,6 @@ I18N = {
         "sidebar_active_law": "Luật hiện hành: Bộ luật Lao động 2019 (Luật số 45/2019/QH14, có hiệu lực 01/01/2021 đến nay - không có luật mới hơn)",
         "sidebar_distractor_law": "Tài liệu bãi bỏ: Bộ luật Lao động 2012 (Luật số 10/2012/QH13, đã hết hiệu lực từ 01/01/2021 theo Điều 219)",
         "sidebar_author": "Học viên / Tác giả:",
-        "sidebar_supervisor": "Giảng viên hướng dẫn:",
         
         # Master Educational Guide
         "master_guide_expander": "Cẩm Nang Trực Quan & Giáo Khoa: Toàn Bộ Cơ Chế Hoạt Động Của 5 Phương Pháp RAG",
@@ -149,15 +147,15 @@ I18N = {
         "paradigm_flare_desc": "Sinh nháp dự phóng từng câu liên tiếp. Chỉ kích hoạt truy xuất chủ động theo độ bất định token tại chỗ khi độ tự tin rơi xuống dưới ngưỡng θ, tiết kiệm tới 67% chi phí tính toán.",
 
         # Tabs
-        "tab1_title": "1. Đấu Trường 3 Mô Hình (Tài Liệu Gây Nhiễu)",
-        "tab2_title": "2. GraphRAG vs. Naive (Cụm Cộng Đồng)",
-        "tab3_title": "3. Token tự đánh giá Self-RAG (Inspector)",
+        "tab1_title": "1. Đấu Trường 3 Cơ Chế (Tài Liệu Gây Nhiễu)",
+        "tab2_title": "2. GraphRAG vs. Naive (Điểm Mù Cục Bộ)",
+        "tab3_title": "3. Kính Hiển Vi Self-RAG (Reflection Inspector)",
         "tab4_title": "4. Truy Xuất Chủ Động (FLARE)",
         "tab5_title": "5. Topo Dữ Liệu & Đồ Thị Tri Thức",
 
         # Tab 1
         "tab1_header": "Thực Nghiệm Đối Chứng: Pure LLM vs. Naive RAG vs. Self-RAG",
-        "tab1_desc": "**Cơ sở khoa học:** Naive RAG tiếp nhận tài liệu thụ động chỉ dựa trên độ tương đồng ngữ nghĩa. Khi kho dữ liệu chứa văn bản hết hiệu lực hoặc tài liệu gây nhiễu, Naive RAG bị **nhiễm độc ngữ cảnh** và đưa ra kết luận hoàn toàn sai lệch. Self-RAG sử dụng Bộ lọc tài liệu liên quan `[IsREL]` để phát hiện và loại trừ tài liệu gây nhiễu hoặc hết hiệu lực.",
+        "tab1_desc": "**Cơ sở khoa học:** Naive RAG tiếp nhận tài liệu thụ động chỉ dựa trên độ tương đồng ngữ nghĩa. Khi kho dữ liệu chứa văn bản hết hiệu lực hoặc tài liệu gây nhiễu, Naive RAG bị **nhiễm độc ngữ cảnh** và đưa ra kết luận hoàn toàn sai lệch. Self-RAG sử dụng Reflection Critic token `[IsREL]` để phát hiện và loại trừ tài liệu gây nhiễu hoặc hết hiệu lực.",
         "tab1_q_label": "Câu hỏi kiểm chứng (Thời gian thử việc tối đa của Giám đốc điều hành theo luật hiện hành):",
         "tab1_btn_run": "Chạy Thực Nghiệm Kiểm Chứng Trực Tiếp",
         "status_cached_label": "Kết Quả Tiền Tính Toán (Cached)",
@@ -168,7 +166,7 @@ I18N = {
         "model2_title": "Mô hình 2: Naive RAG (Lewis et al., 2020)",
         "model2_caption": "Nối thô top-k các đoạn trích trong ngữ cảnh vào prompt",
         "model3_title": "Mô hình 3: Self-RAG (Asai et al., ICLR 2024)",
-        "model3_caption": "Vòng tự đánh giá [IsREL] lọc tài liệu & kiểm định [IsSUP]",
+        "model3_caption": "Reflection Critic [IsREL] & Kiểm định căn cứ [IsSUP]",
         "matrix_title": "Bảng Ma Trận So Sánh Đối Chứng (Đánh Giá 3 Cơ Chế)",
         "matrix_dim": "Tiêu Chí Đánh Giá",
         "matrix_m1": "Mô hình 1: Pure LLM",
@@ -177,7 +175,7 @@ I18N = {
         "matrix_mech": "Cơ Chế Vận Hành",
         "matrix_mech_pure": "Bộ nhớ tham số mô hình",
         "matrix_mech_naive": "Nối thô top-k đoạn văn bản đưa vào prompt",
-        "matrix_mech_self": "Bộ lọc tài liệu liên quan [IsREL] & Kiểm định căn cứ trích dẫn [IsSUP]",
+        "matrix_mech_self": "Reflection Critic [IsREL] & Kiểm định căn cứ trích dẫn [IsSUP]",
         "matrix_lat": "Độ Trễ Thực Thi",
         "matrix_claim": "Kết Luận Về Thời Hạn",
         "matrix_distractor": "Khả Năng Chống Tài Liệu Gây Nhiễu",
@@ -194,10 +192,10 @@ I18N = {
 
         # Tab 3
         "tab3_header": "Bóc Tách Chi Tiết Reflection Tokens Của Self-RAG",
-        "tab3_desc": "**Cơ sở khoa học:** Self-RAG (Asai et al., ICLR 2024) đưa vào 4 token tự đánh giá chuyên biệt để kiểm soát toàn bộ chu trình sinh: `[Retrieve]` (Cổng truy xuất), `[IsREL]` (Bộ lọc tài liệu liên quan), `[IsSUP]` (Kiểm định căn cứ trích dẫn / Đối chiếu ngữ cảnh), và `[IsUSE]` (Đánh giá mức độ hữu dụng).",
+        "tab3_desc": "**Cơ sở khoa học:** Self-RAG (Asai et al., ICLR 2024) đưa vào 4 Reflection Tokens (Critic Tokens) chuyên biệt để kiểm soát toàn bộ chu trình sinh: `[Retrieve]` (Cổng truy xuất), `[IsREL]` (Relevance Critic / Thẩm định tính liên quan), `[IsSUP]` (Grounding Critic / Kiểm định căn cứ trích dẫn), và `[IsUSE]` (Utility Critic / Đánh giá mức độ hữu dụng).",
         "tab3_q_label": "Câu hỏi đa ý kiểm chứng Cổng truy xuất:",
-        "tab3_gate_title": "Bộ lọc tài liệu liên quan [IsREL]:",
-        "tab3_verif_title": "Kiểm định căn cứ trích dẫn / Đối chiếu ngữ cảnh [IsSUP]:",
+        "tab3_gate_title": "Thẩm định tính liên quan [IsREL] (Relevance Critic):",
+        "tab3_verif_title": "Kiểm định căn cứ trích dẫn [IsSUP] (Grounding Critic):",
         "tab3_ans_title": "Câu Trả Lời Xác Thực Cuối Cùng:",
         "tab3_deepdive_title": "Phân Tích Chuyên Sâu: Self-RAG Có Dùng Xác Suất Token (Logprobs) Không?",
 
