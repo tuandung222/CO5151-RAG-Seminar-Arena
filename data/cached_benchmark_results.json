@@ -52,7 +52,7 @@
               "title": "Điều 27. Thời gian thử việc - Bộ luật Lao động số 10/2012/QH13 (Hết hiệu lực từ 01/01/2021)",
               "content": "Thời gian thử việc căn cứ vào tính chất và mức độ phức tạp của công việc... 1. Không quá 60 ngày đối với công việc có chức danh nghề nghiệp cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên...",
               "is_rel_token": "IRRELEVANT",
-              "critique": "Đoạn văn bản này thuộc Bộ luật Lao động 2012 đã hết hiệu lực từ ngày 01/01/2021 và bị thay thế bởi BLLĐ 2019. Thông tin 60 ngày là lỗi thời và gây nhiễm độc ngữ cảnh -> BÁC BỎ [IsREL: IRRELEVANT]."
+              "critique": "Đoạn văn bản này thuộc Bộ luật Lao động 2012 đã hết hiệu lực từ ngày 01/01/2021 và bị thay thế bởi BLLĐ 2019. Thông tin 60 ngày là lỗi thời và gây Context Poisoning (Nhiễm độc ngữ cảnh) -> BÁC BỎ [IsREL: IRRELEVANT]."
             },
             {
               "article_id": "Dieu_25",
@@ -115,7 +115,7 @@
               "title": "Điều 27. Thời gian thử việc - Bộ luật Lao động số 10/2012/QH13 (Hết hiệu lực từ 01/01/2021)",
               "content": "Thời gian thử việc căn cứ vào tính chất và mức độ phức tạp của công việc... 1. Không quá 60 ngày đối với công việc có chức danh nghề nghiệp cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên...",
               "is_rel_token": "IRRELEVANT",
-              "critique": "Đoạn văn bản này thuộc Bộ luật Lao động 2012 đã hết hiệu lực từ ngày 01/01/2021 và bị thay thế bởi BLLĐ 2019. Thông tin 60 ngày là lỗi thời và gây nhiễm độc ngữ cảnh -> BÁC BỎ [IsREL: IRRELEVANT]."
+              "critique": "Đoạn văn bản này thuộc Bộ luật Lao động 2012 đã hết hiệu lực từ ngày 01/01/2021 và bị thay thế bởi BLLĐ 2019. Thông tin 60 ngày là lỗi thời và gây Context Poisoning (Nhiễm độc ngữ cảnh) -> BÁC BỎ [IsREL: IRRELEVANT]."
             },
             {
               "article_id": "Dieu_25",
@@ -178,7 +178,7 @@
               "title": "Điều 27. Thời gian thử việc - Bộ luật Lao động số 10/2012/QH13 (Hết hiệu lực từ 01/01/2021)",
               "content": "Thời gian thử việc căn cứ vào tính chất và mức độ phức tạp của công việc... 1. Không quá 60 ngày đối với công việc có chức danh nghề nghiệp cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên...",
               "is_rel_token": "IRRELEVANT",
-              "critique": "Đoạn văn bản này thuộc Bộ luật Lao động 2012 đã hết hiệu lực từ ngày 01/01/2021 và bị thay thế bởi BLLĐ 2019. Thông tin 60 ngày là lỗi thời và gây nhiễm độc ngữ cảnh -> BÁC BỎ [IsREL: IRRELEVANT]."
+              "critique": "Đoạn văn bản này thuộc Bộ luật Lao động 2012 đã hết hiệu lực từ ngày 01/01/2021 và bị thay thế bởi BLLĐ 2019. Thông tin 60 ngày là lỗi thời và gây Context Poisoning (Nhiễm độc ngữ cảnh) -> BÁC BỎ [IsREL: IRRELEVANT]."
             },
             {
               "article_id": "Dieu_25",
@@ -623,7 +623,7 @@
             "title": "Điều 27. Thời gian thử việc - Bộ luật Lao động số 10/2012/QH13 (Hết hiệu lực từ 01/01/2021)",
             "content": "Thời gian thử việc căn cứ vào tính chất và mức độ phức tạp của công việc... 1. Không quá 60 ngày đối với công việc có chức danh nghề nghiệp cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên...",
             "is_rel_token": "IRRELEVANT",
-            "critique": "Đoạn văn bản này thuộc Bộ luật Lao động 2012 đã hết hiệu lực từ ngày 01/01/2021 và bị thay thế bởi BLLĐ 2019. Thông tin 60 ngày là lỗi thời và gây nhiễm độc ngữ cảnh -> BÁC BỎ [IsREL: IRRELEVANT]."
+            "critique": "Đoạn văn bản này thuộc Bộ luật Lao động 2012 đã hết hiệu lực từ ngày 01/01/2021 và bị thay thế bởi BLLĐ 2019. Thông tin 60 ngày là lỗi thời và gây Context Poisoning (Nhiễm độc ngữ cảnh) -> BÁC BỎ [IsREL: IRRELEVANT]."
           },
           {
             "article_id": "Dieu_25",
@@ -770,7 +770,7 @@
             "title": "Điều 27. Thời gian thử việc - BLLĐ 2012 (Hết hiệu lực từ 01/01/2021)",
             "content": "1. Không quá 60 ngày đối với công việc có chức danh nghề nghiệp cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên...",
             "is_rel_token": "IRRELEVANT",
-            "critique": "Đoạn văn bản này thuộc BLLĐ 2012 đã hết hiệu lực và bị thay thế bởi BLLĐ 2019. Mốc 60 ngày là lỗi thời và gây nhiễm độc ngữ cảnh -> BÁC BỎ [IsREL: IRRELEVANT]."
+            "critique": "Đoạn văn bản này thuộc BLLĐ 2012 đã hết hiệu lực và bị thay thế bởi BLLĐ 2019. Mốc 60 ngày là lỗi thời và gây Context Poisoning (Nhiễm độc ngữ cảnh) -> BÁC BỎ [IsREL: IRRELEVANT]."
           },
           {
             "article_id": "Dieu_25",

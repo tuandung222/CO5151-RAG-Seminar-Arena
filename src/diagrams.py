@@ -159,7 +159,7 @@ flowchart LR
     CHUNKS --> CONCAT["Prompt ghép nối ngữ cảnh thô<br/>(Không có cơ chế thẩm định)"]
     Q --> CONCAT
     CONCAT --> LLM["Mô hình LLM sinh phản hồi<br/>(Instruct Model)"]
-    LLM --> ANS["Câu trả lời chưa kiểm định<br/>(Dễ bị nhiễm độc ngữ cảnh)"]
+    LLM --> ANS["Câu trả lời chưa kiểm định<br/>(Dễ bị Context Poisoning (Nhiễm độc ngữ cảnh))"]
     
     style RET fill:#f1f5f9,stroke:#475569,stroke-width:2px
     style CHUNKS fill:#fef3c7,stroke:#d97706,stroke-width:2px
@@ -200,7 +200,7 @@ flowchart TD
     MAP2 --> REDUCE
     MAP3 --> REDUCE
     
-    REDUCE --> GLOBAL_ANS["Câu trả lời bao quát toàn diện<br/>(Khắc phục triệt để điểm mù cục bộ)"]
+    REDUCE --> GLOBAL_ANS["Câu trả lời bao quát toàn diện<br/>(Khắc phục triệt để điểm mù cục bộ của Vector Search (Local Blindness))"]
     
     style GRAPH fill:#f1f5f9,stroke:#475569,stroke-width:2px
     style REDUCE fill:#ffedd5,stroke:#c2410c,stroke-width:2px

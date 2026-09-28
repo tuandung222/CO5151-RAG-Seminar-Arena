@@ -135,16 +135,16 @@ I18N = {
         "master_guide_header": "Phân Tích Kiến Trúc Khoa Học & Cơ Chế Hoạt Động (ICLR, NeurIPS, EMNLP)",
         "master_guide_intro": "Phòng thực nghiệm này được thiết kế phục vụ môn học Cao học **CO5151 - Advanced Agentic AI** (Chủ đề S1-4: Retrieval-Augmented & Knowledge-Grounded Agents). Dưới đây là phân tích toán học và cơ chế chi tiết của từng phương pháp:",
         "master_guide_tbl_header": "PHÂN LOẠI 5 CƠ CHẾ RAG KHOA HỌC",
-        "paradigm_pure_title": "1. Pure Parametric LLM (Baseline Bộ nhớ tham số)",
+        "paradigm_pure_title": "1. Pure Parametric LLM (Mô hình tham số thuần túy - Parametric Memory)",
         "paradigm_pure_desc": "Sinh văn bản hoàn toàn dựa trên xác suất từ trọng số đã đóng băng, không tra cứu ngữ cảnh ngoài.",
         "paradigm_naive_title": "2. Naive RAG (Lewis et al., NeurIPS 2020)",
         "paradigm_naive_desc": "Nối trực tiếp top-k các đoạn trích ngữ cảnh có độ tương đồng cosine cao nhất vào prompt mà không qua khâu thẩm định hay kiểm chứng.",
         "paradigm_self_title": "3. Self-RAG (Asai et al., ICLR 2024)",
         "paradigm_self_desc": "Sử dụng vòng lặp kiểm định với các Reflection Critic tokens ([Retrieve], [IsREL], [IsSUP], [IsUSE]) để chủ động phát hiện và loại bỏ tài liệu gây nhiễu hoặc sai lệch.",
         "paradigm_graph_title": "4. GraphRAG (Edge et al., Microsoft Research 2024)",
-        "paradigm_graph_desc": "Xây dựng đồ thị tri thức pháp lý, Phân cụm cộng đồng theo Modularity Q và chạy Tổng hợp phân cấp Map-Reduce để khắc phục Điểm mù cục bộ của Vector Search.",
+        "paradigm_graph_desc": "Xây dựng đồ thị tri thức pháp lý, phân cụm cộng đồng theo Modularity Q và chạy tổng hợp phân cấp Map-Reduce để khắc phục điểm mù cục bộ (Local Blindness) của Vector Search.",
         "paradigm_flare_title": "5. Active Retrieval / FLARE (Jiang et al., EMNLP 2023)",
-        "paradigm_flare_desc": "Sinh nháp dự phóng từng câu liên tiếp. Chỉ kích hoạt truy xuất chủ động theo độ bất định token tại chỗ khi độ tự tin rơi xuống dưới ngưỡng θ, tiết kiệm tới 67% chi phí tính toán.",
+        "paradigm_flare_desc": "Sinh nháp dự phóng từng câu liên tiếp. Chỉ kích hoạt truy xuất chủ động theo độ bất định của token (Token Uncertainty) tại chỗ khi độ tự tin rơi xuống dưới ngưỡng θ, tiết kiệm tới 67% chi phí tính toán.",
 
         # Tabs
         "tab1_title": "1. When Retrieval Hurts (Đối Chứng Thực Nghiệm)",
@@ -155,13 +155,13 @@ I18N = {
 
         # Tab 1
         "tab1_header": "Thực Nghiệm Đối Chứng: Pure LLM vs. Naive RAG vs. Self-RAG",
-        "tab1_desc": "**Cơ sở khoa học:** Naive RAG tiếp nhận tài liệu thụ động chỉ dựa trên độ tương đồng ngữ nghĩa. Khi kho dữ liệu chứa văn bản hết hiệu lực hoặc tài liệu gây nhiễu, Naive RAG bị **nhiễm độc ngữ cảnh** và đưa ra kết luận hoàn toàn sai lệch. Self-RAG sử dụng Reflection Critic token `[IsREL]` để phát hiện và loại trừ tài liệu gây nhiễu hoặc hết hiệu lực.",
+        "tab1_desc": "**Cơ sở khoa học:** Naive RAG tiếp nhận tài liệu thụ động chỉ dựa trên độ tương đồng ngữ nghĩa. Khi kho dữ liệu chứa văn bản hết hiệu lực hoặc tài liệu gây nhiễu, Naive RAG bị **Context Poisoning (Nhiễm độc ngữ cảnh)** và đưa ra kết luận hoàn toàn sai lệch. Self-RAG sử dụng Reflection Critic token `[IsREL]` để phát hiện và loại trừ tài liệu gây nhiễu hoặc hết hiệu lực.",
         "tab1_q_label": "Câu hỏi kiểm chứng (Thời gian thử việc tối đa của Giám đốc điều hành theo luật hiện hành):",
         "tab1_btn_run": "Chạy Thực Nghiệm Kiểm Chứng Trực Tiếp",
         "status_cached_label": "Kết Quả Tiền Tính Toán (Cached)",
         "status_live_label": "Thực Nghiệm Cluster Trực Tiếp (Verified)",
         "cached_telemetry_note": "Kết quả được tải tức thì từ phiên kiểm chứng chuẩn trên cluster. Để tự kiểm chứng độc lập trực tiếp, hãy nhấn nút 'Chạy Thực Nghiệm Kiểm Chứng Trực Tiếp' ở trên.",
-        "model1_title": "Mô hình 1: Pure LLM (Baseline Bộ nhớ tham số mô hình)",
+        "model1_title": "Mô hình 1: Pure LLM (Baseline Parametric Memory)",
         "model1_caption": "Chỉ dựa vào bộ nhớ trong; không có ngữ cảnh ngoài",
         "model2_title": "Mô hình 2: Naive RAG (Lewis et al., 2020)",
         "model2_caption": "Nối thô top-k các đoạn trích trong ngữ cảnh vào prompt",
@@ -173,7 +173,7 @@ I18N = {
         "matrix_m2": "Mô hình 2: Naive RAG",
         "matrix_m3": "Mô hình 3: Self-RAG",
         "matrix_mech": "Cơ Chế Vận Hành",
-        "matrix_mech_pure": "Bộ nhớ tham số mô hình",
+        "matrix_mech_pure": "Parametric Memory (Trọng số nội tại của mô hình)",
         "matrix_mech_naive": "Nối thô top-k đoạn văn bản đưa vào prompt",
         "matrix_mech_self": "Reflection Critic [IsREL] & Kiểm định căn cứ trích dẫn [IsSUP]",
         "matrix_lat": "Độ Trễ Thực Thi",
@@ -183,7 +183,7 @@ I18N = {
 
         # Tab 2
         "tab2_header": "GraphRAG Phân Cấp vs. Naive RAG (Khắc Phục Điểm Mù Cục Bộ Của Vector Search)",
-        "tab2_desc": "**Cơ sở khoa học:** Naive RAG chỉ truy xuất top-k các đoạn trích trong ngữ cảnh gần nhất, dẫn đến hiện tượng **Điểm mù cục bộ của Vector Search** khi gặp câu hỏi tổng hợp toàn diện trải dài qua nhiều chương luật. GraphRAG phân hoạch đồ thị thành các cụm cộng đồng thông qua **Phân cụm cộng đồng theo Modularity ($Q$)** và chạy **Tổng hợp phân cấp Map-Reduce** để bao quát 100% ngữ liệu.",
+        "tab2_desc": "**Cơ sở khoa học:** Naive RAG chỉ truy xuất top-k các đoạn trích trong ngữ cảnh gần nhất, dẫn đến hiện tượng **Điểm mù cục bộ (Local Blindness)** của Vector Search khi gặp câu hỏi tổng hợp toàn diện trải dài qua nhiều chương luật. GraphRAG phân hoạch đồ thị thành các cụm cộng đồng thông qua **Phân cụm cộng đồng theo Modularity ($Q$)** và chạy **Tổng hợp phân cấp Map-Reduce** để bao quát 100% ngữ liệu.",
         "tab2_q_label": "Câu hỏi tổng hợp toàn diện trải dài qua các chương luật lao động:",
         "tab2_naive_col": "Naive RAG (Điểm Mù Đoạn Cục Bộ)",
         "tab2_naive_caption": "Lưu ý: Naive RAG chỉ truy xuất được 1-2 điều luật cục bộ, bỏ sót hoàn toàn các chế định quan trọng khác trong bộ luật.",
@@ -201,7 +201,7 @@ I18N = {
 
         # Tab 4
         "tab4_header": "Truy Xuất Chủ Động Theo Nhu Cầu (FLARE Active Retrieval)",
-        "tab4_desc": "**Cơ sở khoa học:** Thay vì truy xuất thụ động ngay từ đầu, FLARE (Jiang et al., EMNLP 2023) sinh nháp dự phóng từng câu một. Khi độ tự tin của câu rơi xuống dưới ngưỡng ($Confidence < \\theta$), hệ thống mới kích hoạt truy xuất chủ động theo độ bất định token đúng trọng tâm và viết lại câu chuẩn xác theo điều luật.",
+        "tab4_desc": "**Cơ sở khoa học:** Thay vì truy xuất thụ động ngay từ đầu, FLARE (Jiang et al., EMNLP 2023) sinh nháp dự phóng từng câu một. Khi độ tự tin của câu rơi xuống dưới ngưỡng ($Confidence < \\theta$), hệ thống mới kích hoạt truy xuất chủ động theo độ bất định của token (Token Uncertainty) đúng trọng tâm và viết lại câu chuẩn xác theo điều luật.",
         "tab4_q_label": "Câu hỏi đa khía cạnh về chế tài pháp lý:",
         "tab4_ans_title": "Kết Quả Tổng Hợp Hoàn Chỉnh:",
         "tab4_deepdive_title": "Cơ Chế Kích Hoạt Độ Không Chắc Chắn & Toán Học Tự Tin Token Của FLARE",

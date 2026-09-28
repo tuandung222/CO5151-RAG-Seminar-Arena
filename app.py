@@ -535,10 +535,10 @@ with st.expander(t("master_guide_expander", lang), expanded=False):
         st.markdown(r"""
 | Cơ Chế RAG | Cơ Chế Vận Hành Cốt Lõi | Công Thức Toán Học / Thuật Toán | Điểm Yếu Chính Được Khắc Phục | Khi Nào Nên Triển Khai Thực Tế |
 | :--- | :--- | :--- | :--- | :--- |
-| **1. Pure LLM** | Bộ nhớ tham số mô hình | $P(y \mid x; \theta)$ | Không tốn độ trễ tra cứu ngoài | Trò chuyện tổng quát, suy luận đời thường |
+| **1. Pure LLM** | Parametric Memory (Bộ nhớ tham số / Trọng số mô hình) mô hình | $P(y \mid x; \theta)$ | Không tốn độ trễ tra cứu ngoài | Trò chuyện tổng quát, suy luận đời thường |
 | **2. Naive RAG** | Tìm kiếm tương đồng top-k + nối chuỗi thô | $\arg\max_y P(y \mid x, \text{TopK}(x))$ | Bổ sung tri thức thiếu trong pre-training | FAQ đơn giản trên tài liệu tĩnh, không xung đột |
 | **3. Self-RAG** | Token tự đánh giá + Cổng xác suất logprob | $\text{Score} = \text{LLM} + w_{\text{rel}} \log P(\text{IsREL}) + w_{\text{sup}} \log P(\text{IsSUP})$ | **Nhiễm độc tài liệu gây nhiễu** (Luật hết hiệu lực/mâu thuẫn) | Lĩnh vực rủi ro cao (Pháp lý, Y tế, Kiểm toán tài chính) |
-| **4. GraphRAG** | Đồ thị tri thức + Phân cụm cộng đồng theo Modularity + Tổng hợp phân cấp Map-Reduce | $\text{Reduce}(\{\text{Map}(C_i)\}_{i=1}^M)$, $Q = \sum [e_{ii} - a_i^2]$ | **Điểm mù cục bộ của Vector Search** (Bỏ sót điều khoản liên chương) | Báo cáo chính sách toàn diện, tóm lược quy chế pháp luật |
+| **4. GraphRAG** | Đồ thị tri thức + Phân cụm cộng đồng theo Modularity + Tổng hợp phân cấp Map-Reduce | $\text{Reduce}(\{\text{Map}(C_i)\}_{i=1}^M)$, $Q = \sum [e_{ii} - a_i^2]$ | **Điểm mù cục bộ của Vector Search (Local Blindness) của Vector Search** (Bỏ sót điều khoản liên chương) | Báo cáo chính sách toàn diện, tóm lược quy chế pháp luật |
 | **5. FLARE** | Sinh nháp dự phóng + Kích hoạt truy xuất chủ động theo độ bất định | Kích hoạt truy xuất khi $\min_{t} P(w_t) < \theta$ | **Tốn kém chi phí & độ trễ truy xuất dư thừa** | Báo cáo sự kiện nhiều câu, văn bản pháp lý dài kỳ |
 """)
         st.caption("Thiết kế phục vụ seminar học viên cao học CO5151 Advanced Agentic AI (HCMUT). Học viên: Dung Vo. Đối chứng thực tế trên Bộ luật Lao động 2019 và tài liệu gây nhiễu BLLĐ 2012 (đã hết hiệu lực thi hành).")
@@ -614,14 +614,14 @@ with tab1:
         st.markdown("""
         <div class="context-card">
             <div class="context-card-title">
-                📌 <b>Bối Cảnh Thực Tế & Mục Tiêu Khảo Nghiệm (Case Study & Experimental Objective - Case 1)</b>
+                📌 <b>Bối Cảnh Thực Tế & Mục Tiêu Thực Nghiệm (Case Study & Experimental Objective - Case 1)</b>
             </div>
             <div style="margin-bottom: 6px;">
                 <span class="context-pill">🏛️ Tình Huống Thực Tế Doanh Nghiệp</span>
                 Một tập đoàn ký hợp đồng thử việc <b>05 tháng (150 ngày)</b> với một Tổng Giám đốc điều hành (CEO). Sau đó công đoàn nội bộ khiếu nại thỏa thuận này vi phạm pháp luật, viện dẫn Bộ luật Lao động 2012 cũ (vốn giới hạn tối đa chỉ 60 ngày đối với mọi chức danh yêu cầu trình độ đại học trở lên). Doanh nghiệp cần xác định chính xác thời hạn 150 ngày này có hợp pháp theo quy định hiện hành hay không.
             </div>
             <div>
-                <span class="context-pill">🎯 Mục Tiêu Khảo Nghiệm CO5151</span>
+                <span class="context-pill">🎯 Mục Tiêu Thực Nghiệm CO5151</span>
                 <b>Kiểm chứng hiện tượng "When Retrieval Hurts" & Ngộ độc ngữ cảnh (Context Poisoning):</b> 
                 Khi retriever truy xuất phải điều luật <i>BLLĐ 2012 cũ đã hết hiệu lực</i> (do trùng khớp từ khóa cao - False Positive), <b>Naive RAG</b> tiếp nhận thụ động tài liệu nạp vào mà không qua khâu thẩm định hiệu lực văn bản, dẫn đến kết luận sai (khẳng định tối đa 60 ngày). Ngược lại, <b>Self-RAG</b> kích hoạt Reflection Critic token <code>[IsREL]</code> (thẩm định tính liên quan) phát hiện văn bản bãi bỏ để loại trừ, bảo toàn câu trả lời chính xác <b>180 ngày</b> (Khoản 1 Điều 25 BLLĐ 2019).
             </div>
@@ -672,7 +672,7 @@ with tab1:
         dist_mode = st.radio(
             dist_mode_label,
             options=["only_distractor", "mixed_conflict"],
-            format_func=lambda x: ("Chế độ 1: Dương tính giả (Chỉ truy xuất BLLĐ 2012 lỗi thời; thiếu Điều 25/2019)" if lang == "vi" else "Mode 1: False Positive (Retrieves only repealed 2012 Code; Article 25/2019 omitted)") if x == "only_distractor" else ("Chế độ 2: Xung đột ngữ cảnh (Ngữ cảnh chứa cả luật 2012 và luật 2019)" if lang == "vi" else "Mode 2: Contextual Conflict (Context contains both 2012 and 2019 statutes)"),
+            format_func=lambda x: ("Chế độ 1: Truy xuất sai lệch (False Positive Retrieval) (Chỉ truy xuất BLLĐ 2012 lỗi thời; thiếu Điều 25/2019)" if lang == "vi" else "Mode 1: False Positive (Retrieves only repealed 2012 Code; Article 25/2019 omitted)") if x == "only_distractor" else ("Chế độ 2: Xung đột ngữ cảnh (Ngữ cảnh chứa cả luật 2012 và luật 2019)" if lang == "vi" else "Mode 2: Contextual Conflict (Context contains both 2012 and 2019 statutes)"),
             horizontal=False,
             disabled=not inject_distractor,
         )
@@ -689,7 +689,7 @@ with tab1:
         else:
             status_title = "Đang Chạy Kiểm Chứng Song Song Trực Tiếp 3 Mô Hình..." if lang == "vi" else "Executing Parallel Live Verification Across 3 Paradigms..."
             with st.status(status_title, expanded=True) as status_box:
-                st.write("Đang đánh giá Mô hình 1: Sinh từ bộ nhớ tham số mô hình..." if lang == "vi" else "Evaluating Model 1: Parametric generation from pre-trained weights...")
+                st.write("Đang đánh giá Mô hình 1: Sinh từ Parametric Memory (Bộ nhớ tham số / Trọng số mô hình) mô hình..." if lang == "vi" else "Evaluating Model 1: Parametric generation from pre-trained weights...")
                 st.write("Đang đánh giá Mô hình 2: Truy xuất lai thụ động (BM25 + BGE-M3) kèm tài liệu gây nhiễu..." if lang == "vi" else "Evaluating Model 2: Blind hybrid retrieval (BM25 + BGE-M3) with distractor injection...")
                 st.write("Đang đánh giá Mô hình 3: Cổng truy xuất Self-RAG [Retrieve], bộ lọc tài liệu liên quan [IsREL] và kiểm định căn cứ trích dẫn [IsSUP]..." if lang == "vi" else "Evaluating Model 3: Self-RAG reflection gate [Retrieve], critic [IsREL], and attribution [IsSUP]...")
 
@@ -730,7 +730,7 @@ with tab1:
         scenario_desc = "Xung Đột Ngữ Cảnh (Chứa Cả Luật 2012 và 2019)" if lang == "vi" else "Contextual Conflict (2012 & 2019 Statutes)"
     else:
         scenario_key = "only_distractor"
-        scenario_desc = "Dương Tính Giả (Chỉ Truy Xuất BLLĐ 2012 Hết Hiệu Lực)" if lang == "vi" else "False Positive (Repealed 2012 Only)"
+        scenario_desc = "Truy Xuất Sai Lệch (False Positive Retrieval) (Chỉ Truy Xuất BLLĐ 2012 Hết Hiệu Lực)" if lang == "vi" else "False Positive (Repealed 2012 Only)"
 
     if st.session_state.get("tab1_is_live") and "tab1_live" in st.session_state:
         tab1_data = st.session_state["tab1_live"]
@@ -854,11 +854,11 @@ with tab1:
         matrix_md = f"""
 | {t('matrix_dim', lang)} | {t('matrix_m1', lang)} | {t('matrix_m2', lang)} | {t('matrix_m3', lang)} |
 | :--- | :--- | :--- | :--- |
-| **{t('matrix_mech', lang)}** | Bộ nhớ tham số mô hình | Nối thô top-k các đoạn trích trong ngữ cảnh | Bộ lọc tài liệu liên quan [IsREL] & Kiểm định căn cứ trích dẫn [IsSUP] |
+| **{t('matrix_mech', lang)}** | Parametric Memory (Bộ nhớ tham số / Trọng số mô hình) mô hình | Nối thô top-k các đoạn trích trong ngữ cảnh | Bộ lọc tài liệu liên quan [IsREL] & Kiểm định căn cứ trích dẫn [IsSUP] |
 | **{t('matrix_lat', lang)}** | `{res_pure['latency_ms']} ms` | `{res_naive['latency_ms']} ms` | `{res_self['latency_ms']} ms` |
 | **{t('matrix_claim', lang)}** | **{claim_pure}** | **{claim_naive}** | **{claim_self}** |
 | **{t('matrix_distractor', lang)}** | {vuln_pure} | {vuln_naive} | {vuln_self} |
-| **{t('matrix_domain', lang)}** | Trung bình (Dễ ảo giác) | Rất nguy hiểm (Dễ bị nhiễm độc ngữ cảnh) | Độ tin cậy cao (Được đối chiếu và xác thực) |
+| **{t('matrix_domain', lang)}** | Trung bình (Dễ ảo giác) | Rất nguy hiểm (Dễ bị Context Poisoning (Nhiễm độc ngữ cảnh)) | Độ tin cậy cao (Được đối chiếu và xác thực) |
 """
     else:
         claim_pure = "180 days (Valid)" if res_pure.get("has_180_days") else ("60 days (Outdated)" if res_pure.get("has_60_days") else "Generic")
@@ -935,7 +935,7 @@ with tab2:
     with st.expander(exp2_title, expanded=False):
         d_tab2_1, d_tab2_2, d_tab2_3 = st.tabs([
             "1. Sơ Đồ Mạng Lưới Đồ Thị (Knowledge Graph Topology)" if lang == "vi" else "1. Knowledge Graph Network Topology",
-            "2. Thiết Kế Bản Thể Luận & Cầu Nối Liên Chương" if lang == "vi" else "2. Graph Ontology & Cross-Chapter Bridges",
+            "2. Thiết Kế Mô Hình Ontology & Cầu Nối Liên Chương" if lang == "vi" else "2. Graph Ontology & Cross-Chapter Bridges",
             "3. Chu Trình Tổng Hợp Phân Cấp Map-Reduce" if lang == "vi" else "3. Hierarchical Map-Reduce Workflow",
         ])
         with d_tab2_1:
@@ -945,7 +945,7 @@ with tab2:
             )
             render_mermaid(get_diagram("knowledge_graph_full", lang), height=580)
             st.caption(
-                "💡 **Chú thích đồ thị:** Các mũi tên nét liền biểu thị quan hệ nội cụm. Các mũi tên nét đứt (`-.->`) là **Cầu Nối Liên Chương (Cross-Chapter Bridges)** – đây chính là liên kết tri thức then chốt giúp GraphRAG khắc phục triệt để điểm mù cục bộ (Local Blindness) của Vector Search." if lang == "vi" else
+                "💡 **Chú thích đồ thị:** Các mũi tên nét liền biểu thị quan hệ nội cụm. Các mũi tên nét đứt (`-.->`) là **Cầu Nối Liên Chương (Cross-Chapter Bridges)** – đây chính là liên kết tri thức then chốt giúp GraphRAG khắc phục triệt để điểm mù cục bộ của Vector Search (Local Blindness) (Local Blindness) của Vector Search." if lang == "vi" else
                 "💡 **Graph Legend:** Solid arrows denote intra-community relationships. Dashed arrows (`-.->`) represent **Cross-Chapter Bridges** – the pivotal structural links enabling GraphRAG to overcome Vector Search's Local Blindness."
             )
         with d_tab2_2:
@@ -1047,14 +1047,14 @@ with tab2:
         st.markdown("""
         <div class="context-card">
             <div class="context-card-title">
-                📌 <b>Bối Cảnh Thực Tế & Mục Tiêu Khảo Nghiệm (Case Study & Experimental Objective - Case 2)</b>
+                📌 <b>Bối Cảnh Thực Tế & Mục Tiêu Thực Nghiệm (Case Study & Experimental Objective - Case 2)</b>
             </div>
             <div style="margin-bottom: 6px;">
                 <span class="context-pill">🏛️ Nhu Cầu Tuân Thủ Doanh Nghiệp</span>
                 Giám đốc Nhân sự (HR Director) chuẩn bị cho kế hoạch tái cấu trúc nhân sự quy mô lớn và yêu cầu Phòng Pháp chế: <i>"Lập danh mục rà soát toàn diện tất cả các trường hợp công ty KHÔNG ĐƯỢC hoặc BỊ HẠN CHẾ quyền đơn phương chấm dứt hợp đồng và kỷ luật sa thải người lao động?"</i> Nếu công ty sơ suất sa thải nhân sự nữ đang mang thai hoặc người lao động đang điều trị tai nạn lao động, công ty sẽ đối mặt với rủi ro bồi thường thiệt hại rất lớn theo Điều 41.
             </div>
             <div>
-                <span class="context-pill">🎯 Mục Tiêu Khảo Nghiệm CO5151</span>
+                <span class="context-pill">🎯 Mục Tiêu Thực Nghiệm CO5151</span>
                 <b>Kiểm chứng Điểm Mù Cục Bộ (Local Blindness) của Vector Search:</b> 
                 Trong Bộ luật Lao động 2019, các chế định bảo vệ lao động nằm rải rác ở hai chương hoàn toàn tách biệt: <b>Chương III</b> (Điều 37: Hạn chế quyền đơn phương chấm dứt khi ốm đau, thai sản) và <b>Chương VIII</b> (Điều 122: Nguyên tắc cấm kỷ luật sa thải lao động mang thai, nuôi con nhỏ dưới 12 tháng). <b>Naive RAG</b> chỉ truy xuất được Điều 37 và bỏ sót Điều 122 do khoảng cách embedding xa. <b>GraphRAG</b> thông qua cạnh liên kết tri thức liên chương và tổng hợp phân cấp Map-Reduce bao quát đầy đủ 100% cả hai chế định.
             </div>
@@ -1198,7 +1198,7 @@ with tab2:
         if lang == "vi":
             st.markdown("""
             #### Cách GraphRAG Khắc Phục 'Điểm Mù Cục Bộ' (Edge et al., Microsoft Research 2024):
-            Phương pháp truyền thống **Naive RAG** chỉ truy xuất các đoạn top-k gần nhất trong không gian embedding. Khi người dùng đặt câu hỏi tổng hợp mang tính toàn cục (ví dụ: *"Tổng hợp các trường hợp Người sử dụng lao động không được chấm dứt hợp đồng và xử lý kỷ luật"*), Naive RAG bộc lộ **Điểm mù cục bộ**—hệ thống chỉ truy xuất được 2-3 điều thuộc Chương III, bỏ sót hoàn toàn các điều luật liên quan tại Chương VIII!
+            Phương pháp truyền thống **Naive RAG** chỉ truy xuất các đoạn top-k gần nhất trong không gian embedding. Khi người dùng đặt câu hỏi tổng hợp mang tính toàn cục (ví dụ: *"Tổng hợp các trường hợp Người sử dụng lao động không được chấm dứt hợp đồng và xử lý kỷ luật"*), Naive RAG bộc lộ **Điểm mù cục bộ của Vector Search (Local Blindness)**—hệ thống chỉ truy xuất được 2-3 điều thuộc Chương III, bỏ sót hoàn toàn các điều luật liên quan tại Chương VIII!
 
             **Thuật toán GraphRAG:**
             1. **Xây dựng Đồ thị Tri thức:** Trích xuất thực thể và các dẫn chiếu chéo thành đồ thị $G = (V, E)$.
@@ -1251,14 +1251,14 @@ with tab3:
         st.markdown("""
         <div class="context-card">
             <div class="context-card-title">
-                📌 <b>Bối Cảnh Thực Tế & Mục Tiêu Khảo Nghiệm (Case Study & Experimental Objective - Case 4)</b>
+                📌 <b>Bối Cảnh Thực Tế & Mục Tiêu Thực Nghiệm (Case Study & Experimental Objective - Case 4)</b>
             </div>
             <div style="margin-bottom: 6px;">
                 <span class="context-pill">🏛️ Tình Huống Pháp Lý Đa Ý (Multi-Intent)</span>
                 Một nhân sự mới ký hợp đồng thử việc đặt ra 2 câu hỏi pháp lý cốt lõi: <i>(1) Tiền lương thử việc tối thiểu pháp luật bắt buộc bằng bao nhiêu phần trăm lương chính thức?</i> và <i>(2) Nếu trong quá trình làm việc vì lý do cá nhân mà tự ý bỏ việc 05 ngày làm việc liên tục không báo trước thì công ty có quyền đơn phương chấm dứt và sa thải ngay không?</i>
             </div>
             <div>
-                <span class="context-pill">🎯 Mục Tiêu Khảo Nghiệm CO5151</span>
+                <span class="context-pill">🎯 Mục Tiêu Thực Nghiệm CO5151</span>
                 <b>Phân tích cơ chế điều phối của 4 Reflection Tokens (Critic Tokens):</b> 
                 Khảo sát quy trình kiểm định đa tầng của Self-RAG: <code>[Retrieve]</code> (kích hoạt tra cứu ngoài theo ngưỡng $\\tau$), <code>[IsREL]</code> (thẩm định tính liên quan của từng đoạn văn bản đối với cả 2 ý: Điều 26 về lương thử việc 85% và Điều 36/125 về tự ý bỏ việc 05 ngày), <code>[IsSUP]</code> (kiểm định căn cứ trích dẫn để chống ảo giác), và <code>[IsUSE]</code> (đánh giá mức độ hữu ích thực tế của câu trả lời).
             </div>
@@ -1351,7 +1351,7 @@ with tab3:
         if tau_threshold > gate_prob:
             tab3_res_data["retrieve_decision"] = {
                 "token": "NO_RETRIEVAL",
-                "reasoning": f"Xác suất cần tra cứu P(Retrieve) = 94.8% nhỏ hơn ngưỡng khắt khe tau = {tau_threshold:.2f} -> ĐÓNG CỔNG TRA CỨU, chuyển sang sinh thuần từ bộ nhớ tham số." if lang == "vi" else f"Retrieval probability P(Retrieve) = 94.8% is below strict threshold tau = {tau_threshold:.2f} -> RETRIEVAL SUPPRESSED, model falls back to parametric memory."
+                "reasoning": f"Xác suất cần tra cứu P(Retrieve) = 94.8% nhỏ hơn ngưỡng khắt khe tau = {tau_threshold:.2f} -> ĐÓNG CỔNG TRA CỨU, chuyển sang sinh thuần từ Parametric Memory (Bộ nhớ tham số / Trọng số mô hình)." if lang == "vi" else f"Retrieval probability P(Retrieve) = 94.8% is below strict threshold tau = {tau_threshold:.2f} -> RETRIEVAL SUPPRESSED, model falls back to parametric memory."
             }
         else:
             tab3_res_data["retrieve_decision"] = {
@@ -1425,7 +1425,7 @@ with tab3:
 
             st.markdown("**Cổng truy xuất thích ứng [Retrieve]:**")
             st.latex(r"P(\text{Retrieve} = \text{yes}) = \frac{P([\text{Retrieve}])}{P([\text{Retrieve}]) + P([\text{No Retrieve}])}")
-            st.caption("Nếu P(Retrieve = yes) > tau (mặc định tau = 0.5), hệ thống kích hoạt truy xuất; ngược lại, LLM sinh thuần từ bộ nhớ tham số.")
+            st.caption("Nếu P(Retrieve = yes) > tau (mặc định tau = 0.5), hệ thống kích hoạt truy xuất; ngược lại, LLM sinh thuần từ Parametric Memory (Bộ nhớ tham số / Trọng số mô hình).")
 
             st.markdown("**Chấm điểm và Reranking trong Beam Search:**")
             st.latex(r"\text{Score}(y_t, d) = \log P(y_t \mid x, d) + w_{\text{rel}} \log P([\text{Relevant}]) + w_{\text{sup}} \log P([\text{Fully supported}]) + w_{\text{use}} \log P([\text{Utility:5}])")
@@ -1498,16 +1498,16 @@ with tab4:
         st.markdown("""
         <div class="context-card">
             <div class="context-card-title">
-                📌 <b>Bối Cảnh Thực Tế & Mục Tiêu Khảo Nghiệm (Case Study & Experimental Objective - Case 3)</b>
+                📌 <b>Bối Cảnh Thực Tế & Mục Tiêu Thực Nghiệm (Case Study & Experimental Objective - Case 3)</b>
             </div>
             <div style="margin-bottom: 6px;">
                 <span class="context-pill">🏛️ Tranh Chấp Nghĩa Vụ Đơn Phương Trái Luật</span>
                 Một kỹ sư phần mềm cao cấp nộp đơn xin thôi việc và tự ý nghỉ việc chỉ sau 02 ngày làm việc (vi phạm nghiêm trọng nghĩa vụ báo trước 30-45 ngày). Người lao động này thắc mắc: <i>Liệu có được thanh toán tiền trợ cấp thôi việc cho những năm đã cống hiến không, và người sử dụng lao động có quyền yêu cầu bồi thường những khoản tiền cụ thể nào theo quy định pháp luật?</i>
             </div>
             <div>
-                <span class="context-pill">🎯 Mục Tiêu Khảo Nghiệm CO5151</span>
+                <span class="context-pill">🎯 Mục Tiêu Thực Nghiệm CO5151</span>
                 <b>Kiểm chứng Truy Xuất Chủ Động Theo Độ Bất Định Token (FLARE):</b> 
-                Đối chiếu giữa truy xuất thụ động nạp toàn bộ (Naive RAG lãng phí chi phí) và truy xuất chủ động dự phóng từng câu (FLARE). Đối với nguyên tắc định tính chung (<i>"đơn phương trái luật thì không được trợ cấp thôi việc"</i>), mô hình sinh trực tiếp từ bộ nhớ tham số vì độ tự tin token cao ($\\min P(w) \\ge \\theta$). Khi chuyển sang các chế tài định lượng bắt buộc (<i>"bồi thường nửa tháng tiền lương", "tiền lương ngày không báo trước", "chi phí đào tạo theo Điều 40"</i>), độ tự tin giảm xuống dưới ngưỡng $\\theta$, kích hoạt truy xuất tại chỗ. Tiết kiệm từ <b>60% đến 80%</b> số lần gọi retrieval không cần thiết!
+                Đối chiếu giữa truy xuất thụ động nạp toàn bộ (Naive RAG lãng phí chi phí) và truy xuất chủ động dự phóng từng câu (FLARE). Đối với nguyên tắc định tính chung (<i>"đơn phương trái luật thì không được trợ cấp thôi việc"</i>), mô hình sinh trực tiếp từ Parametric Memory (Bộ nhớ tham số / Trọng số mô hình) vì độ tự tin token cao ($\\min P(w) \\ge \\theta$). Khi chuyển sang các chế tài định lượng bắt buộc (<i>"bồi thường nửa tháng tiền lương", "tiền lương ngày không báo trước", "chi phí đào tạo theo Điều 40"</i>), độ tự tin giảm xuống dưới ngưỡng $\\theta$, kích hoạt truy xuất tại chỗ. Tiết kiệm từ <b>60% đến 80%</b> số lần gọi retrieval không cần thiết!
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -1854,7 +1854,7 @@ with tab5:
             - **Why RRF:** BM25 scores (unbounded positive values based on IDF and document length) and dense cosine similarities (bounded in [-1, 1]) follow fundamentally different probability distributions. RRF (Cormack et al., SIGIR 2009) uses positional rank $RRF(d) = \\sum \\frac{1}{k + r_i}$ with smoothing parameter $k=60$, creating a scale-invariant and robust rank aggregation.
             """)
 
-    with st.expander("Q3: Thuật toán phân cụm cộng đồng của GraphRAG giải quyết điểm mù cục bộ của Naive RAG như thế nào?" if lang == "vi" else "Q3: How does GraphRAG's community detection address the 'Local Blindness' of Naive RAG?"):
+    with st.expander("Q3: Thuật toán phân cụm cộng đồng của GraphRAG giải quyết điểm mù cục bộ (Local Blindness) của Naive RAG như thế nào?" if lang == "vi" else "Q3: How does GraphRAG's community detection address the 'Local Blindness' of Naive RAG?"):
         if lang == "vi":
             st.markdown("""
             **Trả lời:**
