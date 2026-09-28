@@ -188,68 +188,108 @@ st.markdown("""
         margin-right: 6px;
     }
     /* High-Visibility Executive Query Box Styling */
-    section[data-testid="stMain"] div[data-testid="stTextInput"] {
-        background: linear-gradient(180deg, #ffffff 0%, #f0f9ff 100%);
-        border: 2px solid #0284c7;
-        border-radius: 12px;
-        padding: 12px 16px;
-        box-shadow: 0 4px 18px -2px rgba(2, 132, 199, 0.16), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
-        margin-bottom: 6px;
-        transition: all 0.25s ease-in-out;
-    }
-    section[data-testid="stMain"] div[data-testid="stTextInput"]:hover {
-        border-color: #0369a1;
-        box-shadow: 0 6px 22px -2px rgba(2, 132, 199, 0.25);
-    }
-    section[data-testid="stMain"] div[data-testid="stTextInput"]:focus-within {
-        border-color: #0284c7;
-        background: #ffffff;
-        box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.2), 0 6px 24px -2px rgba(2, 132, 199, 0.25);
-    }
-    section[data-testid="stMain"] div[data-testid="stTextInput"] label {
-        font-size: 0.98rem !important;
-        font-weight: 700 !important;
-        color: #0369a1 !important;
-        letter-spacing: -0.01em !important;
-        margin-bottom: 8px !important;
-        display: flex !important;
-        align-items: center !important;
-        gap: 6px !important;
-    }
-    section[data-testid="stMain"] div[data-testid="stTextInput"] input {
-        font-size: 1.08rem !important;
-        font-weight: 600 !important;
-        color: #0f172a !important;
+    div[data-testid="stTextInput"] div[data-baseweb="input"] {
+        border: 2.5px solid #0284c7 !important;
+        border-radius: 12px !important;
         background-color: #ffffff !important;
-        border: 1.5px solid #94a3b8 !important;
-        border-radius: 8px !important;
-        padding: 10px 14px !important;
+        box-shadow: 0 4px 18px rgba(2, 132, 199, 0.18) !important;
+        min-height: 52px !important;
+        transition: all 0.2s ease-in-out !important;
+    }
+    div[data-testid="stTextInput"] div[data-baseweb="input"]:hover {
+        border-color: #0369a1 !important;
+        box-shadow: 0 6px 24px rgba(2, 132, 199, 0.28) !important;
+    }
+    div[data-testid="stTextInput"] div[data-baseweb="input"]:focus-within {
+        border-color: #0284c7 !important;
+        background-color: #ffffff !important;
+        box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.25), 0 6px 24px rgba(2, 132, 199, 0.2) !important;
+    }
+    div[data-testid="stTextInput"] input {
+        font-size: 1.15rem !important;
+        font-weight: 700 !important;
+        color: #0f172a !important;
+        padding: 12px 16px !important;
         line-height: 1.5 !important;
     }
-    section[data-testid="stMain"] div[data-testid="stTextInput"] input:focus {
-        border-color: #0284c7 !important;
-        box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.25) !important;
+    /* Exclude Sidebar */
+    [data-testid="stSidebar"] div[data-testid="stTextInput"] div[data-baseweb="input"] {
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 8px !important;
+        box-shadow: none !important;
+        min-height: 38px !important;
+    }
+    [data-testid="stSidebar"] div[data-testid="stTextInput"] input {
+        font-size: 0.88rem !important;
+        font-weight: 400 !important;
+        padding: 6px 10px !important;
     }
     /* Executive Primary Button Styling for Run Actions */
-    section[data-testid="stMain"] button[kind="primary"] {
+    button[kind="primary"] {
         background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
         color: #ffffff !important;
-        font-weight: 700 !important;
-        font-size: 0.95rem !important;
+        font-weight: 800 !important;
+        font-size: 1.02rem !important;
         border: none !important;
-        border-radius: 10px !important;
-        padding: 12px 18px !important;
-        box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35) !important;
+        border-radius: 12px !important;
+        padding: 12px 20px !important;
+        box-shadow: 0 4px 16px rgba(2, 132, 199, 0.4) !important;
         transition: all 0.2s ease !important;
-        min-height: 48px !important;
+        min-height: 52px !important;
+        letter-spacing: -0.01em !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
-    section[data-testid="stMain"] button[kind="primary"]:hover {
+    button[kind="primary"]:hover {
         background: linear-gradient(135deg, #0369a1 0%, #075985 100%) !important;
-        box-shadow: 0 6px 20px rgba(2, 132, 199, 0.45) !important;
-        transform: translateY(-1px) !important;
+        box-shadow: 0 6px 24px rgba(2, 132, 199, 0.55) !important;
+        transform: translateY(-2px) !important;
     }
 </style>
 """, unsafe_allow_html=True)
+
+
+def render_query_console(
+    tab_badge: str,
+    hint_text: str,
+    default_question: str,
+    session_key: str,
+    input_key: str,
+    btn_key: str,
+    lang: str,
+    btn_label: str = None,
+):
+    """
+    Renders an executive, eye-catching Query Command Center card:
+    - Dedicated top header banner with vivid blue gradient badge and helpful hint
+    - High-contrast, large-font (1.15rem, 700-weight) input box with 2.5px Royal Blue border
+    - Bottom-aligned primary gradient action button (min-height 52px)
+    """
+    st.markdown(f"""
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 14px; margin-bottom: 6px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #ffffff; font-size: 0.85rem; font-weight: 800; padding: 4px 12px; border-radius: 6px; letter-spacing: 0.04em; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);">
+                ⚡ {tab_badge}
+            </span>
+        </div>
+        <span style="font-size: 0.82rem; color: #0369a1; font-weight: 600; background: #e0f2fe; padding: 4px 12px; border-radius: 20px; border: 1px solid #bae6fd;">
+            ✏️ {hint_text}
+        </span>
+    </div>
+    """, unsafe_allow_html=True)
+    col_q, col_btn = st.columns([3.2, 1.2], vertical_alignment="bottom")
+    with col_q:
+        q_val = st.text_input(
+            tab_badge,
+            value=st.session_state.get(session_key, default_question),
+            key=input_key,
+            label_visibility="collapsed",
+        )
+    with col_btn:
+        actual_btn_label = btn_label or ("🚀 " + t("tab1_btn_run", lang))
+        run_btn = st.button(actual_btn_label, key=btn_key, use_container_width=True, type="primary")
+    return q_val, run_btn
 
 
 def render_mermaid(diagram_code: str, height: int = 460):
@@ -558,15 +598,19 @@ with st.sidebar:
     if st.button("🚀 " + ("Synchronize Question to Tab" if lang == "en" else "Nạp Câu Hỏi Vào Tab"), use_container_width=True, key="btn_sync_preset"):
         if selected_preset_idx == 0:
             st.session_state["q_tab1"] = selected_case["question"]
+            st.session_state["q_tab1_input"] = selected_case["question"]
             st.session_state["tab1_is_live"] = False
         elif selected_preset_idx == 1:
             st.session_state["q_tab2"] = selected_case["question"]
+            st.session_state["q_tab2_input"] = selected_case["question"]
             st.session_state["tab2_is_live"] = False
         elif selected_preset_idx == 2:
             st.session_state["q_tab4"] = selected_case["question"]
+            st.session_state["q_tab4_input"] = selected_case["question"]
             st.session_state["tab4_is_live"] = False
         elif selected_preset_idx == 3:
             st.session_state["q_tab3"] = selected_case["question"]
+            st.session_state["q_tab3_input"] = selected_case["question"]
             st.session_state["tab3_is_live"] = False
         st.success("Đã nạp câu hỏi vào Tab!" if lang == "vi" else "Question loaded into target Tab!")
         st.rerun()
@@ -712,15 +756,12 @@ with tab1:
         </div>
         """, unsafe_allow_html=True)
 
-    col_q, col_btn = st.columns([3.2, 1.2], vertical_alignment="bottom")
-    with col_q:
-        q_tab1 = st.text_input(
-            t("tab1_q_label", lang),
-            value=st.session_state.get("q_tab1", test_cases[0]["question"]),
-            key="q_tab1_input",
-        )
-    with col_btn:
-        run_btn1 = st.button("🚀 " + t("tab1_btn_run", lang), key="btn1", use_container_width=True, type="primary")
+    badge_t1 = "CÂU HỎI TRUY VẤN THỰC NGHIỆM ĐỐI CHỨNG (CASE 1)" if lang == "vi" else "BENCHMARK EVALUATION QUERY (CASE 1)"
+    hint_t1 = "Có thể chỉnh sửa trực tiếp câu hỏi trước khi chạy thực nghiệm" if lang == "vi" else "Editable query - modify freely or run as is"
+    btn_lbl_t1 = "🚀 Chạy Thực Nghiệm Đối Chứng" if lang == "vi" else "🚀 Run Comparative Benchmark"
+    q_tab1, run_btn1 = render_query_console(
+        badge_t1, hint_t1, test_cases[0]["question"], "q_tab1", "q_tab1_input", "btn1", lang, btn_label=btn_lbl_t1
+    )
 
     c_dist_1, c_dist_2 = st.columns([1, 1])
     with c_dist_1:
@@ -1137,15 +1178,12 @@ with tab2:
         </div>
         """, unsafe_allow_html=True)
 
-    col_q2, col_btn2 = st.columns([3.2, 1.2], vertical_alignment="bottom")
-    with col_q2:
-        q_tab2 = st.text_input(
-            t("tab2_q_label", lang),
-            value=st.session_state.get("q_tab2", test_cases[1]["question"]),
-            key="q_tab2_input",
-        )
-    with col_btn2:
-        run_btn2 = st.button("🚀 " + t("tab1_btn_run", lang), key="btn2", use_container_width=True, type="primary")
+    badge_t2 = "CÂU HỎI TRUY VẤN TOÀN CỤC GRAPHRAG (CASE 2)" if lang == "vi" else "GLOBAL SYNTHESIS QUERY (CASE 2)"
+    hint_t2 = "Có thể chỉnh sửa trực tiếp câu hỏi trước khi chạy thực nghiệm" if lang == "vi" else "Editable query - modify freely or run as is"
+    btn_lbl_t2 = "🚀 Chạy Tổng Hợp GraphRAG" if lang == "vi" else "🚀 Run GraphRAG Synthesis"
+    q_tab2, run_btn2 = render_query_console(
+        badge_t2, hint_t2, test_cases[1]["question"], "q_tab2", "q_tab2_input", "btn2", lang, btn_label=btn_lbl_t2
+    )
 
     # Handle Live Re-run
     if run_btn2:
@@ -1339,15 +1377,12 @@ with tab3:
         </div>
         """, unsafe_allow_html=True)
 
-    col_q3, col_btn3 = st.columns([3.2, 1.2], vertical_alignment="bottom")
-    with col_q3:
-        q_tab3 = st.text_input(
-            t("tab3_q_label", lang),
-            value=st.session_state.get("q_tab3", test_cases[3]["question"]),
-            key="q_tab3_input",
-        )
-    with col_btn3:
-        run_btn3 = st.button("🚀 " + t("tab1_btn_run", lang), key="btn3", use_container_width=True, type="primary")
+    badge_t3 = "CÂU HỎI TRUY VẤN ĐA Ý REFLECTION CRITIC (CASE 4)" if lang == "vi" else "MULTI-INTENT REFLECTION QUERY (CASE 4)"
+    hint_t3 = "Có thể chỉnh sửa trực tiếp câu hỏi trước khi chạy thực nghiệm" if lang == "vi" else "Editable query - modify freely or run as is"
+    btn_lbl_t3 = "🚀 Chạy Kiểm Định Reflection" if lang == "vi" else "🚀 Run Reflection Inspection"
+    q_tab3, run_btn3 = render_query_console(
+        badge_t3, hint_t3, test_cases[3]["question"], "q_tab3", "q_tab3_input", "btn3", lang, btn_label=btn_lbl_t3
+    )
 
     col_sc3_1, col_sc3_2 = st.columns([2, 1])
     with col_sc3_1:
@@ -1584,15 +1619,12 @@ with tab4:
         </div>
         """, unsafe_allow_html=True)
 
-    col_q4, col_btn4 = st.columns([3.2, 1.2], vertical_alignment="bottom")
-    with col_q4:
-        q_tab4 = st.text_input(
-            t("tab4_q_label", lang),
-            value=st.session_state.get("q_tab4", test_cases[2]["question"]),
-            key="q_tab4_input",
-        )
-    with col_btn4:
-        run_btn4 = st.button("🚀 " + t("tab1_btn_run", lang), key="btn4", use_container_width=True, type="primary")
+    badge_t4 = "CÂU HỎI TRUY VẤN CHẾ TÀI ĐỊNH LƯỢNG FLARE (CASE 3)" if lang == "vi" else "ACTIVE FORWARD RETRIEVAL QUERY (CASE 3)"
+    hint_t4 = "Có thể chỉnh sửa trực tiếp câu hỏi trước khi chạy thực nghiệm" if lang == "vi" else "Editable query - modify freely or run as is"
+    btn_lbl_t4 = "🚀 Chạy Thực Nghiệm FLARE" if lang == "vi" else "🚀 Run FLARE Benchmark"
+    q_tab4, run_btn4 = render_query_console(
+        badge_t4, hint_t4, test_cases[2]["question"], "q_tab4", "q_tab4_input", "btn4", lang, btn_label=btn_lbl_t4
+    )
 
     c_f_slider, c_f_info = st.columns([2, 1])
     with c_f_slider:
