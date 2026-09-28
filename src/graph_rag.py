@@ -104,6 +104,7 @@ TÓM TẮT ĐÓNG GÓP TỪ CỤM NÀY:"""
                 "community_name": comm["name"],
                 "article_ids": comm["article_ids"],
                 "summary": res["text"],
+                "latency_ms": res.get("latency_ms", 0),
             })
 
         # REDUCE Phase
@@ -129,6 +130,6 @@ HÃY ĐƯA RA CÂU TRẢ LỜI TỔNG THỂ TOÀN DIỆN (REDUCE SYNTHESIS), NÊ
             "communities": communities,
             "map_summaries": map_summaries,
             "global_answer": reduce_res["text"],
-            "total_latency_ms": sum(m.get("latency_ms", 500) for m in map_summaries) + reduce_res["latency_ms"],
+            "total_latency_ms": round(sum(m.get("latency_ms", 0) for m in map_summaries) + reduce_res.get("latency_ms", 0), 2),
             "model": reduce_res["model"],
         }

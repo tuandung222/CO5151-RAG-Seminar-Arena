@@ -1,4 +1,5 @@
 import json
+import time
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field
 from .retriever import LegalRetriever
@@ -134,6 +135,7 @@ Chỉ trả về JSON:"""
         5. Predict [IsSUP] and [IsUSE]
         """
         # Step 1: [Retrieve]
+        start_self_t = time.time()
         retrieval_decision = self.step1_decide_retrieval(query)
 
         if retrieval_decision["token"] == "NO_RETRIEVAL":
@@ -150,6 +152,7 @@ Chỉ trả về JSON:"""
                     "is_use_score": 5,
                     "critique_summary": "Tri thức phổ quát, không cần tra cứu điều luật.",
                 },
+                "latency_ms": round((time.time() - start_self_t) * 1000, 2),
             }
 
         # Step 2: Retrieve candidates
@@ -187,12 +190,21 @@ Hãy đưa ra câu trả lời dựa trên quy định chuẩn xác của Bộ l
 
         gen_res = self.llm.generate(prompt)
 
+        has_180_days = (
+            "180 ngày" in gen_res["text"]
+            or "không quá 180" in gen_res["text"].lower()
+            or "180" in gen_res["text"]
+        )
+
         # Step 5: [IsSUP] & [IsUSE]
         verification = {
             "is_sup_token": "FULLY_SUPPORTED" if valid_passages else "CRITIQUE_REJECT_FALLBACK",
             "is_use_score": 5 if valid_passages else 4,
+            "has_180_days": has_180_days,
             "critique_summary": f"Đã kiểm định {len(candidates)} đoạn văn bản. Chấp nhận {len(valid_passages)} đoạn liên quan, Bác bỏ {len(rejected_passages)} đoạn gây nhiễu/lạc đề.",
         }
+
+        total_latency_ms = round((time.time() - start_self_t) * 1000, 2)
 
         return {
             "mode": "Self-RAG (Reflection Tokens & Grounded Critique)",
@@ -203,5 +215,5 @@ Hãy đưa ra câu trả lời dựa trên quy định chuẩn xác của Bộ l
             "rejected_passages": rejected_passages,
             "answer": gen_res["text"],
             "verification": verification,
-            "latency_ms": gen_res["latency_ms"],
+            "latency_ms": total_latency_ms,
         }

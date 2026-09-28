@@ -1,4 +1,5 @@
 import json
+import time
 from typing import List, Dict, Any, Tuple
 from .retriever import LegalRetriever
 from .llm import UnifiedLLM
@@ -20,6 +21,7 @@ class FLARERAGPipeline:
 
     def run_flare(self, query: str) -> Dict[str, Any]:
         """Execute FLARE active retrieval loop on query."""
+        start_flare_t = time.time()
         # Step 1: Generate initial draft sentences
         draft_prompt = f"""Hãy chia nhỏ câu trả lời cho câu hỏi sau thành 2-3 câu văn ngắn gọn:
 CÂU HỎI: {query}
@@ -105,4 +107,5 @@ CHỈ VIẾT LẠI ĐÚNG 01 CÂU HOÀN CHỈNH:"""
             "retrieval_calls_made": retrieval_calls,
             "trace_steps": trace_steps,
             "final_answer": full_answer,
+            "latency_ms": round((time.time() - start_flare_t) * 1000, 2),
         }

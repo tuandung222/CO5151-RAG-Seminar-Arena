@@ -1,6 +1,7 @@
+.git
 .env
-__pycache__/
+__pycache__
 *.pyc
+*.pptx
 .DS_Store
 *.log
-*.pptx

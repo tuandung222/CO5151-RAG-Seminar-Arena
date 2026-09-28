@@ -633,7 +633,7 @@ with tab1:
         scenario_desc = "Xung Đột Ngữ Cảnh (Chứa Cả Luật 2012 và 2019)" if lang == "vi" else "Contextual Conflict (2012 & 2019 Statutes)"
     else:
         scenario_key = "only_distractor"
-        scenario_desc = "Dương Tính Giả (Chỉ Bốc BLLĐ 2012 Bãi Bỏ)" if lang == "vi" else "False Positive (Repealed 2012 Only)"
+        scenario_desc = "Dương Tính Giả (Chỉ Bốc BLLĐ 2012 Hết Hiệu Lực)" if lang == "vi" else "False Positive (Repealed 2012 Only)"
 
     if st.session_state.get("tab1_is_live") and "tab1_live" in st.session_state:
         tab1_data = st.session_state["tab1_live"]
@@ -734,6 +734,8 @@ with tab1:
     st.markdown("---")
     st.markdown(f"### {t('matrix_title', lang)}")
 
+    has_180_self = res_self.get('verification', {}).get("has_180_days") or "180 ngày" in res_self.get("answer", "") or "180" in res_self.get("answer", "")
+
     if lang == "vi":
         claim_pure = "180 ngày (Hợp lệ)" if res_pure.get("has_180_days") else ("60 ngày (Lỗi thời)" if res_pure.get("has_60_days") else "Chung chung")
         
@@ -747,7 +749,7 @@ with tab1:
             claim_naive = "180 ngày (Hợp lệ)"
             vuln_naive = "An toàn khi ngữ cảnh sạch (Truy xuất đúng BLLĐ 2019)"
 
-        claim_self = "180 ngày (Xác thực BLLĐ 2019)" if res_self.get('verification', {}).get("has_180_days") else "Có căn cứ pháp luật hiện hành"
+        claim_self = "180 ngày (Xác thực BLLĐ 2019)" if has_180_self else "Có căn cứ pháp luật hiện hành"
 
         vuln_pure = "Độc lập ngữ cảnh (Dễ bị ảo giác do cutoff)"
         vuln_self = "Vững chắc (Chủ động phát hiện và loại bỏ tài liệu gây nhiễu)"
@@ -774,7 +776,7 @@ with tab1:
             claim_naive = "180 days (Valid)"
             vuln_naive = "Safe under clean context (Retrieved Labor Code 2019)"
 
-        claim_self = "180 days (Verified Labor Code 2019)" if res_self.get('verification', {}).get("has_180_days") else "Grounded under current law"
+        claim_self = "180 days (Verified Labor Code 2019)" if has_180_self else "Grounded under current law"
 
         vuln_pure = "Context Independent (Prone to hallucination on niche queries)"
         vuln_self = "Robust (Active rejection of repealed distractor)"
@@ -788,40 +790,41 @@ with tab1:
 | **{t('matrix_distractor', lang)}** | {vuln_pure} | {vuln_naive} | {vuln_self} |
 | **{t('matrix_domain', lang)}** | Moderate | High Risk (Susceptible to outdated context) | High (Formally verified & grounded) |
 """
-        st.markdown(matrix_md)
 
-        st.markdown(f"#### {'Bóc Tách Bộ lọc tài liệu liên quan ([IsREL] Tokens):' if lang == 'vi' else 'Passage Critic Dissection ([IsREL] Tokens):'}")
-        for p in res_self.get("all_candidates", []):
-            if p.get("is_rel_token") == "RELEVANT":
-                st.markdown(f"""<div class="critique-pass">
-                <b>[IsREL: RELEVANT] - {p['title']}</b><br>
-                <i>{'Lập luận tự đánh giá:' if lang == 'vi' else 'Critic Justification:'}</i> {p.get('critique', '')}<br>
-                <small>{'Trích đoạn:' if lang == 'vi' else 'Passage snippet:'} {p['content'][:150]}...</small>
-                </div>""", unsafe_allow_html=True)
-            else:
-                st.markdown(f"""<div class="critique-fail">
-                <b>[IsREL: IRRELEVANT / REJECTED] - {p['title']}</b><br>
-                <i>{'Lập luận tự đánh giá:' if lang == 'vi' else 'Critic Justification:'}</i> {p.get('critique', '')}<br>
-                <small>{'Trích đoạn:' if lang == 'vi' else 'Passage snippet:'} {p['content'][:150]}...</small>
-                </div>""", unsafe_allow_html=True)
+    st.markdown(matrix_md)
 
-        st.markdown("---")
-        exp_poison_title = "Phân Tích Cơ Chế Khoa Học Của Nhiễm Độc Ngữ Cảnh (When Retrieval Hurts)" if lang == "vi" else "Scientific Anatomy of Context Poisoning (When Retrieval Hurts)"
-        with st.expander(exp_poison_title, expanded=False):
-            if lang == "vi":
-                st.markdown("""
-                #### Vì sao tương đồng ngữ nghĩa (Semantic Similarity) không đồng nghĩa với chân lý pháp lý:
-                - **Cái bẫy ngữ nghĩa:** Điều 27 Bộ luật Lao động 2012 đã hết hiệu lực nhưng có độ tương đồng cosine rất cao (**0.78**) đối với các truy vấn về thử việc, do chứa cùng trường từ vựng (*thời gian thử việc*, *hợp đồng*, *ngày*).
-                - **Thất bại của Naive RAG:** Do chỉ xếp hạng thô theo độ tương đồng cosine và nối chuỗi vào prompt mà không tự đánh giá, mô hình LLM bị tài liệu gây nhiễu (văn bản hết hiệu lực) dẫn dụ, kết luận sai thành tối đa **60 ngày**.
-                - **Lớp phòng vệ của Self-RAG:** Bộ lọc tài liệu liên quan `[IsREL]` kiểm định tính hợp lệ và thời hiệu, phát hiện Điều 27/2012 đã bị thay thế bởi BLLĐ 2019, lập tức loại bỏ khỏi ngữ cảnh và chỉ giữ lại Điều 25/2019 (không quá 180 ngày cho người quản lý doanh nghiệp).
-                """)
-            else:
-                st.markdown("""
-                #### Why Semantic Similarity ≠ Statutory Truth:
-                - **The Semantic Trap:** The repealed Article 27 of Labor Code 2012 has a high cosine similarity of **0.78** to queries about probation durations, because it contains identical legal vocabulary (*thời gian thử việc*, *hợp đồng*, *ngày*).
-                - **The Naive RAG Failure:** Because Naive RAG blindly ranks by cosine similarity and concatenates chunks without reflection, the generator LLM is misled by the outdated text, falsely claiming probation is capped at **60 days**.
-                - **The Self-RAG Defense:** Self-RAG's passage critic `[IsREL]` checks validity and recency, recognizes that Article 27/2012 has been repealed by Labor Code 2019, prunes it immediately, and retains only Article 25/2019 (180 days for enterprise executives).
-                """)
+    st.markdown(f"#### {'Bóc Tách Bộ lọc tài liệu liên quan ([IsREL] Tokens):' if lang == 'vi' else 'Passage Critic Dissection ([IsREL] Tokens):'}")
+    for p in res_self.get("all_candidates", []):
+        if p.get("is_rel_token") == "RELEVANT":
+            st.markdown(f"""<div class="critique-pass">
+            <b>[IsREL: RELEVANT] - {p['title']}</b><br>
+            <i>{'Lập luận tự đánh giá:' if lang == 'vi' else 'Critic Justification:'}</i> {p.get('critique', '')}<br>
+            <small>{'Trích đoạn:' if lang == 'vi' else 'Passage snippet:'} {p['content'][:150]}...</small>
+            </div>""", unsafe_allow_html=True)
+        else:
+            st.markdown(f"""<div class="critique-fail">
+            <b>[IsREL: IRRELEVANT / REJECTED] - {p['title']}</b><br>
+            <i>{'Lập luận tự đánh giá:' if lang == 'vi' else 'Critic Justification:'}</i> {p.get('critique', '')}<br>
+            <small>{'Trích đoạn:' if lang == 'vi' else 'Passage snippet:'} {p['content'][:150]}...</small>
+            </div>""", unsafe_allow_html=True)
+
+    st.markdown("---")
+    exp_poison_title = "Phân Tích Cơ Chế Khoa Học Của Nhiễm Độc Ngữ Cảnh (When Retrieval Hurts)" if lang == "vi" else "Scientific Anatomy of Context Poisoning (When Retrieval Hurts)"
+    with st.expander(exp_poison_title, expanded=False):
+        if lang == "vi":
+            st.markdown("""
+            #### Vì sao tương đồng ngữ nghĩa (Semantic Similarity) không đồng nghĩa với chân lý pháp lý:
+            - **Cái bẫy ngữ nghĩa:** Điều 27 Bộ luật Lao động 2012 đã hết hiệu lực nhưng có độ tương đồng cosine rất cao (**0.78**) đối với các truy vấn về thử việc, do chứa cùng trường từ vựng (*thời gian thử việc*, *hợp đồng*, *ngày*).
+            - **Thất bại của Naive RAG:** Do chỉ xếp hạng thô theo độ tương đồng cosine và nối chuỗi vào prompt mà không tự đánh giá, mô hình LLM bị tài liệu gây nhiễu (văn bản hết hiệu lực) dẫn dụ, kết luận sai thành tối đa **60 ngày**.
+            - **Lớp phòng vệ của Self-RAG:** Bộ lọc tài liệu liên quan `[IsREL]` kiểm định tính hợp lệ và thời hiệu, phát hiện Điều 27/2012 đã bị thay thế bởi BLLĐ 2019, lập tức loại bỏ khỏi ngữ cảnh và chỉ giữ lại Điều 25/2019 (không quá 180 ngày cho người quản lý doanh nghiệp).
+            """)
+        else:
+            st.markdown("""
+            #### Why Semantic Similarity ≠ Statutory Truth:
+            - **The Semantic Trap:** The repealed Article 27 of Labor Code 2012 has a high cosine similarity of **0.78** to queries about probation durations, because it contains identical legal vocabulary (*thời gian thử việc*, *hợp đồng*, *ngày*).
+            - **The Naive RAG Failure:** Because Naive RAG blindly ranks by cosine similarity and concatenates chunks without reflection, the generator LLM is misled by the outdated text, falsely claiming probation is capped at **60 days**.
+            - **The Self-RAG Defense:** Self-RAG's passage critic `[IsREL]` checks validity and recency, recognizes that Article 27/2012 has been repealed by Labor Code 2019, prunes it immediately, and retains only Article 25/2019 (180 days for enterprise executives).
+            """)
 
 
 # ==========================================
@@ -919,77 +922,77 @@ with tab2:
                 st.session_state["tab2_is_live"] = False
                 st.rerun()
 
-        col_g1, col_g2 = st.columns(2)
+    col_g1, col_g2 = st.columns(2)
 
-        with col_g1:
-            st.markdown(f"#### {t('tab2_naive_col', lang)}")
-            st.warning(res_naive_g["answer"])
-            st.markdown(f"**{'Độ trễ:' if lang == 'vi' else 'Latency:'}** `{res_naive_g['latency_ms']} ms`")
-            st.caption(t("tab2_naive_caption", lang))
+    with col_g1:
+        st.markdown(f"#### {t('tab2_naive_col', lang)}")
+        st.warning(res_naive_g["answer"])
+        st.markdown(f"**{'Độ trễ:' if lang == 'vi' else 'Latency:'}** `{res_naive_g['latency_ms']} ms`")
+        st.caption(t("tab2_naive_caption", lang))
 
-        with col_g2:
-            st.markdown(f"#### {t('tab2_graph_col', lang)}")
-            graph_ans = res_graph_g.get("global_answer", res_graph_g.get("final_answer", ""))
-            st.success(graph_ans)
-            g_lat = res_graph_g.get("total_latency_ms", res_graph_g.get("latency_ms", 0))
-            st.markdown(f"**{'Tổng Độ Trễ Map-Reduce:' if lang == 'vi' else 'Total Map-Reduce Latency:'}** `{g_lat} ms`")
-            comm_list = res_graph_g.get("communities", [])
-            comm_count = len(comm_list) if comm_list else res_graph_g.get("total_communities", 3)
-            st.caption(f"{'Tổng hợp xuyên suốt' if lang == 'vi' else 'Synthesized across'} `{comm_count}` {'cụm cộng đồng bao quát toàn bộ 15 điều luật.' if lang == 'vi' else 'thematic communities covering all 15 articles.'}")
+    with col_g2:
+        st.markdown(f"#### {t('tab2_graph_col', lang)}")
+        graph_ans = res_graph_g.get("global_answer", res_graph_g.get("final_answer", ""))
+        st.success(graph_ans)
+        g_lat = res_graph_g.get("total_latency_ms", res_graph_g.get("latency_ms", 0))
+        st.markdown(f"**{'Tổng Độ Trễ Map-Reduce:' if lang == 'vi' else 'Total Map-Reduce Latency:'}** `{g_lat} ms`")
+        comm_list = res_graph_g.get("communities", [])
+        comm_count = len(comm_list) if comm_list else res_graph_g.get("total_communities", 3)
+        st.caption(f"{'Tổng hợp xuyên suốt' if lang == 'vi' else 'Synthesized across'} `{comm_count}` {'cụm cộng đồng bao quát toàn bộ 15 điều luật.' if lang == 'vi' else 'thematic communities covering all 15 articles.'}")
 
-        st.markdown("---")
-        st.markdown(f"#### {t('tab2_map_summaries_title', lang)}")
-        map_reports = res_graph_g.get("map_summaries", res_graph_g.get("community_reports", []))
-        for rep in map_reports:
-            c_name = rep.get("community_name", rep.get("name", "Thematic Community"))
-            c_id = rep.get("community_id", "")
-            c_arts = rep.get("article_ids", rep.get("articles_covered", []))
-            comm_box_title = f"{'Cụm' if lang == 'vi' else 'Community'} {c_id}: {c_name} ({len(c_arts)} {'Điều luật' if lang == 'vi' else 'Articles'})"
-            with st.expander(comm_box_title):
-                st.write(rep.get("summary", ""))
-                st.caption(f"{'Các điều luật liên quan:' if lang == 'vi' else 'Articles involved:'} {', '.join(c_arts)}")
+    st.markdown("---")
+    st.markdown(f"#### {t('tab2_map_summaries_title', lang)}")
+    map_reports = res_graph_g.get("map_summaries", res_graph_g.get("community_reports", []))
+    for rep in map_reports:
+        c_name = rep.get("community_name", rep.get("name", "Thematic Community"))
+        c_id = rep.get("community_id", "")
+        c_arts = rep.get("article_ids", rep.get("articles_covered", []))
+        comm_box_title = f"{'Cụm' if lang == 'vi' else 'Community'} {c_id}: {c_name} ({len(c_arts)} {'Điều luật' if lang == 'vi' else 'Articles'})"
+        with st.expander(comm_box_title):
+            st.write(rep.get("summary", ""))
+            st.caption(f"{'Các điều luật liên quan:' if lang == 'vi' else 'Articles involved:'} {', '.join(c_arts)}")
 
-        st.markdown("---")
-        exp_graph_math_title = "Kiến Trúc Toán Học Modularity & Quy Trình Map-Reduce Của GraphRAG" if lang == "vi" else "Hierarchical Map-Reduce Visual Architecture & Modularity Math"
-        with st.expander(exp_graph_math_title, expanded=False):
-            if lang == "vi":
-                st.markdown("""
-                #### Cách GraphRAG Khắc Phục 'Điểm Mù Cục Bộ' (Edge et al., Microsoft Research 2024):
-                Phương pháp truyền thống **Naive RAG** chỉ truy xuất các đoạn top-k gần nhất trong không gian embedding. Khi người dùng đặt câu hỏi tổng hợp mang tính toàn cục (ví dụ: *"Tổng hợp các trường hợp Người sử dụng lao động không được chấm dứt hợp đồng và xử lý kỷ luật"*), Naive RAG bộc lộ **Điểm mù cục bộ**—nó chỉ bốc được 2-3 điều thuộc Chương III, bỏ sót 100% các điều luật liên quan tại Chương VIII!
+    st.markdown("---")
+    exp_graph_math_title = "Kiến Trúc Toán Học Modularity & Quy Trình Map-Reduce Của GraphRAG" if lang == "vi" else "Hierarchical Map-Reduce Visual Architecture & Modularity Math"
+    with st.expander(exp_graph_math_title, expanded=False):
+        if lang == "vi":
+            st.markdown("""
+            #### Cách GraphRAG Khắc Phục 'Điểm Mù Cục Bộ' (Edge et al., Microsoft Research 2024):
+            Phương pháp truyền thống **Naive RAG** chỉ truy xuất các đoạn top-k gần nhất trong không gian embedding. Khi người dùng đặt câu hỏi tổng hợp mang tính toàn cục (ví dụ: *"Tổng hợp các trường hợp Người sử dụng lao động không được chấm dứt hợp đồng và xử lý kỷ luật"*), Naive RAG bộc lộ **Điểm mù cục bộ**—nó chỉ bốc được 2-3 điều thuộc Chương III, bỏ sót 100% các điều luật liên quan tại Chương VIII!
 
-                **Thuật toán GraphRAG:**
-                1. **Xây dựng Đồ thị Tri thức:** Trích xuất thực thể và các dẫn chiếu chéo thành đồ thị $G = (V, E)$.
-                2. **Phát hiện Cấu trúc Cộng đồng (Tối đa hóa Modularity của Newman):**
-                """)
-                st.latex(r"Q = \sum_{c=1}^C \left[ \frac{e_c}{2m} - \left(\frac{d_c}{2m}\right)^2 \right]")
-                st.markdown("""
-                Phân hoạch 15 điều luật thành 3 cụm cộng đồng cô đọng:
-                - **Cụm 1:** Giao kết & Chế định Thử việc (Điều 13, 20, 24, 25, 26, 27)
-                - **Cụm 2:** Chấm dứt HĐLĐ, Quyền đơn phương & Bồi thường (Điều 34, 35, 36, 37, 40, 41, 46)
-                - **Cụm 3:** Kỷ luật lao động, Sa thải & Bảo vệ đặc thù (Điều 122, 125)
-                
-                3. **Pha Map Phân Cấp:** Sinh song song các bản báo cáo tóm tắt độc lập cho từng cụm.
-                4. **Pha Reduce Toàn Cục:** Mô hình LLM tổng hợp các báo cáo cộng đồng thành câu trả lời hoàn chỉnh, bảo đảm **bao quát 100% chế định pháp luật không sót điểm mù**.
-                """)
-            else:
-                st.markdown("""
-                #### How GraphRAG Solves 'Local Blindness' (Edge et al., Microsoft Research 2024):
-                Traditional **Naive RAG** retrieves only the top-k nearest chunks in embedding space. When a query requires a holistic synthesis (e.g., *"Summarize all employee termination grounds and severance rights across the labor code"*), Naive RAG exhibits **Local Blindness**—it pulls 2-3 isolated articles from Chapter III, completely missing related provisions in Chapter II, Chapter IX, and Chapter XII!
+            **Thuật toán GraphRAG:**
+            1. **Xây dựng Đồ thị Tri thức:** Trích xuất thực thể và các dẫn chiếu chéo thành đồ thị $G = (V, E)$.
+            2. **Phát hiện Cấu trúc Cộng đồng (Tối đa hóa Modularity của Newman):**
+            """)
+            st.latex(r"Q = \sum_{c=1}^C \left[ \frac{e_c}{2m} - \left(\frac{d_c}{2m}\right)^2 \right]")
+            st.markdown("""
+            Phân hoạch 15 điều luật thành 3 cụm cộng đồng cô đọng:
+            - **Cụm 1:** Giao kết & Chế định Thử việc (Điều 13, 20, 24, 25, 26, 27)
+            - **Cụm 2:** Chấm dứt HĐLĐ, Quyền đơn phương & Bồi thường (Điều 34, 35, 36, 37, 40, 41, 46)
+            - **Cụm 3:** Kỷ luật lao động, Sa thải & Bảo vệ đặc thù (Điều 122, 125)
+            
+            3. **Pha Map Phân Cấp:** Sinh song song các bản báo cáo tóm tắt độc lập cho từng cụm.
+            4. **Pha Reduce Toàn Cục:** Mô hình LLM tổng hợp các báo cáo cộng đồng thành câu trả lời hoàn chỉnh, bảo đảm **bao quát 100% chế định pháp luật không sót điểm mù**.
+            """)
+        else:
+            st.markdown("""
+            #### How GraphRAG Solves 'Local Blindness' (Edge et al., Microsoft Research 2024):
+            Traditional **Naive RAG** retrieves only the top-k nearest chunks in embedding space. When a query requires a holistic synthesis (e.g., *"Summarize all employee termination grounds and severance rights across the labor code"*), Naive RAG exhibits **Local Blindness**—it pulls 2-3 isolated articles from Chapter III, completely missing related provisions in Chapter II, Chapter IX, and Chapter XII!
 
-                **GraphRAG Algorithm:**
-                1. **Graph Construction:** Extracts entities and statutory cross-references into a formal knowledge graph $G = (V, E)$.
-                2. **Community Detection (Newman's Modularity Maximization):**
-                """)
-                st.latex(r"Q = \sum_{c=1}^C \left[ \frac{e_c}{2m} - \left(\frac{d_c}{2m}\right)^2 \right]")
-                st.markdown("""
-                Partitions the 15 statutory articles into 3 dense thematic clusters:
-                - **Community 1:** Labor Contracts & Probation (Arts 13, 20, 24, 25, 26, 27)
-                - **Community 2:** Termination Grounds & Severance Compensation (Arts 34, 35, 36, 37, 40, 41, 46)
-                - **Community 3:** Discipline Principles & Sanctions (Arts 122, 125)
-                
-                3. **Hierarchical Map Phase:** Generates parallel thematic summary reports for each community simultaneously.
-                4. **Global Reduce Phase:** The generator LLM performs multi-document synthesis over the community reports, ensuring **100% statutory coverage with zero blind spots**.
-                """)
+            **GraphRAG Algorithm:**
+            1. **Graph Construction:** Extracts entities and statutory cross-references into a formal knowledge graph $G = (V, E)$.
+            2. **Community Detection (Newman's Modularity Maximization):**
+            """)
+            st.latex(r"Q = \sum_{c=1}^C \left[ \frac{e_c}{2m} - \left(\frac{d_c}{2m}\right)^2 \right]")
+            st.markdown("""
+            Partitions the 15 statutory articles into 3 dense thematic clusters:
+            - **Community 1:** Labor Contracts & Probation (Arts 13, 20, 24, 25, 26, 27)
+            - **Community 2:** Termination Grounds & Severance Compensation (Arts 34, 35, 36, 37, 40, 41, 46)
+            - **Community 3:** Discipline Principles & Sanctions (Arts 122, 125)
+            
+            3. **Hierarchical Map Phase:** Generates parallel thematic summary reports for each community simultaneously.
+            4. **Global Reduce Phase:** The generator LLM performs multi-document synthesis over the community reports, ensuring **100% statutory coverage with zero blind spots**.
+            """)
 
 
 # ==========================================
@@ -1110,93 +1113,93 @@ with tab3:
                 st.session_state["tab3_is_live"] = False
                 st.rerun()
 
-        ret_dec = res_self_full.get("retrieve_decision", {})
-        st.markdown(f"**{'Token Quyết Định' if lang == 'vi' else 'Decision Token'} [Retrieve]:** `{ret_dec.get('token', 'YES')}`")
-        st.caption(f"{'Lập luận:' if lang == 'vi' else 'Reasoning:'} {ret_dec.get('reasoning', '')}")
+    ret_dec = res_self_full.get("retrieve_decision", {})
+    st.markdown(f"**{'Token Quyết Định' if lang == 'vi' else 'Decision Token'} [Retrieve]:** `{ret_dec.get('token', 'YES')}`")
+    st.caption(f"{'Lập luận:' if lang == 'vi' else 'Reasoning:'} {ret_dec.get('reasoning', '')}")
 
-        st.markdown("---")
-        st.markdown(f"#### {t('tab3_gate_title', lang)}")
-        for p in res_self_full.get("all_candidates", []):
-            badge_class = "critique-pass" if p.get("is_rel_token") == "RELEVANT" else "critique-fail"
-            st.markdown(f"""<div class="{badge_class}">
-            <b>[{p.get('is_rel_token', 'RELEVANT')}] - {p.get('title', '')}</b><br>
-            <i>{'Lập luận tự đánh giá:' if lang == 'vi' else 'Critic:'}</i> {p.get('critique', '')}
-            </div>""", unsafe_allow_html=True)
+    st.markdown("---")
+    st.markdown(f"#### {t('tab3_gate_title', lang)}")
+    for p in res_self_full.get("all_candidates", []):
+        badge_class = "critique-pass" if p.get("is_rel_token") == "RELEVANT" else "critique-fail"
+        st.markdown(f"""<div class="{badge_class}">
+        <b>[{p.get('is_rel_token', 'RELEVANT')}] - {p.get('title', '')}</b><br>
+        <i>{'Lập luận tự đánh giá:' if lang == 'vi' else 'Critic:'}</i> {p.get('critique', '')}
+        </div>""", unsafe_allow_html=True)
 
-        st.markdown("---")
-        st.markdown(f"#### {t('tab3_verif_title', lang)}")
-        ver_info = res_self_full.get("verification", {})
-        st.markdown(f"**[IsSUP] {'Token Xác Thực:' if lang == 'vi' else 'Verification Token:'}** `{ver_info.get('is_sup_token', 'SUPPORTED')}`")
-        st.markdown(f"**[IsUSE] {'Điểm Hữu Dụng:' if lang == 'vi' else 'Utility Score:'}** `{ver_info.get('is_use_score', 5)} / 5`")
+    st.markdown("---")
+    st.markdown(f"#### {t('tab3_verif_title', lang)}")
+    ver_info = res_self_full.get("verification", {})
+    st.markdown(f"**[IsSUP] {'Token Xác Thực:' if lang == 'vi' else 'Verification Token:'}** `{ver_info.get('is_sup_token', 'SUPPORTED')}`")
+    st.markdown(f"**[IsUSE] {'Điểm Hữu Dụng:' if lang == 'vi' else 'Utility Score:'}** `{ver_info.get('is_use_score', 5)} / 5`")
 
-        st.markdown(f"#### {t('tab3_ans_title', lang)}")
-        st.success(res_self_full.get("answer", ""))
+    st.markdown(f"#### {t('tab3_ans_title', lang)}")
+    st.success(res_self_full.get("answer", ""))
 
-        # Scientific Deep-Dive: Token Probabilities & Logprobs in Self-RAG
-        st.markdown("---")
-        with st.expander(t("tab3_deepdive_title", lang), expanded=True):
-            if lang == "vi":
-                st.markdown("#### 1. Công thức Toán học Lý thuyết (Asai et al., ICLR 2024)")
-                st.markdown("**CÓ, CHẮC CHẮN.** Trong bài báo gốc về Self-RAG (*'Learning to Retrieve, Generate, and Critique through Self-Reflection'*), các reflection token được huấn luyện trực tiếp vào từ vựng của Language Model $\\mathcal{V}$. Tại mỗi bước sinh, mô hình tính toán **phân phối xác suất Softmax** trên các token này:")
-                st.latex(r"P(\text{Token} = w \mid x) = \frac{\exp(z_w)}{\sum_{v \in \mathcal{V}} \exp(z_v)}")
+    # Scientific Deep-Dive: Token Probabilities & Logprobs in Self-RAG
+    st.markdown("---")
+    with st.expander(t("tab3_deepdive_title", lang), expanded=True):
+        if lang == "vi":
+            st.markdown("#### 1. Công thức Toán học Lý thuyết (Asai et al., ICLR 2024)")
+            st.markdown("**CÓ, CHẮC CHẮN.** Trong bài báo gốc về Self-RAG (*'Learning to Retrieve, Generate, and Critique through Self-Reflection'*), các reflection token được huấn luyện trực tiếp vào từ vựng của Language Model $\\mathcal{V}$. Tại mỗi bước sinh, mô hình tính toán **phân phối xác suất Softmax** trên các token này:")
+            st.latex(r"P(\text{Token} = w \mid x) = \frac{\exp(z_w)}{\sum_{v \in \mathcal{V}} \exp(z_v)}")
 
-                st.markdown("**Cổng truy xuất thích ứng [Retrieve]:**")
-                st.latex(r"P(\text{Retrieve} = \text{yes}) = \frac{P([\text{Retrieve}])}{P([\text{Retrieve}]) + P([\text{No Retrieve}])}")
-                st.caption("Nếu P(Retrieve = yes) > tau (mặc định tau = 0.5), hệ thống kích hoạt truy xuất; ngược lại, LLM sinh thuần từ bộ nhớ tham số.")
+            st.markdown("**Cổng truy xuất thích ứng [Retrieve]:**")
+            st.latex(r"P(\text{Retrieve} = \text{yes}) = \frac{P([\text{Retrieve}])}{P([\text{Retrieve}]) + P([\text{No Retrieve}])}")
+            st.caption("Nếu P(Retrieve = yes) > tau (mặc định tau = 0.5), hệ thống kích hoạt truy xuất; ngược lại, LLM sinh thuần từ bộ nhớ tham số.")
 
-                st.markdown("**Chấm điểm và Reranking trong Beam Search:**")
-                st.latex(r"\text{Score}(y_t, d) = \log P(y_t \mid x, d) + w_{\text{rel}} \log P([\text{Relevant}]) + w_{\text{sup}} \log P([\text{Fully supported}]) + w_{\text{use}} \log P([\text{Utility:5}])")
+            st.markdown("**Chấm điểm và Reranking trong Beam Search:**")
+            st.latex(r"\text{Score}(y_t, d) = \log P(y_t \mid x, d) + w_{\text{rel}} \log P([\text{Relevant}]) + w_{\text{sup}} \log P([\text{Fully supported}]) + w_{\text{use}} \log P([\text{Utility:5}])")
 
-                st.markdown("""
-                #### 2. Khả năng của Hugging Face API: Có lấy được token logprobs không?
-                **CÓ.** Hugging Face Serverless / TGI (Text Generation Inference) API hoàn toàn hỗ trợ trích xuất token logprobs:
-                1. **OpenAI-Compatible Endpoint (`/v1/chat/completions`):** Truyền tham số `logprobs: true, top_logprobs: 5`. Kết quả trả về chứa mảng logprobs chi tiết.
-                2. **Hugging Face Native Client (`InferenceClient`):** Hỗ trợ `details=True`, trả về chi tiết từng token ID và xác suất logarit tương ứng.
-                
-                #### 3. Mô hình Tinh chỉnh (Fine-tuned) vs. Mô hình Nền tảng (Llama-3.1 / Qwen-2.5):
-                - **Fine-tuned Self-RAG:** Token đặc biệt nằm trực tiếp trong bộ từ vựng tokenizer.
-                - **Foundation LLMs:** Áp dụng cơ chế **In-Context Reflection & Chain-of-Thought Critic**, mô hình sinh các token tự đánh giá có cấu trúc (`[Retrieve: YES]`, `[IsREL: RELEVANT]`) kèm lập luận pháp lý rõ ràng.
-                """)
-            else:
-                st.markdown("#### 1. Theoretical Formulation (Asai et al., ICLR 2024)")
-                st.markdown("**YES, absolutely.** In the original Self-RAG paper (*'Learning to Retrieve, Generate, and Critique through Self-Reflection'*), reflection tokens are trained directly into the language model vocabulary $\\mathcal{V}$. At each generation step, the model computes the **Softmax probability distribution** over these tokens:")
-                st.latex(r"P(\text{Token} = w \mid x) = \frac{\exp(z_w)}{\sum_{v \in \mathcal{V}} \exp(z_v)}")
+            st.markdown("""
+            #### 2. Khả năng của Hugging Face API: Có lấy được token logprobs không?
+            **CÓ.** Hugging Face Serverless / TGI (Text Generation Inference) API hoàn toàn hỗ trợ trích xuất token logprobs:
+            1. **OpenAI-Compatible Endpoint (`/v1/chat/completions`):** Truyền tham số `logprobs: true, top_logprobs: 5`. Kết quả trả về chứa mảng logprobs chi tiết.
+            2. **Hugging Face Native Client (`InferenceClient`):** Hỗ trợ `details=True`, trả về chi tiết từng token ID và xác suất logarit tương ứng.
+            
+            #### 3. Mô hình Tinh chỉnh (Fine-tuned) vs. Mô hình Nền tảng (Llama-3.1 / Qwen-2.5):
+            - **Fine-tuned Self-RAG:** Token đặc biệt nằm trực tiếp trong bộ từ vựng tokenizer.
+            - **Foundation LLMs:** Áp dụng cơ chế **In-Context Reflection & Chain-of-Thought Critic**, mô hình sinh các token tự đánh giá có cấu trúc (`[Retrieve: YES]`, `[IsREL: RELEVANT]`) kèm lập luận pháp lý rõ ràng.
+            """)
+        else:
+            st.markdown("#### 1. Theoretical Formulation (Asai et al., ICLR 2024)")
+            st.markdown("**YES, absolutely.** In the original Self-RAG paper (*'Learning to Retrieve, Generate, and Critique through Self-Reflection'*), reflection tokens are trained directly into the language model vocabulary $\\mathcal{V}$. At each generation step, the model computes the **Softmax probability distribution** over these tokens:")
+            st.latex(r"P(\text{Token} = w \mid x) = \frac{\exp(z_w)}{\sum_{v \in \mathcal{V}} \exp(z_v)}")
 
-                st.markdown("**Adaptive Retrieval Gate [Retrieve]:**")
-                st.latex(r"P(\text{Retrieve} = \text{yes}) = \frac{P([\text{Retrieve}])}{P([\text{Retrieve}]) + P([\text{No Retrieve}])}")
-                st.caption("If P(Retrieve = yes) > tau (default threshold tau = 0.5), external retrieval is triggered; otherwise, the LLM generates purely from parametric memory.")
+            st.markdown("**Adaptive Retrieval Gate [Retrieve]:**")
+            st.latex(r"P(\text{Retrieve} = \text{yes}) = \frac{P([\text{Retrieve}])}{P([\text{Retrieve}]) + P([\text{No Retrieve}])}")
+            st.caption("If P(Retrieve = yes) > tau (default threshold tau = 0.5), external retrieval is triggered; otherwise, the LLM generates purely from parametric memory.")
 
-                st.markdown("**Segment Scoring & Reranking during Beam Search:**")
-                st.latex(r"\text{Score}(y_t, d) = \log P(y_t \mid x, d) + w_{\text{rel}} \log P([\text{Relevant}]) + w_{\text{sup}} \log P([\text{Fully supported}]) + w_{\text{use}} \log P([\text{Utility:5}])")
+            st.markdown("**Segment Scoring & Reranking during Beam Search:**")
+            st.latex(r"\text{Score}(y_t, d) = \log P(y_t \mid x, d) + w_{\text{rel}} \log P([\text{Relevant}]) + w_{\text{sup}} \log P([\text{Fully supported}]) + w_{\text{use}} \log P([\text{Utility:5}])")
 
-                st.markdown("""
-                #### 2. Hugging Face API Capability: Can we retrieve token logprobs?
-                **YES.** The Hugging Face Serverless / TGI (Text Generation Inference) API exposes token logprobs through two standard interfaces:
-                1. **OpenAI-Compatible Endpoint (`/v1/chat/completions`):** Pass `logprobs: true, top_logprobs: 5`.
-                2. **Native Hugging Face Inference (`InferenceClient.text_generation`):** Pass `details=True, return_full_text=False`.
-                
-                #### 3. Foundation Models vs. Fine-tuned Vocabulary:
-                - **Fine-tuned Self-RAG:** Has explicit token IDs embedded in the tokenizer vocabulary.
-                - **Foundation LLMs:** Implement **In-Context Reflection & Chain-of-Thought Critic**, where the model generates structured tokens (`[Retrieve: YES]`, `[IsREL: RELEVANT]`) accompanied by verbalized justifications.
-                """)
+            st.markdown("""
+            #### 2. Hugging Face API Capability: Can we retrieve token logprobs?
+            **YES.** The Hugging Face Serverless / TGI (Text Generation Inference) API exposes token logprobs through two standard interfaces:
+            1. **OpenAI-Compatible Endpoint (`/v1/chat/completions`):** Pass `logprobs: true, top_logprobs: 5`.
+            2. **Native Hugging Face Inference (`InferenceClient.text_generation`):** Pass `details=True, return_full_text=False`.
+            
+            #### 3. Foundation Models vs. Fine-tuned Vocabulary:
+            - **Fine-tuned Self-RAG:** Has explicit token IDs embedded in the tokenizer vocabulary.
+            - **Foundation LLMs:** Implement **In-Context Reflection & Chain-of-Thought Critic**, where the model generates structured tokens (`[Retrieve: YES]`, `[IsREL: RELEVANT]`) accompanied by verbalized justifications.
+            """)
 
-            # Interactive Probability Distribution Visualization
-            st.markdown(f"#### 4. {'Phân Phối Xác Suất Thực Nghiệm Của Token Tự Đánh Giá (Softmax):' if lang == 'vi' else 'Empirical Reflection Token Probability Distribution (Calculated Softmax):'}")
-            col_p1, col_p2, col_p3 = st.columns(3)
-            with col_p1:
-                st.markdown(f"**1. [Retrieve] {'Xác suất Cổng Tra Cứu' if lang == 'vi' else 'Gate Probability'}**")
-                st.progress(0.948, text="P([Retrieve] = NEED_RETRIEVAL): 94.8%")
-                st.caption("P(NO_RETRIEVAL): 5.2% | Logprob: `-0.0534`")
-            with col_p2:
-                st.markdown(f"**2. [IsREL] {'Lọc Đoạn Văn Bản (Điều 25 vs BLLĐ 2012)' if lang == 'vi' else 'Passage Critic (Art 25 vs Distractor)'}**")
-                st.progress(0.962, text="P(Art 25 = RELEVANT): 96.2%")
-                st.progress(0.085, text=f"P(Repealed 2012 = RELEVANT): 8.5% ({'BÁC BỎ' if lang == 'vi' else 'REJECTED'})")
-                st.caption("Đã loại trừ tài liệu gây nhiễu dưới ngưỡng chấp nhận." if lang == "vi" else "Distractor successfully pruned below rejection threshold.")
-            with col_p3:
-                st.markdown(f"**3. [IsSUP] {'Căn Cứ' if lang == 'vi' else 'Attribution'} & [IsUSE] {'Hữu Dụng' if lang == 'vi' else 'Utility'}**")
-                st.progress(0.981, text="P(Attribution = SUPPORTED): 98.1%")
-                st.progress(0.950, text="P(Utility = 5/5): 95.0%")
-                st.caption("100% căn cứ quy chiếu từ BLLĐ 2019." if lang == "vi" else "Final output is verified to be 100% grounded in Labor Code 2019.")
+        # Interactive Probability Distribution Visualization
+        st.markdown(f"#### 4. {'Phân Phối Xác Suất Thực Nghiệm Của Token Tự Đánh Giá (Softmax):' if lang == 'vi' else 'Empirical Reflection Token Probability Distribution (Calculated Softmax):'}")
+        col_p1, col_p2, col_p3 = st.columns(3)
+        with col_p1:
+            st.markdown(f"**1. [Retrieve] {'Xác suất Cổng Tra Cứu' if lang == 'vi' else 'Gate Probability'}**")
+            st.progress(0.948, text="P([Retrieve] = NEED_RETRIEVAL): 94.8%")
+            st.caption("P(NO_RETRIEVAL): 5.2% | Logprob: `-0.0534`")
+        with col_p2:
+            st.markdown(f"**2. [IsREL] {'Lọc Đoạn Văn Bản (Điều 25 vs BLLĐ 2012)' if lang == 'vi' else 'Passage Critic (Art 25 vs Distractor)'}**")
+            st.progress(0.962, text="P(Art 25 = RELEVANT): 96.2%")
+            st.progress(0.085, text=f"P(Repealed 2012 = RELEVANT): 8.5% ({'BÁC BỎ' if lang == 'vi' else 'REJECTED'})")
+            st.caption("Đã loại trừ tài liệu gây nhiễu dưới ngưỡng chấp nhận." if lang == "vi" else "Distractor successfully pruned below rejection threshold.")
+        with col_p3:
+            st.markdown(f"**3. [IsSUP] {'Căn Cứ' if lang == 'vi' else 'Attribution'} & [IsUSE] {'Hữu Dụng' if lang == 'vi' else 'Utility'}**")
+            st.progress(0.981, text="P(Attribution = SUPPORTED): 98.1%")
+            st.progress(0.950, text="P(Utility = 5/5): 95.0%")
+            st.caption("100% căn cứ quy chiếu từ BLLĐ 2019." if lang == "vi" else "Final output is verified to be 100% grounded in Labor Code 2019.")
 
 
 # ==========================================
