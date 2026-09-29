@@ -3,7 +3,7 @@
     "model": "Qwen/Qwen2.5-72B-Instruct (Flagship Benchmark) & meta-llama/Llama-3.1-8B-Instruct (Academic Baseline)",
     "retriever": "Dense SOTA BAAI/bge-m3 (1024-d, L2 normalized) + Okapi BM25 (RRF k=60)",
     "corpus_version": "Bo luat Lao dong so 45/2019/QH14 (Hien hanh) vs Bo luat Lao dong so 10/2012/QH13 (Bai bo)",
-    "audit_status": "CONTROLLED BENCHMARK RUN (Reproducible Master Seminar Testbed)",
+    "audit_status": "CURATED ILLUSTRATION (Hand-edited from actual LLM outputs for seminar demo)",
     "timestamp": "2026-09-27 00:15:00 UTC"
   },
   "tab1": {

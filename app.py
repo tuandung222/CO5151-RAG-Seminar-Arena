@@ -687,9 +687,9 @@ with st.expander(t("master_guide_expander", lang), expanded=False):
 | :--- | :--- | :--- | :--- | :--- |
 | **1. Pure LLM** | Parametric Memory (Bộ nhớ tham số / Trọng số mô hình) mô hình | $P(y \mid x; \theta)$ | Không tốn độ trễ tra cứu ngoài | Trò chuyện tổng quát, suy luận đời thường |
 | **2. Naive RAG** | Tìm kiếm tương đồng top-k + nối chuỗi thô | $\arg\max_y P(y \mid x, \text{TopK}(x))$ | Bổ sung tri thức thiếu trong pre-training | FAQ đơn giản trên tài liệu tĩnh, không xung đột |
-| **3. Self-RAG** | Token tự đánh giá + Cổng xác suất logprob | $\text{Score} = \text{LLM} + w_{\text{rel}} \log P(\text{IsREL}) + w_{\text{sup}} \log P(\text{IsSUP})$ | **Nhiễm độc tài liệu gây nhiễu** (Luật hết hiệu lực/mâu thuẫn) | Lĩnh vực rủi ro cao (Pháp lý, Y tế, Kiểm toán tài chính) |
+| **3. Self-RAG** | Token tự đánh giá (In-context Surrogate) | Emulate: $\text{Score} \approx f(\text{IsREL}, \text{IsSUP}, \text{IsUSE})$ | **Nhiễm độc tài liệu gây nhiễu** (Luật hết hiệu lực/mâu thuẫn) | Lĩnh vực rủi ro cao (Pháp lý, Y tế, Kiểm toán tài chính) |
 | **4. GraphRAG** | Đồ thị tri thức + Phân cụm cộng đồng theo Modularity + Tổng hợp phân cấp Map-Reduce | $\text{Reduce}(\{\text{Map}(C_i)\}_{i=1}^M)$, $Q = \sum [e_{ii} - a_i^2]$ | **Điểm mù cục bộ của Vector Search (Local Blindness) của Vector Search** (Bỏ sót điều khoản liên chương) | Báo cáo chính sách toàn diện, tóm lược quy chế pháp luật |
-| **5. FLARE** | Sinh nháp dự phóng + Kích hoạt truy xuất chủ động theo độ bất định | Kích hoạt truy xuất khi $\min_{t} P(w_t) < \theta$ | **Tốn kém chi phí & độ trễ truy xuất dư thừa** | Báo cáo sự kiện nhiều câu, văn bản pháp lý dài kỳ |
+| **5. FLARE** | Sinh nháp dự phóng + Kích hoạt truy xuất theo verbalized confidence | Kích hoạt truy xuất khi $\text{Conf}_{\text{LLM}}(S_t) < \theta$ | **Tốn kém chi phí & độ trễ truy xuất dư thừa** | Báo cáo sự kiện nhiều câu, văn bản pháp lý dài kỳ |
 """)
         st.caption("Thiết kế phục vụ seminar học viên cao học CO5151 Advanced Agentic AI (HCMUT). Học viên: Dung Vo. Đối chứng thực tế trên Bộ luật Lao động 2019 và tài liệu gây nhiễu BLLĐ 2012 (đã hết hiệu lực thi hành).")
     else:
@@ -704,9 +704,9 @@ with st.expander(t("master_guide_expander", lang), expanded=False):
 | :--- | :--- | :--- | :--- | :--- |
 | **1. Pure LLM** | Parametric weights only | $P(y \mid x; \theta)$ | Zero external latency / cold-start | General conversation, common-sense reasoning |
 | **2. Naive RAG** | Blind top-k similarity search + concatenation | $\arg\max_y P(y \mid x, \text{TopK}(x))$ | Information absence in pre-training | Simple FAQ lookup on static, non-conflicting docs |
-| **3. Self-RAG** | Reflective critic tokens + logprob gating | $\text{Score} = \text{LLM} + w_{\text{rel}} \log P(\text{IsREL}) + w_{\text{sup}} \log P(\text{IsSUP})$ | **Distractor Poisoning** (Repealed/Conflicting laws) | High-stakes domains (Legal, Healthcare, Financial audit) |
+| **3. Self-RAG** | Reflective critic tokens (In-context Surrogate) | Emulate: $\text{Score} \approx f(\text{IsREL}, \text{IsSUP}, \text{IsUSE})$ | **Distractor Poisoning** (Repealed/Conflicting laws) | High-stakes domains (Legal, Healthcare, Financial audit) |
 | **4. GraphRAG** | Knowledge Graph + Community Modularity + Map-Reduce | $\text{Reduce}(\{\text{Map}(C_i)\}_{i=1}^M)$, $Q = \sum [e_{ii} - a_i^2]$ | **Local Blindness** (Corpus-wide omission) | Holistic policy summaries, comprehensive legal digests |
-| **5. FLARE** | Forward drafting + on-demand confidence trigger | Trigger retrieval iff $\min_{t} P(w_t) < \theta$ | **Excessive Retrieval Latency & Overhead** | Long-form multi-sentence factual reports |
+| **5. FLARE** | Sinh nháp dự phóng + Kích hoạt truy xuất theo verbalized confidence | Kích hoạt truy xuất khi $\text{Conf}_{\text{LLM}}(S_t) < \theta$ | **Tốn kém chi phí & độ trễ truy xuất dư thừa** | Báo cáo sự kiện nhiều câu, văn bản pháp lý dài kỳ |
 """)
         st.caption("Developed for Master's Seminar in HCMUT CO5151 Advanced Agentic AI (Presenter: Dung Vo). Grounded on authentic Vietnamese Labor Law (BLLĐ 2019 vs 2012 distractor).")
 
@@ -1568,6 +1568,7 @@ with tab3:
 
             st.markdown("**Chấm điểm và Reranking trong Beam Search:**")
             st.latex(r"\text{Score}(y_t, d) = \log P(y_t \mid x, d) + w_{\text{rel}} \log P([\text{Relevant}]) + w_{\text{sup}} \log P([\text{Fully supported}]) + w_{\text{use}} \log P([\text{Utility:5}])")
+            st.caption("⚠️ **Lưu ý Demo:** Công thức trên là từ bài báo gốc (Self-RAG fine-tuned model). Bản demo này sử dụng **In-Context Surrogate** — các reflection tokens được sinh qua prompting thay vì trích xuất từ logprobs của mô hình fine-tuned.")
 
             st.markdown("""
             #### 2. Khả năng của Hugging Face API: Có lấy được token logprobs không?
@@ -1590,6 +1591,7 @@ with tab3:
 
             st.markdown("**Segment Scoring & Reranking during Beam Search:**")
             st.latex(r"\text{Score}(y_t, d) = \log P(y_t \mid x, d) + w_{\text{rel}} \log P([\text{Relevant}]) + w_{\text{sup}} \log P([\text{Fully supported}]) + w_{\text{use}} \log P([\text{Utility:5}])")
+            st.caption("⚠️ **Demo Note:** The formula above is from the original paper (Self-RAG fine-tuned model). This demo uses an **In-Context Surrogate** — reflection tokens are generated via prompting rather than extracted from fine-tuned model logprobs.")
 
             st.markdown("""
             #### 2. Hugging Face API Capability: Can we retrieve token logprobs?
@@ -1646,7 +1648,7 @@ with tab4:
             <div>
                 <span class="context-pill">🎯 Mục Tiêu Thực Nghiệm CO5151</span>
                 <b>Kiểm chứng Truy Xuất Chủ Động Theo Độ Bất Định Token (FLARE):</b> 
-                Đối chiếu giữa truy xuất thụ động nạp toàn bộ (Naive RAG lãng phí chi phí) và truy xuất chủ động dự phóng từng câu (FLARE). Đối với nguyên tắc định tính chung (<i>"đơn phương trái luật thì không được trợ cấp thôi việc"</i>), mô hình sinh trực tiếp từ Parametric Memory (Bộ nhớ tham số / Trọng số mô hình) vì độ tự tin token cao ($\\min P(w) \\ge \\theta$). Khi chuyển sang các chế tài định lượng bắt buộc (<i>"bồi thường nửa tháng tiền lương", "tiền lương ngày không báo trước", "chi phí đào tạo theo Điều 40"</i>), độ tự tin giảm xuống dưới ngưỡng $\\theta$, kích hoạt truy xuất tại chỗ. Tiết kiệm từ <b>60% đến 80%</b> số lần gọi retrieval không cần thiết!
+                Đối chiếu giữa truy xuất thụ động nạp toàn bộ (Naive RAG lãng phí chi phí) và truy xuất chủ động dự phóng từng câu (FLARE). Đối với nguyên tắc định tính chung (<i>"đơn phương trái luật thì không được trợ cấp thôi việc"</i>), mô hình sinh trực tiếp từ Parametric Memory (Bộ nhớ tham số / Trọng số mô hình) vì độ tự tin token cao ($\\text{Conf}_{\\text{LLM}} \\ge \\theta$). Khi chuyển sang các chế tài định lượng bắt buộc (<i>"bồi thường nửa tháng tiền lương", "tiền lương ngày không báo trước", "chi phí đào tạo theo Điều 40"</i>), độ tự tin giảm xuống dưới ngưỡng $\\theta$, kích hoạt truy xuất tại chỗ. Trong kịch bản minh họa (3 câu), giảm số lần tra cứu tùy theo ngưỡng theta.
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -1663,7 +1665,7 @@ with tab4:
             <div>
                 <span class="context-pill">🎯 CO5151 Seminar Objective</span>
                 <b>Demonstrating Forward-Looking Active Retrieval (FLARE):</b> 
-                Benchmarking upfront passive retrieval against on-demand active retrieval driven by token uncertainty. For high-confidence general principles (<i>"unlawful termination forfeits severance pay"</i>), the LLM confidence is high ($\\min P(w) \\ge \\theta$), generating directly from parametric weights with zero retrieval overhead. When formulating quantitative legal damages (<i>"half-month salary damages", "unnoticed days salary compensation", "training costs under Art 40"</i>), token confidence drops below threshold $\\theta$, triggering targeted retrieval. Bypasses <b>60% to 80%</b> of redundant retrieval calls!
+                Benchmarking upfront passive retrieval against on-demand active retrieval driven by token uncertainty. For high-confidence general principles (<i>"unlawful termination forfeits severance pay"</i>), the LLM confidence is high ($\\text{Conf}_{\\text{LLM}} \\ge \\theta$), generating directly from parametric weights with zero retrieval overhead. When formulating quantitative legal damages (<i>"half-month salary damages", "unnoticed days salary compensation", "training costs under Art 40"</i>), token confidence drops below threshold $\\theta$, triggering targeted retrieval. In this illustrative scenario (3 sentences), reduces retrieval calls depending on theta threshold.
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -1685,7 +1687,7 @@ with tab4:
             key="flare_theta_slider"
         )
     with c_f_info:
-        st.info(f"{'Cơ chế kích hoạt:' if lang == 'vi' else 'Trigger Rule:'} $\\min_t P(w_t) < {flare_theta:.1f}$\n\n{'Tiết kiệm tính toán tra cứu khi câu tự tin cao.' if lang == 'vi' else 'Bypasses search when draft tokens are confident.'}")
+        st.info(f"{'Cơ chế kích hoạt:' if lang == 'vi' else 'Trigger Rule:'} $\\Conf_{LLM}(S_t) < {flare_theta:.1f}$\n\n{'Tiết kiệm tính toán tra cứu khi câu tự tin cao.' if lang == 'vi' else 'Bypasses search when draft tokens are confident.'}")
 
     # Handle Live Re-run
     if run_btn4:
@@ -1789,7 +1791,7 @@ with tab4:
                 1. **Soạn thảo câu dự phóng:** LLM sinh câu dự phóng tiếp theo $S = (w_1, w_2, \\dots, w_L)$.
                 2. **Đánh giá độ chắc chắn:** Hệ thống tính toán xác suất token. Nếu có bất kỳ token sự kiện nào có độ tự tin rơi xuống dưới ngưỡng $\\theta$:
                 """)
-                st.latex(r"\min_{w_i \in S} P(w_i \mid x, w_{<i}) < \theta")
+                st.latex(r"\text{Conf}_{\text{LLM}}(S_t) < \theta")
                 st.markdown("""
                 3. **Tạo truy vấn chủ động:** Câu có độ tự tin thấp được chuyển hóa thành câu truy vấn mục tiêu: `Search(ý_con_cần_tra)`.
                 4. **Viết lại câu dựa trên căn cứ:** Chỉ câu cụ thể đó được viết lại dựa trên các đoạn điều luật vừa tra cứu.
@@ -1802,7 +1804,7 @@ with tab4:
                 1. **Forward Draft Generation:** The LLM generates a candidate continuation sentence $S = (w_1, w_2, \\dots, w_L)$.
                 2. **Uncertainty Evaluation:** The system computes token-level log probabilities. If any factual token's confidence drops below threshold $\\theta$:
                 """)
-                st.latex(r"\min_{w_i \in S} P(w_i \mid x, w_{<i}) < \theta")
+                st.latex(r"\text{Conf}_{\text{LLM}}(S_t) < \theta")
                 st.markdown("""
                 3. **Active Query Formulation:** The low-confidence sentence is masked into a targeted retrieval query: `Search(query_subtopic)`.
                 4. **Fact-Grounded Rewriting:** Only that specific sentence is rewritten using the newly retrieved evidence chunks.
