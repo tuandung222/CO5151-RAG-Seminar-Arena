@@ -51,11 +51,12 @@ class NaiveRAGPipeline:
                 "rrf_score": 0.999,
             }
             if distractor_mode == "only_distractor":
-                # Distractor injected at rank 1; remaining slots filled from retriever (no article filtering)
+                # Distractor-heavy context: distractor dominates with only 1 real retriever result.
+                # Simulates polluted index where false-positive takes up most of the context window.
                 passages_to_use.append(distractor_item)
-                passages_to_use.extend(raw_retrieved[: top_k - 1])
+                passages_to_use.extend(raw_retrieved[:1])
             else:
-                # Mixed conflict: Distractor + whatever was retrieved
+                # Mixed conflict: distractor + full retriever results (balanced context with competing evidence)
                 passages_to_use.append(distractor_item)
                 passages_to_use.extend(raw_retrieved[: top_k - 1])
         else:

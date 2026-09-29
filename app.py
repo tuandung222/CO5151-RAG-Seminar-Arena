@@ -692,6 +692,18 @@ with st.expander(t("master_guide_expander", lang), expanded=False):
 | **5. FLARE** | Sinh nháp dự phóng + Kích hoạt truy xuất theo verbalized confidence | Kích hoạt truy xuất khi $\text{Conf}_{\text{LLM}}(S_t) < \theta$ | **Tốn kém chi phí & độ trễ truy xuất dư thừa** | Báo cáo sự kiện nhiều câu, văn bản pháp lý dài kỳ |
 """)
         st.caption("Thiết kế phục vụ seminar học viên cao học CO5151 Advanced Agentic AI (HCMUT). Học viên: Dung Vo. Đối chứng thực tế trên Bộ luật Lao động 2019 và tài liệu gây nhiễu BLLĐ 2012 (đã hết hiệu lực thi hành).")
+        st.info("""
+        🔄 **Retrieval: Từ Pipeline Cố Định → Công Cụ Trong Vòng Quyết Định Của Agent**
+
+        | Cách tiếp cận | Vai trò của Retrieval | Ai quyết định retrieve? |
+        |:---|:---|:---|
+        | **Naive RAG** (Lewis 2020) | Stage cố định trong pipeline tuyến tính | Luôn retrieve, không có lựa chọn |
+        | **Self-RAG** (Asai 2024) | **Tool có điều kiện** — `[Retrieve]` gate quyết định có/không | Agent (LLM) tự đánh giá qua reflection token |
+        | **FLARE** (Jiang 2023) | **Tool theo yêu cầu** — chỉ gọi khi confidence thấp | Agent giám sát uncertainty từng câu sinh ra |
+        | **GraphRAG** (Edge 2024) | **Tool cấu trúc** — truy vấn theo graph topology | Agent tổng hợp qua community map-reduce |
+
+        *Trong paradigm agentic (CoALA, Sumers 2024), retrieval không phải bước bắt buộc mà là một **action** agent có thể chọn gọi hoặc bỏ qua dựa trên trạng thái hiện tại.*
+        """)
     else:
         st.info("""
         ⏱️ **Statutory Timeline & Scientific Grounding Assumptions:**
@@ -709,6 +721,18 @@ with st.expander(t("master_guide_expander", lang), expanded=False):
 | **5. FLARE** | Sinh nháp dự phóng + Kích hoạt truy xuất theo verbalized confidence | Kích hoạt truy xuất khi $\text{Conf}_{\text{LLM}}(S_t) < \theta$ | **Tốn kém chi phí & độ trễ truy xuất dư thừa** | Báo cáo sự kiện nhiều câu, văn bản pháp lý dài kỳ |
 """)
         st.caption("Developed for Master's Seminar in HCMUT CO5151 Advanced Agentic AI (Presenter: Dung Vo). Grounded on authentic Vietnamese Labor Law (BLLĐ 2019 vs 2012 distractor).")
+        st.info("""
+        🔄 **Retrieval: From Fixed Pipeline Stage → Tool in Agent's Decision Loop**
+
+        | Approach | Role of Retrieval | Who decides to retrieve? |
+        |:---|:---|:---|
+        | **Naive RAG** (Lewis 2020) | Fixed stage in linear pipeline | Always retrieves, no choice |
+        | **Self-RAG** (Asai 2024) | **Conditional tool** — `[Retrieve]` gate decides yes/no | Agent (LLM) self-evaluates via reflection tokens |
+        | **FLARE** (Jiang 2023) | **On-demand tool** — triggered only when confidence drops | Agent monitors per-sentence uncertainty |
+        | **GraphRAG** (Edge 2024) | **Structured tool** — queries graph topology | Agent synthesizes via community map-reduce |
+
+        *In the agentic paradigm (CoALA, Sumers 2024), retrieval is not a mandatory step but an **action** the agent may invoke or skip based on its current state.*
+        """)
 
 # Render Tabs (Bilingual)
 tab_names = [
@@ -821,7 +845,7 @@ with tab1:
         dist_mode = st.radio(
             dist_mode_label,
             options=["only_distractor", "mixed_conflict"],
-            format_func=lambda x: ("Chế độ 1: Truy xuất sai lệch (False Positive Retrieval) (Chỉ truy xuất BLLĐ 2012 lỗi thời; thiếu Điều 25/2019)" if lang == "vi" else "Mode 1: False Positive (Retrieves only repealed 2012 Code; Article 25/2019 omitted)") if x == "only_distractor" else ("Chế độ 2: Xung đột ngữ cảnh (Ngữ cảnh chứa cả luật 2012 và luật 2019)" if lang == "vi" else "Mode 2: Contextual Conflict (Context contains both 2012 and 2019 statutes)"),
+            format_func=lambda x: ("Chế độ 1: Ngữ cảnh bị chi phối bởi tài liệu gây nhiễu (Distractor-Heavy: 1 distractor + 1 tài liệu thật)" if lang == "vi" else "Mode 1: Distractor-Heavy Context (1 distractor + 1 real passage)") if x == "only_distractor" else ("Chế độ 2: Xung đột ngữ cảnh cân bằng (1 distractor + 2 tài liệu thật)" if lang == "vi" else "Mode 2: Balanced Conflict (1 distractor + 2 real passages)"),
             horizontal=False,
             disabled=not inject_distractor,
         )
