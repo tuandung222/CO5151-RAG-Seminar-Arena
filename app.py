@@ -801,7 +801,7 @@ with tab1:
             <div>
                 <span class="context-pill">🎯 Mục Tiêu Thực Nghiệm CO5151</span>
                 <b>Kiểm chứng hiện tượng "When Retrieval Hurts" & Ngộ độc ngữ cảnh (Context Poisoning):</b> 
-                Khi retriever truy xuất phải điều luật <i>BLLĐ 2012 cũ đã hết hiệu lực</i> (do trùng khớp từ khóa cao - False Positive), <b>Naive RAG</b> tiếp nhận thụ động tài liệu nạp vào mà không qua khâu thẩm định hiệu lực văn bản, dẫn đến kết luận sai (khẳng định tối đa 60 ngày). Ngược lại, <b>Self-RAG</b> kích hoạt Reflection Critic token <code>[IsREL]</code> (thẩm định tính liên quan) phát hiện văn bản bãi bỏ để loại trừ, bảo toàn câu trả lời chính xác <b>180 ngày</b> (Khoản 1 Điều 25 BLLĐ 2019).
+                Khi retriever truy xuất phải điều luật <i>BLLĐ 2012 cũ đã hết hiệu lực</i> (do trùng khớp từ khóa cao - False Positive), <b>Naive RAG</b> tiếp nhận thụ động tài liệu nạp vào mà không qua khâu thẩm định hiệu lực văn bản, dẫn đến kết luận sai (khẳng định tối đa 60 ngày). Ngược lại, <b>Self-RAG</b> kích hoạt Reflection Critic token <code>[IsREL]</code> (thẩm định độ liên quan) phát hiện văn bản bãi bỏ để loại trừ, bảo toàn câu trả lời chính xác <b>180 ngày</b> (Khoản 1 Điều 25 BLLĐ 2019).
             </div>
             <div style="margin-top: 8px; padding-top: 6px; border-top: 1px dashed #cbd5e1; font-size: 0.84rem; color: #475569;">
                 ⏱️ <b>Mốc Thời Gian & Hiệu Lực Chuẩn:</b> Bộ luật Lao động 2019 (Luật số 45/2019/QH14) có hiệu lực từ ngày <b>01/01/2021 đến nay (2026)</b> và là Bộ luật Lao động <b>hiện hành duy nhất và mới nhất</b> tại Việt Nam (không có bộ luật nào mới hơn). Bộ luật Lao động 2012 cũ đã chính thức <b>hết hiệu lực từ 01/01/2021</b>.
@@ -1063,7 +1063,7 @@ with tab1:
 
     st.markdown(matrix_md)
 
-    st.markdown(f"#### {'Bóc Tách Reflection Critic ([IsREL] Tokens):' if lang == 'vi' else 'Passage Critic Dissection ([IsREL] Tokens):'}")
+    st.markdown(f"#### {'Bóc Tách Token tự đánh giá ([IsREL]):' if lang == 'vi' else 'Passage Critic Dissection ([IsREL] Tokens):'}")
     for p in res_self.get("all_candidates", []):
         if p.get("is_rel_token") == "RELEVANT":
             st.markdown(f"""<div class="critique-pass">
@@ -1086,7 +1086,7 @@ with tab1:
             #### Vì sao tương đồng ngữ nghĩa (Semantic Similarity) không đồng nghĩa với chân lý pháp lý:
             - **Giới hạn của tương đồng ngữ nghĩa (Semantic Similarity Trap):** Điều 27 Bộ luật Lao động 2012 (hết hiệu lực từ 01/01/2021) có độ tương đồng cosine dense BGE-M3 rất cao (**0.64 – 0.75**) đối với các truy vấn về thử việc, do chứa trùng trường từ vựng (*thời gian thử việc*, *hợp đồng*, *ngày*, *chức danh nghề nghiệp*).
             - **Thất bại của Naive RAG (When Retrieval Hurts):** Dưới thiết kế kiểm thử xung đột tri thức có kiểm soát (*Controlled In-Context Conflict Stress Test* theo Neeman et al. 2023 & Wu et al. 2024), do chỉ ghép nối thụ động các đoạn văn bản mà không qua khâu thẩm định hiệu lực, mô hình LLM bị tài liệu bãi bỏ gây nhiễu và kết luận sai thành tối đa **60 ngày**.
-            - **Lớp phòng vệ của Self-RAG:** Reflection Critic token `[IsREL]` kiểm định tính hợp lệ và thời hiệu, phát hiện văn bản 2012 đã hết hiệu lực, loại bỏ khỏi ngữ cảnh để bảo toàn chân lý pháp lý (180 ngày theo Điều 25 BLLĐ 2019).
+            - **Lớp phòng vệ của Self-RAG:** Token tự đánh giá `[IsREL]` kiểm định tính hợp lệ và thời hiệu, phát hiện văn bản 2012 đã hết hiệu lực, loại bỏ khỏi ngữ cảnh để bảo toàn chân lý pháp lý (180 ngày theo Điều 25 BLLĐ 2019).
             """)
         else:
             st.markdown("""
@@ -1118,7 +1118,7 @@ with tab2:
             )
             render_mermaid(get_diagram("knowledge_graph_full", lang), height=580)
             st.caption(
-                "💡 **Chú thích đồ thị:** Các mũi tên nét liền biểu thị quan hệ nội cụm. Các mũi tên nét đứt (`-.->`) là **Cầu Nối Liên Chương (Cross-Chapter Bridges)** – đây chính là liên kết tri thức then chốt giúp GraphRAG khắc phục triệt để điểm mù cục bộ của Vector Search (Local Blindness) (Local Blindness) của Vector Search." if lang == "vi" else
+                "💡 **Chú thích đồ thị:** Các mũi tên nét liền biểu thị quan hệ nội cụm. Các mũi tên nét đứt (`-.->`) là **Cầu Nối Liên Chương (Cross-Chapter Bridges)** – đây chính là liên kết tri thức then chốt giúp GraphRAG khắc phục triệt để Điểm mù cục bộ của Vector Search (Local Blindness)." if lang == "vi" else
                 "💡 **Graph Legend:** Solid arrows denote intra-community relationships. Dashed arrows (`-.->`) represent **Cross-Chapter Bridges** – the pivotal structural links enabling GraphRAG to overcome Vector Search's Local Blindness."
             )
         with d_tab2_2:
@@ -1410,7 +1410,7 @@ with tab3:
     st.markdown(f"### {t('tab3_header', lang)}")
     st.markdown(t("tab3_desc", lang))
 
-    exp3_title = "Kiến Trúc Hệ Thống: Vòng Lặp 4 Reflection Tokens (Critic Tokens) Của Self-RAG" if lang == "vi" else "System Architecture: Self-RAG 4 Reflection Tokens Critic Loop"
+    exp3_title = "Kiến Trúc Hệ Thống: Vòng Lặp 4 Token tự đánh giá (Reflection Tokens) Của Self-RAG" if lang == "vi" else "System Architecture: Self-RAG 4 Reflection Tokens Critic Loop"
     with st.expander(exp3_title, expanded=False):
         render_mermaid(get_diagram("self_rag", lang), height=340)
 
@@ -1427,8 +1427,8 @@ with tab3:
             </div>
             <div>
                 <span class="context-pill">🎯 Mục Tiêu Thực Nghiệm CO5151</span>
-                <b>Phân tích cơ chế điều phối của 4 Reflection Tokens (Critic Tokens):</b> 
-                Khảo sát quy trình kiểm định đa tầng của Self-RAG: <code>[Retrieve]</code> (kích hoạt tra cứu ngoài theo ngưỡng $\\tau$), <code>[IsREL]</code> (thẩm định tính liên quan của từng đoạn văn bản đối với cả 2 ý: Điều 26 về lương thử việc 85% và Điều 36/125 về tự ý bỏ việc 05 ngày), <code>[IsSUP]</code> (kiểm định căn cứ trích dẫn để chống ảo giác), và <code>[IsUSE]</code> (đánh giá mức độ hữu ích thực tế của câu trả lời).
+                <b>Phân tích cơ chế điều phối của 4 Token tự đánh giá (Reflection Tokens):</b> 
+                Khảo sát quy trình kiểm định đa tầng của Self-RAG: <code>[Retrieve]</code> (kích hoạt tra cứu ngoài theo ngưỡng $\\tau$), <code>[IsREL]</code> (thẩm định độ liên quan của từng đoạn văn bản đối với cả 2 ý: Điều 26 về lương thử việc 85% và Điều 36/125 về tự ý bỏ việc 05 ngày), <code>[IsSUP]</code> (kiểm định căn cứ trích dẫn để chống ảo giác), và <code>[IsUSE]</code> (đánh giá mức độ hữu dụng thực tế của câu trả lời).
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -1452,7 +1452,7 @@ with tab3:
 
     badge_t3 = "CÂU HỎI TRUY VẤN ĐA Ý REFLECTION CRITIC (CASE 4)" if lang == "vi" else "MULTI-INTENT REFLECTION QUERY (CASE 4)"
     hint_t3 = "Có thể chỉnh sửa trực tiếp câu hỏi trước khi chạy thực nghiệm" if lang == "vi" else "Editable query - modify freely or run as is"
-    btn_lbl_t3 = "🚀 Chạy Kiểm Định Reflection" if lang == "vi" else "🚀 Run Reflection Inspection"
+    btn_lbl_t3 = "🚀 Chạy Kiểm Định Token tự đánh giá" if lang == "vi" else "🚀 Run Reflection Inspection"
     q_tab3, run_btn3 = render_query_console(
         badge_t3, hint_t3, test_cases[3]["question"], "q_tab3", "q_tab3_input", "btn3", lang, btn_label=btn_lbl_t3
     )
@@ -1460,7 +1460,7 @@ with tab3:
     col_sc3_1, col_sc3_2 = st.columns([2, 1])
     with col_sc3_1:
         tab3_scenario_choice = st.selectbox(
-            "Chọn Kịch Bản Kiểm Định Reflection Tokens:" if lang == "vi" else "Select Reflection Token Benchmark Scenario:",
+            "Chọn Kịch Bản Kiểm Định Token tự đánh giá:" if lang == "vi" else "Select Reflection Token Benchmark Scenario:",
             options=[
                 "case_3: Câu hỏi đa ý (Lương thử việc Điều 26 & Sa thải bỏ việc 05 ngày Điều 36, 125)" if lang == "vi" else "case_3: Multi-intent (Wage % Art 26 & Dismissal on 5-day Absence Arts 36, 125)",
                 "case_0: Loại trừ tài liệu gây nhiễu và hết hiệu lực (Điều 25/2019 vs BLLĐ 2012 hết hiệu lực)" if lang == "vi" else "case_0: Distractor Pruning (Labor Code 2019 vs Repealed 2012)",
@@ -1485,13 +1485,13 @@ with tab3:
         if cur_provider == "huggingface" and (not cur_api_key or cur_api_key.strip() in ("", "EMPTY")):
             request_token_ui("tab3")
         else:
-            status_t3_title = "Đang Kiểm Định Reflection Tokens (Self-RAG) Trực Tiếp..." if lang == "vi" else "Inspecting Self-RAG Reflection Tokens Live..."
+            status_t3_title = "Đang Kiểm Định Token tự đánh giá (Self-RAG) Trực Tiếp..." if lang == "vi" else "Inspecting Self-RAG Reflection Tokens Live..."
             with st.status(status_t3_title, expanded=True) as status_box:
                 st.write("Đang đánh giá Cổng Quyết Định [Retrieve]..." if lang == "vi" else "Evaluating Reflection Gate [Retrieve]...")
                 st.write("Đang chạy bộ lọc tài liệu liên quan [IsREL]..." if lang == "vi" else "Executing passage critic [IsREL] across candidate chunks...")
                 st.write("Đang kiểm định căn cứ [IsSUP] và độ hữu dụng [IsUSE]..." if lang == "vi" else "Evaluating attribution support [IsSUP] and utility [IsUSE]...")
                 res_self_full_live = self_pipe.run_self_rag(q_tab3, top_k=3, tau=tau_threshold)
-                status_box.update(label="Hoàn tất phân tích Reflection Critic!" if lang == "vi" else "Reflection Analysis Complete!", state="complete", expanded=False)
+                status_box.update(label="Hoàn tất phân tích Token tự đánh giá!" if lang == "vi" else "Reflection Analysis Complete!", state="complete", expanded=False)
 
             st.session_state["tab3_is_live"] = True
             st.session_state["tab3_live"] = {
@@ -1583,7 +1583,7 @@ with tab3:
     with st.expander(t("tab3_deepdive_title", lang), expanded=True):
         if lang == "vi":
             st.markdown("#### 1. Công thức Toán học Lý thuyết (Asai et al., ICLR 2024)")
-            st.markdown("**CÓ, CHẮC CHẮN.** Trong bài báo gốc về Self-RAG (*'Learning to Retrieve, Generate, and Critique through Self-Reflection'*), các reflection token được huấn luyện trực tiếp vào từ vựng của Language Model $\\mathcal{V}$. Tại mỗi bước sinh, mô hình tính toán **phân phối xác suất Softmax** trên các token này:")
+            st.markdown("**CÓ, CHẮC CHẮN.** Trong bài báo gốc về Self-RAG (*'Learning to Retrieve, Generate, and Critique through Self-Reflection'*), các token tự đánh giá (reflection tokens) được huấn luyện trực tiếp vào từ vựng của Language Model $\\mathcal{V}$. Tại mỗi bước sinh, mô hình tính toán **phân phối xác suất Softmax** trên các token này:")
             st.latex(r"P(\text{Token} = w \mid x) = \frac{\exp(z_w)}{\sum_{v \in \mathcal{V}} \exp(z_v)}")
 
             st.markdown("**Cổng truy xuất thích ứng [Retrieve]:**")
@@ -1602,7 +1602,7 @@ with tab3:
             
             #### 3. Mô hình Tinh chỉnh (Fine-tuned) vs. Mô hình Nền tảng (Llama-3.1 / Qwen-2.5):
             - **Fine-tuned Self-RAG:** Token đặc biệt nằm trực tiếp trong bộ từ vựng tokenizer.
-            - **Foundation LLMs:** Áp dụng cơ chế **In-Context Reflection & Chain-of-Thought Critic**, mô hình sinh các Reflection Critic tokens có cấu trúc (`[Retrieve: YES]`, `[IsREL: RELEVANT]`) kèm lập luận pháp lý rõ ràng.
+            - **Foundation LLMs:** Áp dụng cơ chế **In-Context Reflection & Chain-of-Thought Critic**, mô hình sinh các Token tự đánh giá (Reflection Tokens) có cấu trúc (`[Retrieve: YES]`, `[IsREL: RELEVANT]`) kèm lập luận pháp lý rõ ràng.
             """)
         else:
             st.markdown("#### 1. Theoretical Formulation (Asai et al., ICLR 2024)")
@@ -1636,7 +1636,7 @@ with tab3:
             st.progress(0.948, text="P([Retrieve] = NEED_RETRIEVAL): 94.8%")
             st.caption("P(NO_RETRIEVAL): 5.2% | Logprob: `-0.0534`")
         with col_p2:
-            st.markdown(f"**2. [IsREL] {'Lọc Đoạn Văn Bản (Điều 25 vs BLLĐ 2012)' if lang == 'vi' else 'Passage Critic (Art 25 vs Distractor)'}**")
+            st.markdown(f"**2. [IsREL] {'Thẩm định độ liên quan (Điều 25 vs BLLĐ 2012)' if lang == 'vi' else 'Passage Critic (Art 25 vs Distractor)'}**")
             st.progress(0.962, text="P(Art 25 = RELEVANT): 96.2%")
             st.progress(0.085, text=f"P(Repealed 2012 = RELEVANT): 8.5% ({'BÁC BỎ' if lang == 'vi' else 'REJECTED'})")
             st.caption("Đã loại trừ tài liệu gây nhiễu dưới ngưỡng chấp nhận." if lang == "vi" else "Distractor successfully pruned below rejection threshold.")

@@ -170,12 +170,12 @@ flowchart LR
     Q["Câu hỏi của Người dùng"] --> DECIDE{"Cổng [Retrieve]<br/>Có cần truy xuất ngoài?"}
     DECIDE -->|Không| PARAM["Sinh từ bộ nhớ trong<br/>(Parametric Weights)"]
     DECIDE -->|Có| RET["Truy xuất BGE-M3 + BM25<br/>(Đoạn luật ứng viên)"]
-    RET --> CRITIC{"Bộ lọc tài liệu [IsREL]<br/>Đánh giá tính liên quan"}
+    RET --> CRITIC{"Token tự đánh giá [IsREL]<br/>Thẩm định độ liên quan"}
     CRITIC -->|Hết hạn / Gây nhiễu| REJECT["Loại bỏ tài liệu gây nhiễu<br/>(IsREL: IRRELEVANT)"]
     CRITIC -->|Hợp lệ| GROUNDED["Ngữ cảnh căn cứ chuẩn<br/>(IsREL: RELEVANT)"]
     GROUNDED --> GEN["Sinh phản hồi có căn cứ<br/>(Grounded Generation)"]
-    GEN --> SUP{"Kiểm định căn cứ [IsSUP]<br/>Đối chiếu chứng cứ"}
-    SUP --> OUT["Câu trả lời đã kiểm định<br/>Độ hữu dụng: 5/5 [IsUSE]"]
+    GEN --> SUP{"Kiểm định căn cứ trích dẫn [IsSUP]<br/>Đối chiếu chứng cứ"}
+    SUP --> OUT["Câu trả lời đã kiểm định<br/>Đánh giá mức độ hữu dụng: 5/5 [IsUSE]"]
     
     style DECIDE fill:#f8fafc,stroke:#64748b,stroke-width:2px
     style CRITIC fill:#ffedd5,stroke:#ea580c,stroke-width:2px

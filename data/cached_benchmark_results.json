@@ -402,7 +402,7 @@
           "answer": "Căn cứ theo quy định tại **Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14**, thời gian thử việc do hai bên thỏa thuận căn cứ vào tính chất và mức độ phức tạp của công việc nhưng chỉ được thử việc một lần đối với một công việc và bảo đảm điều kiện sau đây:\n\n**Không quá 180 ngày** đối với công việc của người quản lý doanh nghiệp theo quy định của Luật Doanh nghiệp, Luật Quản lý, sử dụng vốn nhà nước đầu tư vào sản xuất, kinh doanh tại doanh nghiệp.",
           "latency_ms": 1940,
           "outcome": "VERIFIED_CORRECT",
-          "verdict_text": "✅ Chính xác: Khi không có tài liệu gây nhiễu làm nhiễu, Naive RAG truy xuất đúng Điều 25 BLLĐ 2019 và trả lời chuẩn xác 180 ngày!",
+          "verdict_text": "✅ Chính xác: Khi không có tài liệu gây nhiễu, Naive RAG truy xuất đúng Điều 25 BLLĐ 2019 và trả lời chuẩn xác 180 ngày!",
           "has_180_days": true,
           "has_60_days": false,
           "retrieved_passages": [
@@ -521,7 +521,7 @@
           "answer": "Căn cứ theo quy định tại **Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14**, thời gian thử việc do hai bên thỏa thuận căn cứ vào tính chất và mức độ phức tạp của công việc nhưng chỉ được thử việc một lần đối với một công việc và bảo đảm điều kiện sau đây:\n\n**Không quá 180 ngày** đối với công việc của người quản lý doanh nghiệp theo quy định của Luật Doanh nghiệp, Luật Quản lý, sử dụng vốn nhà nước đầu tư vào sản xuất, kinh doanh tại doanh nghiệp.",
           "latency_ms": 1240,
           "outcome": "VERIFIED_CORRECT",
-          "verdict_text": "✅ Chính xác: Khi không có tài liệu gây nhiễu làm nhiễu, Naive RAG truy xuất đúng Điều 25 BLLĐ 2019 và trả lời chuẩn xác 180 ngày!",
+          "verdict_text": "✅ Chính xác: Khi không có tài liệu gây nhiễu, Naive RAG truy xuất đúng Điều 25 BLLĐ 2019 và trả lời chuẩn xác 180 ngày!",
           "has_180_days": true,
           "has_60_days": false,
           "retrieved_passages": [
