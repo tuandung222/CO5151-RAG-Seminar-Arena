@@ -504,18 +504,29 @@ with st.sidebar:
         cur_provider = "huggingface"
         cur_base_url = "https://api-inference.huggingface.co/v1"
         
-        # User Hugging Face Token Authentication Input
-        default_hf_token = st.session_state.get("user_hf_token", HF_TOKEN)
+        # Security: Clean up any stale session state containing raw server secret
+        if st.session_state.get("user_hf_token") == HF_TOKEN:
+            st.session_state.pop("user_hf_token", None)
+
+        # User Hugging Face Token Authentication Input (Optional client override)
         user_hf_token = st.text_input(
             t("sidebar_token_label", lang),
-            value=default_hf_token,
+            value=st.session_state.get("user_hf_token", ""),
             type="password",
+            placeholder=t("sidebar_token_placeholder", lang),
             help=t("sidebar_token_help", lang),
         )
-        if user_hf_token:
-            st.session_state["user_hf_token"] = user_hf_token
-            retriever.update_api_key(user_hf_token)
-        cur_api_key = user_hf_token
+        if user_hf_token and user_hf_token.strip():
+            st.session_state["user_hf_token"] = user_hf_token.strip()
+            retriever.update_api_key(user_hf_token.strip())
+            cur_api_key = user_hf_token.strip()
+        else:
+            cur_api_key = HF_TOKEN
+
+        # Display server token status indicator without exposing secret characters
+        if HF_TOKEN and not user_hf_token:
+            st.caption("🔒 " + ("Server Default Token: Active & Secured" if lang == "en" else "Token Mặc Định Hệ Thống: Đang hoạt động (Bảo mật máy chủ)"))
+
         parsed_model = hf_model_choice.split(" ")[0]
         cur_model = st.text_input("Model ID:", value="Qwen/Qwen2.5-72B-Instruct") if "Custom" in hf_model_choice else parsed_model
 
@@ -528,13 +539,32 @@ with st.sidebar:
     elif provider_choice == "OpenAI-Compatible Gateway":
         cur_provider = "openai-compatible"
         cur_base_url = st.text_input("Base URL:", value=os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1"))
-        cur_api_key = st.text_input("API Key:", value=os.environ.get("OPENAI_API_KEY", ""), type="password")
+        env_openai_key = os.environ.get("OPENAI_API_KEY", "")
+        user_openai_key = st.text_input(
+            "API Key:",
+            value=st.session_state.get("user_openai_key", ""),
+            type="password",
+            placeholder="Tùy chọn: Nhập API key nếu muốn ghi đè..." if env_openai_key else "sk-...",
+        )
+        if user_openai_key and user_openai_key.strip():
+            st.session_state["user_openai_key"] = user_openai_key.strip()
+            cur_api_key = user_openai_key.strip()
+        else:
+            cur_api_key = env_openai_key
+        if env_openai_key and not user_openai_key:
+            st.caption("🔒 " + ("Server API Key: Active & Secured" if lang == "en" else "API Key Máy Chủ: Đang hoạt động (Bảo mật máy chủ)"))
         cur_model = st.text_input("Model Name:", value=os.environ.get("OPENAI_MODEL", "gpt-4o-mini"))
 
     else:
         cur_provider = "openai-compatible"
         cur_base_url = st.text_input("vLLM Base URL:", value=VLLM_BASE_URL)
-        cur_api_key = st.text_input("API Key:", value="EMPTY", type="password")
+        user_vllm_key = st.text_input(
+            "API Key:",
+            value=st.session_state.get("user_vllm_key", ""),
+            type="password",
+            placeholder="EMPTY",
+        )
+        cur_api_key = user_vllm_key.strip() if user_vllm_key else "EMPTY"
         cur_model = st.text_input("Model Name:", value=VLLM_MODEL)
 
     llm = UnifiedLLM(
