@@ -518,6 +518,10 @@ with st.sidebar:
         )
         if user_hf_token and user_hf_token.strip():
             st.session_state["user_hf_token"] = user_hf_token.strip()
+            # NOTE: retriever is a @st.cache_resource singleton shared across all sessions.
+            # Mutating its API key here affects all concurrent users.
+            # For production use, create per-session retriever instances instead.
+            # Acceptable for single-presenter seminar demo only.
             retriever.update_api_key(user_hf_token.strip())
             cur_api_key = user_hf_token.strip()
         else:
@@ -532,31 +536,42 @@ with st.sidebar:
 
     elif provider_choice == "Local Ollama (Native REST API)":
         cur_provider = "ollama-native"
+        # NOTE: Base URL is user-controlled. cur_api_key="EMPTY" so no credential leak,
+        # but SSRF to internal services is possible. Acceptable for demo/seminar use only.
         cur_base_url = st.text_input("Ollama Base URL:", value=OLLAMA_BASE_URL)
         cur_api_key = "EMPTY"
         cur_model = st.text_input("Ollama Model Name:", value=OLLAMA_MODEL)
 
     elif provider_choice == "OpenAI-Compatible Gateway":
         cur_provider = "openai-compatible"
-        cur_base_url = st.text_input("Base URL:", value=os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1"))
+        default_openai_url = os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1")
+        cur_base_url = st.text_input("Base URL:", value=default_openai_url)
         env_openai_key = os.environ.get("OPENAI_API_KEY", "")
         user_openai_key = st.text_input(
             "API Key:",
             value=st.session_state.get("user_openai_key", ""),
             type="password",
-            placeholder="Tùy chọn: Nhập API key nếu muốn ghi đè..." if env_openai_key else "sk-...",
+            placeholder="Nhập API key..." if lang == "vi" else "Enter API key...",
         )
         if user_openai_key and user_openai_key.strip():
             st.session_state["user_openai_key"] = user_openai_key.strip()
             cur_api_key = user_openai_key.strip()
-        else:
+        elif cur_base_url.strip() == default_openai_url:
+            # Only use server key when URL matches the trusted default
             cur_api_key = env_openai_key
-        if env_openai_key and not user_openai_key:
+        else:
+            # User changed URL but didn't provide key — don't leak server credentials
+            cur_api_key = ""
+            if env_openai_key:
+                st.warning("⚠️ " + ("Custom Base URL detected. Server API key will NOT be forwarded for security. Please enter your own API key." if lang == "en" else "Phát hiện Base URL tùy chỉnh. API key máy chủ sẽ KHÔNG được chuyển tiếp vì lý do bảo mật. Vui lòng nhập API key riêng."))
+        if env_openai_key and cur_api_key == env_openai_key:
             st.caption("🔒 " + ("Server API Key: Active & Secured" if lang == "en" else "API Key Máy Chủ: Đang hoạt động (Bảo mật máy chủ)"))
         cur_model = st.text_input("Model Name:", value=os.environ.get("OPENAI_MODEL", "gpt-4o-mini"))
 
     else:
         cur_provider = "openai-compatible"
+        # NOTE: Base URL is user-controlled. cur_api_key="EMPTY" so no credential leak,
+        # but SSRF to internal services is possible. Acceptable for demo/seminar use only.
         cur_base_url = st.text_input("vLLM Base URL:", value=VLLM_BASE_URL)
         user_vllm_key = st.text_input(
             "API Key:",
@@ -719,6 +734,10 @@ def request_token_ui(tab_key: str):
         if st.button("Authenticate & Save" if lang == "en" else "Xác thực & Lưu", key=f"tok_btn_{tab_key}", use_container_width=True):
             if token_val.startswith("hf_"):
                 st.session_state["user_hf_token"] = token_val
+                # NOTE: retriever is a @st.cache_resource singleton shared across all sessions.
+                # Mutating its API key here affects all concurrent users.
+                # For production use, create per-session retriever instances instead.
+                # Acceptable for single-presenter seminar demo only.
                 retriever.update_api_key(token_val)
                 st.success("Token verified and saved. Please re-click the run button." if lang == "en" else "Đã xác thực và lưu token. Vui lòng bấm lại nút chạy.")
                 st.rerun()

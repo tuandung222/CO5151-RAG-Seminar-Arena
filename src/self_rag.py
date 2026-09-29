@@ -116,7 +116,7 @@ Chỉ trả về JSON:"""
                 rel_token = data.get("is_rel_token", "RELEVANT")
                 critique_text = data.get("critique", "")
             except Exception:
-                rel_token = "RELEVANT"
+                rel_token = "UNCERTAIN"
                 critique_text = "Đoạn văn bản có điểm tương đồng từ khóa."
 
             critiques.append({
@@ -199,13 +199,13 @@ Hãy đưa ra câu trả lời dựa trên quy định chuẩn xác của Bộ l
         has_180_days = (
             "180 ngày" in gen_res["text"]
             or "không quá 180" in gen_res["text"].lower()
-            or "180" in gen_res["text"]
         )
 
         # Step 5: [IsSUP] & [IsUSE] (Attribution & Utility Verification)
         if valid_passages:
             is_supported = any(
-                p.get("article_id", "") in gen_res["text"] or any(word in gen_res["text"] for word in ["180 ngày", "Điều 25", "85%", "thử việc", "sa thải"])
+                p.get("article_id", "") in gen_res["text"]
+                or p.get("title", "")[:20] in gen_res["text"]
                 for p in valid_passages
             )
             sup_token = "FULLY_SUPPORTED" if is_supported else "PARTIALLY_SUPPORTED"

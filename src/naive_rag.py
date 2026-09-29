@@ -36,7 +36,7 @@ class NaiveRAGPipeline:
         """
         Baseline 2: Naive RAG.
         Simulates the two real-world failure modes of retrieval:
-        1. 'only_distractor': False Positive retrieval failure (Retriever truy xuất nhầm văn bản gây nhiễu và các điều không liên quan, bỏ sót Điều 25).
+        1. 'only_distractor': False Positive retrieval failure (Retriever truy xuất nhầm văn bản gây nhiễu và các điều không liên quan).
         2. 'mixed_conflict': Context chứa cả văn bản gây nhiễu (60 ngày) và Điều 25 (180 ngày).
         """
         raw_retrieved = self.retriever.search_hybrid_rrf(query, top_k=top_k)
@@ -51,10 +51,9 @@ class NaiveRAGPipeline:
                 "rrf_score": 0.999,
             }
             if distractor_mode == "only_distractor":
-                # False positive: Distractor + other unrelated articles (exclude Dieu_25 to simulate missing target in top-k)
+                # Distractor injected at rank 1; remaining slots filled from retriever (no article filtering)
                 passages_to_use.append(distractor_item)
-                unrelated = [p for p in raw_retrieved if p["article_id"] != "Dieu_25"]
-                passages_to_use.extend(unrelated[: top_k - 1])
+                passages_to_use.extend(raw_retrieved[: top_k - 1])
             else:
                 # Mixed conflict: Distractor + whatever was retrieved
                 passages_to_use.append(distractor_item)

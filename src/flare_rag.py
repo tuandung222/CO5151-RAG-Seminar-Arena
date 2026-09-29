@@ -42,7 +42,7 @@ CÂU VĂN: "{sentence}"
 Trả về JSON:
 {{
   "requires_retrieval": true hoặc false,
-  "confidence_score": số từ 0.0 đến 1.0 (trên 0.8 là rất chắc chắn, dưới 0.8 là cần tra cứu),
+  "confidence_score": số từ 0.0 đến 1.0 (độ tự tin của mô hình về tính chính xác của câu văn),
   "search_query": "từ khóa chính xác cần tra cứu nếu cần",
   "reason": "lý do"
 }}
@@ -57,7 +57,7 @@ Chỉ trả về JSON:"""
                 sub_query = eval_data.get("search_query", query)
             except Exception:
                 req_retrieval = ("ngày" in sentence or "%" in sentence or "bồi thường" in sentence)
-                confidence = 0.6 if req_retrieval else 0.95
+                confidence = 0.4 if req_retrieval else 0.95
                 sub_query = query
 
             if req_retrieval and confidence < theta:
