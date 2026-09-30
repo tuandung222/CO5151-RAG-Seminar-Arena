@@ -2640,12 +2640,17 @@ Hãy tổng hợp câu trả lời hoàn chỉnh, cấu trúc rõ ràng, viện 
     # SUBTAB 5: AGENTIC PARADIGM (COALA)
     # -----------------------------------------------------------
     with sub_t5:
+        core_mech_coala = (
+            "Chuyển dịch vai trò của Retrieval từ một 'công đoạn cố định trong đường ống' sang một 'công cụ (Tool)' trong không gian hành động do Agent tự chủ quyết định."
+            if lang == "vi" else
+            "Shifts retrieval from a fixed linear pipeline stage into a dynamic Tool in the action space of an autonomous decision-making agent."
+        )
         st.markdown(f"""
         <div class="context-card">
             <div class="context-card-title">🤖 <b>Agentic RAG & CoALA Cognitive Architecture (Sumers et al., 2024)</b></div>
             <div>
                 <i>"Cognitive Architectures for Language Agents"</i> — Princeton University / Stanford / Allen AI.<br>
-                <b>{'Cơ chế cốt lõi:' if lang == 'vi' else 'Core Mechanism:'}</b> {'Chuyển dịch vai trò của Retrieval từ một \'công đoạn cố định trong đường ống\' sang một \'công cụ (Tool)\' trong không gian hành động do Agent tự chủ quyết định.' if lang == 'vi' else 'Shifts retrieval from a fixed linear pipeline stage into a dynamic Tool in the action space of an autonomous decision-making agent.'}
+                <b>{'Cơ chế cốt lõi:' if lang == 'vi' else 'Core Mechanism:'}</b> {core_mech_coala}
             </div>
         </div>
         """, unsafe_allow_html=True)
