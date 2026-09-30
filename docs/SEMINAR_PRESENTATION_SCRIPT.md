@@ -244,11 +244,12 @@
 ## PHÚT 28:00–29:00 — TAB 6: KHO MÃ GIẢ & THUẬT TOÁN (VŨ KHÍ ĐẶC BIỆT KHI Q&A)
 
 **👆 Click Tab 6 (Algorithms) — Giới thiệu tổng quan:**
-> "Để phục vụ nghiên cứu và trả lời chất vấn kỹ thuật chuyên sâu của hội đồng, nhóm đã tổng hợp toàn bộ mã giả suy luận (Inference Pseudocode) và sơ đồ luồng vector cho cả 5 cơ chế: Naive RAG, Self-RAG, GraphRAG, FLARE và Agentic CoALA.
+> "Để phục vụ nghiên cứu và trả lời chất vấn kỹ thuật chuyên sâu của hội đồng, nhóm đã tổng hợp toàn bộ mã giả suy luận (Inference Pseudocode) và sơ đồ luồng vector cho cả 4 cơ chế RAG cốt lõi: Naive RAG, Self-RAG, GraphRAG, và FLARE.
+> Giao diện hỗ trợ linh hoạt 3 chế độ hiển thị: Song song (Split 50:50), Toàn màn hình Mã giả (100% Width), hoặc Xếp dọc toàn diện, kèm nút Phóng to Modal toàn màn hình để hội trường có thể quan sát từng dòng mã rõ ràng nhất.
 > Mỗi mô hình đều có đầy đủ 3 phần:
 > 1. **Sơ đồ luồng vector tương tác**
 > 2. **Công thức toán học từ bài báo gốc** (Marginalization, Modularity Q, Reflection Scoring, Uncertainty Threshold)
-> 3. **Mã giả Pythonic** có chú thích từng bước thực thi.
+> 3. **Mã giả Pythonic** có chú thích từng bước thực thi và đánh số dòng chi tiết.
 > Bất kỳ ai nhìn vào Tab 6 cũng có thể nắm bắt và tái lập lại 100% thuật toán."
 
 ---

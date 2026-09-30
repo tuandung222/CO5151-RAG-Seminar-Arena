@@ -2287,33 +2287,113 @@ with tab5:
 # ==========================================
 # TAB 6: RAG ALGORITHMS & INFERENCE PSEUDOCODE
 # ==========================================
+@st.dialog("Mã Giả Thuật Toán / Pythonic Pseudocode", width="large")
+def show_pseudocode_dialog(title: str, code_str: str, paper_ref: str = "", current_lang: str = "vi"):
+    st.markdown(f"### 🧩 {title}")
+    if paper_ref:
+        st.caption(f"📖 **Paper Reference:** {paper_ref}")
+    st.code(code_str, language="python", line_numbers=True)
+    tip_text = "💡 Mẹo: Bấm phím Esc hoặc bấm ra ngoài cửa sổ để đóng modal." if current_lang == "vi" else "💡 Tip: Press Esc or click outside the dialog to close."
+    st.caption(tip_text)
+
 with tab6:
     header_t6 = "🧩 Kho Thuật Toán & Mã Giả Suy Luận (Inference Flow & Pseudocode)" if lang == "vi" else "🧩 Core RAG Paradigms: Inference Flow & Pseudocode"
     desc_t6 = (
-        "**Tổng hợp kiến trúc suy luận và mã giả chi tiết** cho toàn bộ 5 giải pháp RAG được kiểm chứng trong seminar. "
+        "**Tổng hợp kiến trúc suy luận và mã giả chi tiết** cho toàn bộ 4 giải pháp RAG được kiểm chứng trong seminar. "
         "Mỗi mô hình đều tích hợp sơ đồ luồng (Flow Diagram) trực quan, công thức toán học chuẩn từ bài báo gốc, "
         "và mã giả Pythonic với chú thích chi tiết giúp bất kỳ ai cũng có thể nắm bắt 100% bản chất thuật toán."
         if lang == "vi" else
-        "**Comprehensive architectural reference and executable pseudocode** for all 5 RAG paradigms benchmarked in the seminar. "
+        "**Comprehensive architectural reference and executable pseudocode** for all 4 core RAG paradigms benchmarked in the seminar. "
         "Each paradigm integrates an interactive vector flow diagram, formal mathematical formulation from the seminal paper, "
         "and heavily commented Pythonic pseudocode designed for immediate conceptual mastery."
     )
-    st.markdown(f"### {header_t6}")
+
+    col_hdr, col_view = st.columns([1.5, 1.5])
+    with col_hdr:
+        st.markdown(f"### {header_t6}")
+    with col_view:
+        view_mode = st.radio(
+            "📐 Bố cục hiển thị / Layout View:" if lang == "vi" else "📐 Layout View:",
+            options=["split", "code_full", "stacked"],
+            format_func=lambda x: {
+                "split": "🌓 Song song (Split 50:50)" if lang == "vi" else "🌓 Split (50:50)",
+                "code_full": "📜 Toàn màn hình Mã giả (100%)" if lang == "vi" else "📜 Full-Width Code (100%)",
+                "stacked": "📑 Xếp dọc toàn diện" if lang == "vi" else "📑 Stacked View"
+            }[x],
+            horizontal=True,
+            key="tab6_view_mode"
+        )
     st.markdown(desc_t6)
 
-    sub_t1, sub_t2, sub_t3, sub_t4, sub_t5 = st.tabs([
+    def render_algorithm_panel(
+        subtab_key: str,
+        paper_card_html: str,
+        diag_name: str,
+        diag_height: int,
+        math_title: str,
+        math_text: str,
+        math_latex: str,
+        math_caption: str,
+        custom_critique_block,
+        code_title: str,
+        code_str: str,
+        paper_modal_title: str,
+        paper_ref: str
+    ):
+        st.markdown(paper_card_html, unsafe_allow_html=True)
+
+        def _render_theory():
+            st.markdown(f"#### {'1. Sơ Đồ Luồng Suy Luận' if lang == 'vi' else '1. Inference Flow Diagram'}")
+            render_mermaid(get_diagram(diag_name, lang), height=diag_height)
+            if math_title:
+                st.markdown(f"#### {math_title}")
+            if math_text:
+                st.markdown(math_text)
+            if math_latex:
+                st.latex(math_latex)
+            if math_caption:
+                st.caption(math_caption)
+            if custom_critique_block:
+                custom_critique_block()
+
+        def _render_code():
+            col_c_hdr, col_c_btn = st.columns([2.5, 1.2])
+            with col_c_hdr:
+                st.markdown(f"#### {code_title}")
+            with col_c_btn:
+                btn_txt = "⛶ " + ("Phóng to Toàn màn hình" if lang == "vi" else "Fullscreen Modal")
+                if st.button(btn_txt, key=f"btn_modal_{subtab_key}", help="Bung cửa sổ modal phóng to toàn màn hình" if lang == "vi" else "Open full-screen modal"):
+                    show_pseudocode_dialog(paper_modal_title, code_str, paper_ref, lang)
+            st.code(code_str, language="python", line_numbers=True)
+
+        if view_mode == "split":
+            col_diag, col_code = st.columns([1, 1.2])
+            with col_diag:
+                _render_theory()
+            with col_code:
+                _render_code()
+        elif view_mode == "code_full":
+            _render_code()
+            exp_txt = "🖼️ " + ("Xem Sơ đồ luồng & Cơ sở lý thuyết" if lang == "vi" else "View Flow Diagram & Theoretical Foundations")
+            with st.expander(exp_txt, expanded=False):
+                _render_theory()
+        else:  # stacked
+            _render_theory()
+            st.markdown("---")
+            _render_code()
+
+    sub_t1, sub_t2, sub_t3, sub_t4 = st.tabs([
         "1. Naive RAG (Lewis 2020)",
         "2. Self-RAG (Asai 2024)",
         "3. GraphRAG (Edge 2024)",
-        "4. FLARE (Jiang 2023)",
-        "5. Agentic Loop (CoALA 2024)"
+        "4. FLARE (Jiang 2023)"
     ])
 
     # -----------------------------------------------------------
     # SUBTAB 1: NAIVE RAG
     # -----------------------------------------------------------
     with sub_t1:
-        st.markdown(f"""
+        card_naive = f"""
         <div class="context-card">
             <div class="context-card-title">📚 <b>Naive RAG (Lewis et al., NeurIPS 2020)</b></div>
             <div>
@@ -2321,19 +2401,9 @@ with tab6:
                 <b>{'Cơ chế cốt lõi:' if lang == 'vi' else 'Core Mechanism:'}</b> {'Nối thô các đoạn văn bản truy xuất gần nhất vào prompt mà không qua khâu thẩm định phản biện.' if lang == 'vi' else 'Blind concatenation of top-k semantically nearest chunks directly into generator prompt.'}
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """
 
-        col_n_diag, col_n_code = st.columns([1, 1.2])
-
-        with col_n_diag:
-            st.markdown(f"#### {'1. Sơ Đồ Luồng Suy Luận' if lang == 'vi' else '1. Inference Flow Diagram'}")
-            render_mermaid(get_diagram("naive_rag", lang), height=280)
-
-            st.markdown(f"#### {'2. Công Thức Xác Suất Lý Thuyết' if lang == 'vi' else '2. Theoretical Formulation'}")
-            st.markdown("Xác suất sinh câu trả lời $y$ bằng cách lấy tổng biên (marginalize) trên tập tài liệu $z$ truy xuất được:")
-            st.latex(r"P(y \mid x) = \sum_{z \in \text{Top-}k} P(z \mid x) \cdot P(y \mid x, z)")
-            st.caption(r"Trong triển khai thực tế (In-Context RAG), mô hình bỏ qua phép tính tổng biên và ghép nối chuỗi trực tiếp: $P(y \mid x, z_1, \dots, z_k)$." if lang == "vi" else r"In real-world In-Context RAG, marginalization is approximated via direct prompt concatenation: $P(y \mid x, z_1, \dots, z_k)$.")
-
+        def naive_critique():
             st.markdown(f"#### {'3. Điểm Yếu Cốt Lõi (Failure Mode)' if lang == 'vi' else '3. Primary Failure Mode'}")
             st.error("""
             **Context Poisoning (Nhiễm độc ngữ cảnh):**
@@ -2345,9 +2415,7 @@ with tab6:
             - When an expired statute (2012 Code) matches keywords closely, Naive RAG injects it uncritically, tricking the generator into asserting a 60-day cap instead of 180 days.
             """)
 
-        with col_n_code:
-            st.markdown(f"#### {'4. Mã Giả Thuật Toán (Executable Pseudocode)' if lang == 'vi' else '4. Pythonic Pseudocode'}")
-            st.code('''def naive_rag_inference(query: str, corpus: list, top_k: int = 3) -> str:
+        code_naive = '''def naive_rag_inference(query: str, corpus: list, top_k: int = 3) -> str:
     """
     Thuật toán suy luận Naive RAG (Lewis et al., 2020)
     Nhược điểm: Không có khâu phản biện, dễ bị ngộ độc tài liệu gây nhiễu.
@@ -2374,13 +2442,29 @@ Hãy trả lời dựa trên ngữ cảnh trên:"""
 
     # 4. Sinh phản hồi từ mô hình ngôn ngữ
     response = generator_llm.generate(prompt)
-    return response''', language="python")
+    return response'''
+
+        render_algorithm_panel(
+            subtab_key="naive_rag",
+            paper_card_html=card_naive,
+            diag_name="naive_rag",
+            diag_height=280,
+            math_title="2. Công Thức Xác Suất Lý Thuyết" if lang == "vi" else "2. Theoretical Formulation",
+            math_text="Xác suất sinh câu trả lời $y$ bằng cách lấy tổng biên (marginalize) trên tập tài liệu $z$ truy xuất được:" if lang == "vi" else "Probability of generating answer $y$ marginalized over retrieved documents $z$:",
+            math_latex=r"P(y \mid x) = \sum_{z \in \text{Top-}k} P(z \mid x) \cdot P(y \mid x, z)",
+            math_caption=r"Trong triển khai thực tế (In-Context RAG), mô hình bỏ qua phép tính tổng biên và ghép nối chuỗi trực tiếp: $P(y \mid x, z_1, \dots, z_k)$." if lang == "vi" else r"In real-world In-Context RAG, marginalization is approximated via direct prompt concatenation: $P(y \mid x, z_1, \dots, z_k)$.",
+            custom_critique_block=naive_critique,
+            code_title="4. Mã Giả Thuật Toán (Executable Pseudocode)" if lang == "vi" else "4. Pythonic Pseudocode",
+            code_str=code_naive,
+            paper_modal_title="Naive RAG (Lewis et al., NeurIPS 2020)",
+            paper_ref="Lewis et al. (NeurIPS 2020) — 'Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks'"
+        )
 
     # -----------------------------------------------------------
     # SUBTAB 2: SELF-RAG
     # -----------------------------------------------------------
     with sub_t2:
-        st.markdown(f"""
+        card_self_rag = f"""
         <div class="context-card">
             <div class="context-card-title">🔬 <b>Self-RAG: Learning to Retrieve, Generate, and Critique (Asai et al., ICLR 2024)</b></div>
             <div>
@@ -2388,18 +2472,9 @@ Hãy trả lời dựa trên ngữ cảnh trên:"""
                 <b>{'Cơ chế cốt lõi:' if lang == 'vi' else 'Core Mechanism:'}</b> {'Kiểm soát chu trình sinh bằng 4 Token tự đánh giá: [Retrieve], [IsREL], [IsSUP], [IsUSE] để loại trừ tài liệu gây nhiễu.' if lang == 'vi' else 'Controls generation lifecycle via discrete reflection tokens: [Retrieve], [IsREL], [IsSUP], and [IsUSE] to actively prune distractors.'}
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """
 
-        col_s_diag, col_s_code = st.columns([1, 1.2])
-
-        with col_s_diag:
-            st.markdown(f"#### {'1. Sơ Đồ Luồng Suy Luận' if lang == 'vi' else '1. Inference Flow Diagram'}")
-            render_mermaid(get_diagram("self_rag", lang), height=340)
-
-            st.markdown(f"#### {'2. Hàm Mục Tiêu Chấm Điểm (Paper Scoring Formula)' if lang == 'vi' else '2. Reflection Scoring Objective'}")
-            st.markdown("Điểm số rerank trong beam search kết hợp giữa xác suất sinh và xác suất của các Token phản biện:")
-            st.latex(r"\text{Score}(y, d) = \log P(y \mid x, d) + w_{\text{rel}} \log P([\text{IsREL}]) + w_{\text{sup}} \log P([\text{IsSUP}]) + w_{\text{use}} \log P([\text{IsUSE}])")
-
+        def self_rag_critique():
             st.markdown(f"#### {'3. Bảng 4 Token Tự Đánh Giá (Reflection Tokens)' if lang == 'vi' else '3. Special Reflection Tokens Matrix'}")
             st.markdown("""
             | Token | Tên gọi & Chức năng | Giá trị dự đoán |
@@ -2417,9 +2492,7 @@ Hãy trả lời dựa trên ngữ cảnh trên:"""
             | `[IsUSE]` | **Utility Rating** — Overall response usefulness | Rating scale `1` to `5` |
             """)
 
-        with col_s_code:
-            st.markdown(f"#### {'4. Mã Giả Thuật Toán (Executable Pseudocode)' if lang == 'vi' else '4. Pythonic Pseudocode'}")
-            st.code('''def self_rag_inference(query: str, retriever: object, tau: float = 0.5) -> dict:
+        code_self_rag = '''def self_rag_inference(query: str, retriever: object, tau: float = 0.5) -> dict:
     """
     Thuật toán suy luận Self-RAG (Asai et al., ICLR 2024)
     Ưu điểm: Chủ động phát hiện và loại bỏ tài liệu bãi bỏ bằng [IsREL].
@@ -2470,13 +2543,29 @@ Hãy trả lời dựa trên ngữ cảnh trên:"""
         "is_use_score": is_use,
         "pruned_distractors": [d.title for d in pruned_passages],
         "verified_passages": [d.title for d in valid_passages]
-    }''', language="python")
+    }'''
+
+        render_algorithm_panel(
+            subtab_key="self_rag",
+            paper_card_html=card_self_rag,
+            diag_name="self_rag",
+            diag_height=340,
+            math_title="2. Hàm Mục Tiêu Chấm Điểm (Paper Scoring Formula)" if lang == "vi" else "2. Reflection Scoring Objective",
+            math_text="Điểm số rerank trong beam search kết hợp giữa xác suất sinh và xác suất của các Token phản biện:" if lang == "vi" else "Rerank score during segment beam search integrates reflection token log-probabilities:",
+            math_latex=r"\text{Score}(y, d) = \log P(y \mid x, d) + w_{\text{rel}} \log P([\text{IsREL}]) + w_{\text{sup}} \log P([\text{IsSUP}]) + w_{\text{use}} \log P([\text{IsUSE}])",
+            math_caption="",
+            custom_critique_block=self_rag_critique,
+            code_title="4. Mã Giả Thuật Toán (Executable Pseudocode)" if lang == "vi" else "4. Pythonic Pseudocode",
+            code_str=code_self_rag,
+            paper_modal_title="Self-RAG (Asai et al., ICLR 2024)",
+            paper_ref="Asai et al. (ICLR 2024) — 'Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection'"
+        )
 
     # -----------------------------------------------------------
     # SUBTAB 3: GRAPHRAG
     # -----------------------------------------------------------
     with sub_t3:
-        st.markdown(f"""
+        card_graph_rag = f"""
         <div class="context-card">
             <div class="context-card-title">🕸️ <b>GraphRAG: From Local to Global (Edge et al., Microsoft Research 2024)</b></div>
             <div>
@@ -2484,18 +2573,9 @@ Hãy trả lời dựa trên ngữ cảnh trên:"""
                 <b>{'Cơ chế cốt lõi:' if lang == 'vi' else 'Core Mechanism:'}</b> {'Xây dựng Đồ thị Tri thức, phân cụm Modularity thành các cộng đồng chuyên đề và chạy quy trình Map-Reduce để bao quát 100% ngữ liệu.' if lang == 'vi' else 'Constructs a Knowledge Graph, partitions into Modularity communities, and executes hierarchical Map-Reduce for complete global synthesis.'}
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """
 
-        col_g_diag, col_g_code = st.columns([1, 1.2])
-
-        with col_g_diag:
-            st.markdown(f"#### {'1. Sơ Đồ Luồng Map-Reduce' if lang == 'vi' else '1. Hierarchical Map-Reduce Flow'}")
-            render_mermaid(get_diagram("graphrag", lang), height=380)
-
-            st.markdown(f"#### {'2. Thuật Toán Phân Cụm Cộng Đồng (Newman Modularity Q)' if lang == 'vi' else '2. Newman Modularity Optimization'}")
-            st.latex(r"Q = \sum_{c=1}^C \left[ \frac{e_c}{2m} - \left( \frac{d_c}{2m} \right)^2 \right]")
-            st.caption("Tối đa hóa mật độ liên kết nội bộ trong cụm so với mật độ ngẫu nhiên kỳ vọng, phân hoạch 15 điều luật thành 3 cụm chuyên đề bao quát đa chương.")
-
+        def graph_rag_critique():
             st.markdown(f"#### {'3. Khắc Phục Điểm Mù Cục Bộ (Local Blindness)' if lang == 'vi' else '3. Overcoming Local Blindness'}")
             st.info("""
             **Tại sao Naive RAG thất bại trên câu hỏi toàn cục?**
@@ -2509,9 +2589,7 @@ Hãy trả lời dựa trên ngữ cảnh trên:"""
             - **GraphRAG:** Traverses 100% of communities in parallel, guaranteeing zero cross-chapter blindness.
             """)
 
-        with col_g_code:
-            st.markdown(f"#### {'4. Mã Giả Thuật Toán (Executable Pseudocode)' if lang == 'vi' else '4. Pythonic Pseudocode'}")
-            st.code('''def graph_rag_global_inference(query: str, statutory_graph: Graph) -> str:
+        code_graph_rag = '''def graph_rag_global_inference(query: str, statutory_graph: Graph) -> str:
     """
     Thuật toán suy luận GraphRAG (Edge et al., Microsoft Research 2024)
     Ưu điểm: Khắc phục triệt để điểm mù cục bộ bằng Map-Reduce qua các cụm cộng đồng.
@@ -2556,13 +2634,29 @@ Hãy tổng hợp câu trả lời hoàn chỉnh, cấu trúc rõ ràng, viện 
 
     # LLM tổng hợp toàn cục (Global Synthesis)
     global_answer = generator_llm.generate(reduce_prompt)
-    return global_answer''', language="python")
+    return global_answer'''
+
+        render_algorithm_panel(
+            subtab_key="graph_rag",
+            paper_card_html=card_graph_rag,
+            diag_name="graphrag",
+            diag_height=380,
+            math_title="2. Thuật Toán Phân Cụm Cộng Đồng (Newman Modularity Q)" if lang == "vi" else "2. Newman Modularity Optimization",
+            math_text="" if lang == "vi" else "",
+            math_latex=r"Q = \sum_{c=1}^C \left[ \frac{e_c}{2m} - \left( \frac{d_c}{2m} \right)^2 \right]",
+            math_caption="Tối đa hóa mật độ liên kết nội bộ trong cụm so với mật độ ngẫu nhiên kỳ vọng, phân hoạch 15 điều luật thành 3 cụm chuyên đề bao quát đa chương." if lang == "vi" else "Maximizes internal edge density versus expected random connections across multi-chapter statutory graph.",
+            custom_critique_block=graph_rag_critique,
+            code_title="4. Mã Giả Thuật Toán (Executable Pseudocode)" if lang == "vi" else "4. Pythonic Pseudocode",
+            code_str=code_graph_rag,
+            paper_modal_title="GraphRAG (Edge et al., Microsoft Research 2024)",
+            paper_ref="Edge et al. (Microsoft Research 2024) — 'From Local to Global: A Graph RAG Approach to Query-Focused Summarization'"
+        )
 
     # -----------------------------------------------------------
     # SUBTAB 4: FLARE
     # -----------------------------------------------------------
     with sub_t4:
-        st.markdown(f"""
+        card_flare = f"""
         <div class="context-card">
             <div class="context-card-title">⚡ <b>FLARE: Forward-Looking Active Retrieval (Jiang et al., EMNLP 2023)</b></div>
             <div>
@@ -2570,19 +2664,9 @@ Hãy tổng hợp câu trả lời hoàn chỉnh, cấu trúc rõ ràng, viện 
                 <b>{'Cơ chế cốt lõi:' if lang == 'vi' else 'Core Mechanism:'}</b> {'Soạn thảo dự phóng từng câu; chỉ kích hoạt truy xuất chủ động khi độ tự tin token rơi xuống dưới ngưỡng theta.' if lang == 'vi' else 'Forward drafts sentence-by-sentence; actively triggers search queries only when token confidence drops below threshold theta.'}
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """
 
-        col_f_diag, col_f_code = st.columns([1, 1.2])
-
-        with col_f_diag:
-            st.markdown(f"#### {'1. Sơ Đồ Luồng Truy Xuất Chủ Động' if lang == 'vi' else '1. Active Retrieval Flow'}")
-            render_mermaid(get_diagram("flare", lang), height=280)
-
-            st.markdown(f"#### {'2. Điều Kiện Kích Hoạt (Trigger Condition)' if lang == 'vi' else '2. Uncertainty Trigger Condition'}")
-            st.markdown("Truy xuất được kích hoạt khi xác suất token nhỏ nhất trong câu dự phóng rơi xuống dưới ngưỡng $\\theta$:")
-            st.latex(r"\text{Trigger Retrieval} \iff \min_{w_t \in S_i} P(w_t \mid x, y_{<t}) < \theta")
-            st.caption("Nếu $\\min P(w_t) \\ge \\theta$, câu văn đạt độ tự tin cao -> Giữ nguyên, tiết kiệm 100% chi phí truy xuất.")
-
+        def flare_critique():
             st.markdown(f"#### {'3. So Sánh Chiến Lược Thời Điểm Truy Xuất' if lang == 'vi' else '3. Retrieval Timing Comparison'}")
             st.markdown("""
             - **Naive RAG (Thụ động):** Luôn tra cứu ngay từ đầu (Upfront) bất kể mô hình đã biết hay chưa -> Lãng phí độ trễ và chi phí.
@@ -2594,9 +2678,7 @@ Hãy tổng hợp câu trả lời hoàn chỉnh, cấu trúc rõ ràng, viện 
             - **FLARE (On-Demand Active):** Drafts forward first, checks sentence confidence -> Searches only when genuinely uncertain.
             """)
 
-        with col_f_code:
-            st.markdown(f"#### {'4. Mã Giả Thuật Toán (Executable Pseudocode)' if lang == 'vi' else '4. Pythonic Pseudocode'}")
-            st.code('''def flare_active_inference(query: str, retriever: object, theta: float = 0.5) -> str:
+        code_flare = '''def flare_active_inference(query: str, retriever: object, theta: float = 0.5) -> str:
     """
     Thuật toán suy luận FLARE (Jiang et al., EMNLP 2023)
     Ưu điểm: Tối ưu chi phí tra cứu, chỉ kích hoạt khi gặp độ bất định token.
@@ -2634,90 +2716,23 @@ Hãy tổng hợp câu trả lời hoàn chỉnh, cấu trúc rõ ràng, viện 
             )
             generated_sentences.append(grounded_sentence)
             
-    return " ".join(generated_sentences)''', language="python")
+    return " ".join(generated_sentences)'''
 
-    # -----------------------------------------------------------
-    # SUBTAB 5: AGENTIC PARADIGM (COALA)
-    # -----------------------------------------------------------
-    with sub_t5:
-        core_mech_coala = (
-            "Chuyển dịch vai trò của Retrieval từ một 'công đoạn cố định trong đường ống' sang một 'công cụ (Tool)' trong không gian hành động do Agent tự chủ quyết định."
-            if lang == "vi" else
-            "Shifts retrieval from a fixed linear pipeline stage into a dynamic Tool in the action space of an autonomous decision-making agent."
+        render_algorithm_panel(
+            subtab_key="flare_rag",
+            paper_card_html=card_flare,
+            diag_name="flare",
+            diag_height=280,
+            math_title="2. Điều Kiện Kích Hoạt (Trigger Condition)" if lang == "vi" else "2. Uncertainty Trigger Condition",
+            math_text="Truy xuất được kích hoạt khi xác suất token nhỏ nhất trong câu dự phóng rơi xuống dưới ngưỡng $\\theta$:" if lang == "vi" else "Retrieval is triggered when the minimum token probability within drafted sentence drops below threshold $\\theta$:",
+            math_latex=r"\text{Trigger Retrieval} \iff \min_{w_t \in S_i} P(w_t \mid x, y_{<t}) < \theta",
+            math_caption="Nếu $\\min P(w_t) \\ge \\theta$, câu văn đạt độ tự tin cao -> Giữ nguyên, tiết kiệm 100% chi phí truy xuất." if lang == "vi" else "If $\\min P(w_t) \\ge \\theta$, sentence confidence is high -> Preserved directly, saving 100% search latency.",
+            custom_critique_block=flare_critique,
+            code_title="4. Mã Giả Thuật Toán (Executable Pseudocode)" if lang == "vi" else "4. Pythonic Pseudocode",
+            code_str=code_flare,
+            paper_modal_title="FLARE (Jiang et al., EMNLP 2023)",
+            paper_ref="Jiang et al. (EMNLP 2023) — 'Active Retrieval Augmented Generation'"
         )
-        st.markdown(f"""
-        <div class="context-card">
-            <div class="context-card-title">🤖 <b>Agentic RAG & CoALA Cognitive Architecture (Sumers et al., 2024)</b></div>
-            <div>
-                <i>"Cognitive Architectures for Language Agents"</i> — Princeton University / Stanford / Allen AI.<br>
-                <b>{'Cơ chế cốt lõi:' if lang == 'vi' else 'Core Mechanism:'}</b> {core_mech_coala}
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
 
-        col_a_diag, col_a_code = st.columns([1, 1.2])
-
-        with col_a_diag:
-            st.markdown(f"#### {'1. Vòng Lặp Quyết Định Của Agent' if lang == 'vi' else '1. Agent Decision Loop (CoALA)'}")
-            render_mermaid(get_diagram("agentic_coala", lang), height=420)
-
-            st.markdown(f"#### {'2. Sự Chuyển Dịch Hệ Tiên Đề (Paradigm Shift)' if lang == 'vi' else '2. Conceptual Paradigm Shift'}")
-            st.markdown("""
-            | Tiêu chí | Classical RAG Pipeline | Agentic RAG (CoALA) |
-            | :--- | :--- | :--- |
-            | **Vị trí của Retrieval** | Bước cố định (Fixed Stage) | **Công cụ (Action / Tool)** |
-            | **Ai quyết định tra cứu?** | Lập trình viên cấu hình cứng | **Agent tự chủ đánh giá trạng thái** |
-            | **Số bước tra cứu** | Luôn là 1 bước (Single-hop) | **Linh hoạt đa bước (Multi-hop)** |
-            | **Kiểm định kết quả** | Không có hoặc tách rời | **Tích hợp vào Bộ nhớ làm việc** |
-            """ if lang == "vi" else """
-            | Dimension | Classical RAG Pipeline | Agentic RAG (CoALA) |
-            | :--- | :--- | :--- |
-            | **Retrieval Role** | Hardcoded Pipeline Stage | **Dynamic Action / Tool** |
-            | **Decision Authority** | Fixed by developer | **Autonomous Agent Evaluation** |
-            | **Search Depth** | Strictly single-hop | **Multi-hop reasoning loop** |
-            | **Evidence Verification**| None or decoupled | **Integrated in Working Memory** |
-            """)
-
-        with col_a_code:
-            st.markdown(f"#### {'3. Mã Giả Vòng Lặp Quyết Định (Agentic Loop)' if lang == 'vi' else '3. Agent Decision Loop Pseudocode'}")
-            st.code('''def agentic_rag_loop(user_goal: str, tools: dict, max_steps: int = 5) -> str:
-    """
-    Vòng lặp Quyết định của Agent theo khung kiến trúc CoALA (Sumers et al., 2024).
-    Retrieval là một công cụ (Tool) mà Agent tự chủ kích hoạt khi cần thiết.
-    """
-    # 1. Khởi tạo Bộ nhớ làm việc (Working Memory)
-    working_memory = [
-        {"role": "user_goal", "content": user_goal}
-    ]
-
-    for step in range(max_steps):
-        # 2. Suy ngẫm và quan sát trạng thái (Reasoning / Thought)
-        prompt = format_agent_state(
-            memory=working_memory,
-            tools_manifest=tools.keys()
-        )
-        decision = agent_llm.generate_decision(prompt)
-        
-        # 3. Phân nhánh hành động (Action Selection)
-        if decision.action_type == "CALL_TOOL":
-            tool_name = decision.selected_tool       # Ví dụ: "Statutory_Retriever"
-            tool_args = decision.tool_arguments      # Ví dụ: {"query": "Điều 25 thử việc 180 ngày"}
-            
-            # Kích hoạt công cụ truy xuất (hoặc công cụ tính toán, tra cứu đồ thị)
-            observation = tools[tool_name].execute(**tool_args)
-            
-            # Lưu vết vào bộ nhớ làm việc để suy ngẫm cho bước kế tiếp
-            working_memory.append({
-                "step": step,
-                "thought": decision.thought,
-                "action": f"{tool_name}({tool_args})",
-                "observation": observation
-            })
-            
-        elif decision.action_type == "FINAL_ANSWER":
-            # Đã thu thập đủ bằng chứng và kiểm chứng căn cứ
-            return decision.final_response
-
-    return fallback_synthesis(working_memory)''', language="python")
 
 
