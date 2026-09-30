@@ -1719,7 +1719,7 @@ with tab4:
             key="flare_theta_slider"
         )
     with c_f_info:
-        st.info(f"{'Cơ chế kích hoạt:' if lang == 'vi' else 'Trigger Rule:'} $\\Conf_{LLM}(S_t) < {flare_theta:.1f}$\n\n{'Bỏ qua tra cứu khi Verbalized Confidence (LLM tự khai) cao.' if lang == 'vi' else 'Bypasses search when verbalized confidence is high.'}")
+        st.info(f"{'Cơ chế kích hoạt:' if lang == 'vi' else 'Trigger Rule:'} $\\Conf_{{LLM}}(S_t) < {flare_theta:.1f}$\n\n{'Bỏ qua tra cứu khi Verbalized Confidence (LLM tự khai) cao.' if lang == 'vi' else 'Bypasses search when verbalized confidence is high.'}")
 
     # Handle Live Re-run
     if run_btn4:
