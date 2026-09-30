@@ -689,7 +689,7 @@ with st.expander(t("master_guide_expander", lang), expanded=False):
 | **2. Naive RAG** | Tìm kiếm tương đồng top-k + nối chuỗi thô | $\arg\max_y P(y \mid x, \text{TopK}(x))$ | Bổ sung tri thức thiếu trong pre-training | FAQ đơn giản trên tài liệu tĩnh, không xung đột |
 | **3. Self-RAG** | Token tự đánh giá (In-context Surrogate) | Emulate: $\text{Score} \approx f(\text{IsREL}, \text{IsSUP}, \text{IsUSE})$ | **Nhiễm độc tài liệu gây nhiễu** (Luật hết hiệu lực/mâu thuẫn) | Lĩnh vực rủi ro cao (Pháp lý, Y tế, Kiểm toán tài chính) |
 | **4. GraphRAG** | Đồ thị tri thức + Phân cụm cộng đồng theo Modularity + Tổng hợp phân cấp Map-Reduce | $\text{Reduce}(\{\text{Map}(C_i)\}_{i=1}^M)$, $Q = \sum [e_{ii} - a_i^2]$ | **Điểm mù cục bộ của Vector Search (Local Blindness) của Vector Search** (Bỏ sót điều khoản liên chương) | Báo cáo chính sách toàn diện, tóm lược quy chế pháp luật |
-| **5. FLARE** | Sinh nháp dự phóng + Kích hoạt truy xuất theo verbalized confidence | Kích hoạt truy xuất khi $\text{Conf}_{\text{LLM}}(S_t) < \theta$ | **Tốn kém chi phí & độ trễ truy xuất dư thừa** | Báo cáo sự kiện nhiều câu, văn bản pháp lý dài kỳ |
+| **5. FLARE** | Draft generation + Active retrieval on verbalized confidence | Trigger retrieval when $\text{Conf}_{\text{LLM}}(S_t) < \theta$ | **Excessive retrieval cost & latency** | Multi-sentence reports, long-form legal documents |
 """)
         st.caption("Thiết kế phục vụ seminar học viên cao học CO5151 Advanced Agentic AI (HCMUT). Học viên: Dung Vo. Đối chứng thực tế trên Bộ luật Lao động 2019 và tài liệu gây nhiễu BLLĐ 2012 (đã hết hiệu lực thi hành).")
         st.info("""
@@ -718,7 +718,7 @@ with st.expander(t("master_guide_expander", lang), expanded=False):
 | **2. Naive RAG** | Blind top-k similarity search + concatenation | $\arg\max_y P(y \mid x, \text{TopK}(x))$ | Information absence in pre-training | Simple FAQ lookup on static, non-conflicting docs |
 | **3. Self-RAG** | Reflective critic tokens (In-context Surrogate) | Emulate: $\text{Score} \approx f(\text{IsREL}, \text{IsSUP}, \text{IsUSE})$ | **Distractor Poisoning** (Repealed/Conflicting laws) | High-stakes domains (Legal, Healthcare, Financial audit) |
 | **4. GraphRAG** | Knowledge Graph + Community Modularity + Map-Reduce | $\text{Reduce}(\{\text{Map}(C_i)\}_{i=1}^M)$, $Q = \sum [e_{ii} - a_i^2]$ | **Local Blindness** (Corpus-wide omission) | Holistic policy summaries, comprehensive legal digests |
-| **5. FLARE** | Sinh nháp dự phóng + Kích hoạt truy xuất theo verbalized confidence | Kích hoạt truy xuất khi $\text{Conf}_{\text{LLM}}(S_t) < \theta$ | **Tốn kém chi phí & độ trễ truy xuất dư thừa** | Báo cáo sự kiện nhiều câu, văn bản pháp lý dài kỳ |
+| **5. FLARE** | Draft generation + Active retrieval on verbalized confidence | Trigger retrieval when $\text{Conf}_{\text{LLM}}(S_t) < \theta$ | **Excessive retrieval cost & latency** | Multi-sentence reports, long-form legal documents |
 """)
         st.caption("Developed for Master's Seminar in HCMUT CO5151 Advanced Agentic AI (Presenter: Dung Vo). Grounded on authentic Vietnamese Labor Law (BLLĐ 2019 vs 2012 distractor).")
         st.info("""
@@ -776,8 +776,18 @@ with tab1:
     st.markdown(f"### {t('tab1_header', lang)}")
     st.markdown(t("tab1_desc", lang))
 
-    exp1_title = "Kiến Trúc Hệ Thống: Naive Linear RAG Tuyến Tính vs. Vòng Tự Đánh Giá Self-RAG" if lang == "vi" else "System Architecture: Naive Linear RAG vs. Self-RAG Reflective Rejection Loop"
-    with st.expander(exp1_title, expanded=False):
+    # ── Query Console FIRST (above-the-fold) ──
+    badge_t1 = "CÂU HỎI TRUY VẤN THỰC NGHIỆM ĐỐI CHỨNG (CASE 1)" if lang == "vi" else "BENCHMARK EVALUATION QUERY (CASE 1)"
+    hint_t1 = "Có thể chỉnh sửa trực tiếp câu hỏi trước khi chạy thực nghiệm" if lang == "vi" else "Editable query - modify freely or run as is"
+    btn_lbl_t1 = "🚀 Chạy Thực Nghiệm Đối Chứng" if lang == "vi" else "🚀 Run Comparative Benchmark"
+    q_tab1, run_btn1 = render_query_console(
+        badge_t1, hint_t1, test_cases[0]["question"], "q_tab1", "q_tab1_input", "btn1", lang, btn_label=btn_lbl_t1
+    )
+
+    # ── Context & Architecture details (collapsed) ──
+    ctx_expander_title = "📌 Bối Cảnh Thực Tế & Kiến Trúc Hệ Thống" if lang == "vi" else "📌 Case Study Context & System Architecture"
+    with st.expander(ctx_expander_title, expanded=False):
+        # Architecture diagrams
         d_tab1, d_tab2 = st.tabs([
             "1. Kiến Trúc Naive RAG Tuyến Tính" if lang == "vi" else "1. Naive Linear RAG Architecture",
             "2. Vòng Tự Đánh Giá Self-RAG" if lang == "vi" else "2. Self-RAG Reflective Loop Architecture",
@@ -787,54 +797,47 @@ with tab1:
         with d_tab2:
             render_mermaid(get_diagram("self_rag", lang), height=320)
 
-    # Pedagogical & Dispute Context Card (Case 1)
-    if lang == "vi":
-        st.markdown("""
-        <div class="context-card">
-            <div class="context-card-title">
-                📌 <b>Bối Cảnh Thực Tế & Mục Tiêu Thực Nghiệm (Case Study & Experimental Objective - Case 1)</b>
+        # Pedagogical & Dispute Context Card (Case 1)
+        if lang == "vi":
+            st.markdown("""
+            <div class="context-card">
+                <div class="context-card-title">
+                    📌 <b>Bối Cảnh Thực Tế & Mục Tiêu Thực Nghiệm (Case Study & Experimental Objective - Case 1)</b>
+                </div>
+                <div style="margin-bottom: 6px;">
+                    <span class="context-pill">🏛️ Tình Huống Thực Tế Doanh Nghiệp</span>
+                    Một tập đoàn ký hợp đồng thử việc <b>05 tháng (150 ngày)</b> với một Tổng Giám đốc điều hành (CEO). Sau đó công đoàn nội bộ khiếu nại thỏa thuận này vi phạm pháp luật, viện dẫn Bộ luật Lao động 2012 cũ (vốn giới hạn tối đa chỉ 60 ngày đối với mọi chức danh yêu cầu trình độ đại học trở lên). Doanh nghiệp cần xác định chính xác thời hạn 150 ngày này có hợp pháp theo quy định hiện hành hay không.
+                </div>
+                <div>
+                    <span class="context-pill">🎯 Mục Tiêu Thực Nghiệm CO5151</span>
+                    <b>Kiểm chứng hiện tượng "When Retrieval Hurts" & Ngộ độc ngữ cảnh (Context Poisoning):</b> 
+                    Khi retriever truy xuất phải điều luật <i>BLLĐ 2012 cũ đã hết hiệu lực</i> (do trùng khớp từ khóa cao - False Positive), <b>Naive RAG</b> tiếp nhận thụ động tài liệu nạp vào mà không qua khâu thẩm định hiệu lực văn bản, dẫn đến kết luận sai (khẳng định tối đa 60 ngày). Ngược lại, <b>Self-RAG</b> kích hoạt Reflection Critic token <code>[IsREL]</code> (thẩm định độ liên quan) phát hiện văn bản bãi bỏ để loại trừ, bảo toàn câu trả lời chính xác <b>180 ngày</b> (Khoản 1 Điều 25 BLLĐ 2019).
+                </div>
+                <div style="margin-top: 8px; padding-top: 6px; border-top: 1px dashed #cbd5e1; font-size: 0.84rem; color: #475569;">
+                    ⏱️ <b>Mốc Thời Gian & Hiệu Lực Chuẩn:</b> Bộ luật Lao động 2019 (Luật số 45/2019/QH14) có hiệu lực từ ngày <b>01/01/2021 đến nay (2026)</b> và là Bộ luật Lao động <b>hiện hành duy nhất và mới nhất</b> tại Việt Nam (không có bộ luật nào mới hơn). Bộ luật Lao động 2012 cũ đã chính thức <b>hết hiệu lực từ 01/01/2021</b>.
+                </div>
             </div>
-            <div style="margin-bottom: 6px;">
-                <span class="context-pill">🏛️ Tình Huống Thực Tế Doanh Nghiệp</span>
-                Một tập đoàn ký hợp đồng thử việc <b>05 tháng (150 ngày)</b> với một Tổng Giám đốc điều hành (CEO). Sau đó công đoàn nội bộ khiếu nại thỏa thuận này vi phạm pháp luật, viện dẫn Bộ luật Lao động 2012 cũ (vốn giới hạn tối đa chỉ 60 ngày đối với mọi chức danh yêu cầu trình độ đại học trở lên). Doanh nghiệp cần xác định chính xác thời hạn 150 ngày này có hợp pháp theo quy định hiện hành hay không.
+            """, unsafe_allow_html=True)
+        else:
+            st.markdown("""
+            <div class="context-card">
+                <div class="context-card-title">
+                    📌 <b>Real-World Dispute Context & Pedagogical Grounding (Case 1)</b>
+                </div>
+                <div style="margin-bottom: 6px;">
+                    <span class="context-pill">🏛️ Corporate Dispute Scenario</span>
+                    A corporation executes a <b>5-month (150-day) probation contract</b> with an incoming Chief Executive Officer (CEO). The internal labor union disputes this clause, citing the former Labor Code 2012 which strictly capped probation at 60 days for all executive/degree-level roles. Corporate compliance must determine whether 150 days is lawful under current law.
+                </div>
+                <div>
+                    <span class="context-pill">🎯 CO5151 Seminar Objective</span>
+                    <b>Demonstrating "When Retrieval Hurts" & Context Poisoning:</b> 
+                    When a naive retriever fetches a <i>repealed 2012 statutory distractor</i> due to high lexical similarity (False Positive), <b>Naive RAG</b> uncritically relies on the poisoned context and issues false legal advice (capping at 60 days). In contrast, <b>Self-RAG</b> triggers the <code>[IsREL]</code> reflection critic to prune the expired statute, maintaining the ground-truth legal limit of <b>180 days</b> (Article 25, Labor Code 2019).
+                </div>
+                <div style="margin-top: 8px; padding-top: 6px; border-top: 1px dashed #cbd5e1; font-size: 0.84rem; color: #475569;">
+                    ⏱️ <b>Statutory Timeline Baseline:</b> Labor Code 2019 (Law No. 45/2019/QH14) took effect on <b>Jan 1, 2021 and remains the latest active Labor Code in Vietnam through 2026</b> (no subsequent Labor Code exists). The former Labor Code 2012 was <b>formally repealed on Jan 1, 2021</b>.
+                </div>
             </div>
-            <div>
-                <span class="context-pill">🎯 Mục Tiêu Thực Nghiệm CO5151</span>
-                <b>Kiểm chứng hiện tượng "When Retrieval Hurts" & Ngộ độc ngữ cảnh (Context Poisoning):</b> 
-                Khi retriever truy xuất phải điều luật <i>BLLĐ 2012 cũ đã hết hiệu lực</i> (do trùng khớp từ khóa cao - False Positive), <b>Naive RAG</b> tiếp nhận thụ động tài liệu nạp vào mà không qua khâu thẩm định hiệu lực văn bản, dẫn đến kết luận sai (khẳng định tối đa 60 ngày). Ngược lại, <b>Self-RAG</b> kích hoạt Reflection Critic token <code>[IsREL]</code> (thẩm định độ liên quan) phát hiện văn bản bãi bỏ để loại trừ, bảo toàn câu trả lời chính xác <b>180 ngày</b> (Khoản 1 Điều 25 BLLĐ 2019).
-            </div>
-            <div style="margin-top: 8px; padding-top: 6px; border-top: 1px dashed #cbd5e1; font-size: 0.84rem; color: #475569;">
-                ⏱️ <b>Mốc Thời Gian & Hiệu Lực Chuẩn:</b> Bộ luật Lao động 2019 (Luật số 45/2019/QH14) có hiệu lực từ ngày <b>01/01/2021 đến nay (2026)</b> và là Bộ luật Lao động <b>hiện hành duy nhất và mới nhất</b> tại Việt Nam (không có bộ luật nào mới hơn). Bộ luật Lao động 2012 cũ đã chính thức <b>hết hiệu lực từ 01/01/2021</b>.
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-    else:
-        st.markdown("""
-        <div class="context-card">
-            <div class="context-card-title">
-                📌 <b>Real-World Dispute Context & Pedagogical Grounding (Case 1)</b>
-            </div>
-            <div style="margin-bottom: 6px;">
-                <span class="context-pill">🏛️ Corporate Dispute Scenario</span>
-                A corporation executes a <b>5-month (150-day) probation contract</b> with an incoming Chief Executive Officer (CEO). The internal labor union disputes this clause, citing the former Labor Code 2012 which strictly capped probation at 60 days for all executive/degree-level roles. Corporate compliance must determine whether 150 days is lawful under current law.
-            </div>
-            <div>
-                <span class="context-pill">🎯 CO5151 Seminar Objective</span>
-                <b>Demonstrating "When Retrieval Hurts" & Context Poisoning:</b> 
-                When a naive retriever fetches a <i>repealed 2012 statutory distractor</i> due to high lexical similarity (False Positive), <b>Naive RAG</b> uncritically relies on the poisoned context and issues false legal advice (capping at 60 days). In contrast, <b>Self-RAG</b> triggers the <code>[IsREL]</code> reflection critic to prune the expired statute, maintaining the ground-truth legal limit of <b>180 days</b> (Article 25, Labor Code 2019).
-            </div>
-            <div style="margin-top: 8px; padding-top: 6px; border-top: 1px dashed #cbd5e1; font-size: 0.84rem; color: #475569;">
-                ⏱️ <b>Statutory Timeline Baseline:</b> Labor Code 2019 (Law No. 45/2019/QH14) took effect on <b>Jan 1, 2021 and remains the latest active Labor Code in Vietnam through 2026</b> (no subsequent Labor Code exists). The former Labor Code 2012 was <b>formally repealed on Jan 1, 2021</b>.
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    badge_t1 = "CÂU HỎI TRUY VẤN THỰC NGHIỆM ĐỐI CHỨNG (CASE 1)" if lang == "vi" else "BENCHMARK EVALUATION QUERY (CASE 1)"
-    hint_t1 = "Có thể chỉnh sửa trực tiếp câu hỏi trước khi chạy thực nghiệm" if lang == "vi" else "Editable query - modify freely or run as is"
-    btn_lbl_t1 = "🚀 Chạy Thực Nghiệm Đối Chứng" if lang == "vi" else "🚀 Run Comparative Benchmark"
-    q_tab1, run_btn1 = render_query_console(
-        badge_t1, hint_t1, test_cases[0]["question"], "q_tab1", "q_tab1_input", "btn1", lang, btn_label=btn_lbl_t1
-    )
+            """, unsafe_allow_html=True)
 
     c_dist_1, c_dist_2 = st.columns([1, 1])
     with c_dist_1:
@@ -1580,7 +1583,7 @@ with tab3:
 
     # Scientific Deep-Dive: Token Probabilities & Logprobs in Self-RAG
     st.markdown("---")
-    with st.expander(t("tab3_deepdive_title", lang), expanded=True):
+    with st.expander(t("tab3_deepdive_title", lang), expanded=False):
         if lang == "vi":
             st.markdown("#### 1. Công thức Toán học Lý thuyết (Asai et al., ICLR 2024)")
             st.markdown("**CÓ, CHẮC CHẮN.** Trong bài báo gốc về Self-RAG (*'Learning to Retrieve, Generate, and Critique through Self-Reflection'*), các token tự đánh giá (reflection tokens) được huấn luyện trực tiếp vào từ vựng của Language Model $\\mathcal{V}$. Tại mỗi bước sinh, mô hình tính toán **phân phối xác suất Softmax** trên các token này:")
@@ -1978,7 +1981,7 @@ with tab5:
 
     # Section 4: Seminar Defense Q&A Sheet
     st.markdown(f"#### 4. {'Bộ Câu Hỏi Bảo Vệ Seminar & Phản Biện Học Thuật' if lang == 'vi' else 'Academic Seminar Defense Cheat Sheet (Anticipated Technical Questions)'}")
-    with st.expander("Q1: Vì sao hệ thống tính toán trước Embeddings ngoại tuyến thay vì mã hóa toàn bộ ngữ liệu khi runtime?" if lang == "vi" else "Q1: Why does the system pre-compute embeddings offline instead of encoding the corpus at runtime?", expanded=True):
+    with st.expander("Q1: Vì sao hệ thống tính toán trước Embeddings ngoại tuyến thay vì mã hóa toàn bộ ngữ liệu khi runtime?" if lang == "vi" else "Q1: Why does the system pre-compute embeddings offline instead of encoding the corpus at runtime?", expanded=False):
         if lang == "vi":
             st.markdown("""
             **Trả lời:** Trong các hệ thống RAG thực tế, kho dữ liệu chứa hàng ngàn đến hàng triệu đoạn văn bản. Nếu mã hóa lại toàn bộ kho dữ liệu mỗi khi có truy vấn:
