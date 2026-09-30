@@ -188,7 +188,8 @@ st.markdown("""
         margin-right: 6px;
     }
     /* High-Visibility Executive Query Box Styling */
-    div[data-testid="stTextInput"] div[data-baseweb="input"] {
+    div[data-testid="stTextInput"] div[data-baseweb="input"],
+    div[data-testid="stTextArea"] div[data-baseweb="textarea"] {
         border: 2.5px solid #0284c7 !important;
         border-radius: 12px !important;
         background-color: #ffffff !important;
@@ -196,16 +197,19 @@ st.markdown("""
         min-height: 52px !important;
         transition: all 0.2s ease-in-out !important;
     }
-    div[data-testid="stTextInput"] div[data-baseweb="input"]:hover {
+    div[data-testid="stTextInput"] div[data-baseweb="input"]:hover,
+    div[data-testid="stTextArea"] div[data-baseweb="textarea"]:hover {
         border-color: #0369a1 !important;
         box-shadow: 0 6px 24px rgba(2, 132, 199, 0.28) !important;
     }
-    div[data-testid="stTextInput"] div[data-baseweb="input"]:focus-within {
+    div[data-testid="stTextInput"] div[data-baseweb="input"]:focus-within,
+    div[data-testid="stTextArea"] div[data-baseweb="textarea"]:focus-within {
         border-color: #0284c7 !important;
         background-color: #ffffff !important;
         box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.25), 0 6px 24px rgba(2, 132, 199, 0.2) !important;
     }
-    div[data-testid="stTextInput"] input {
+    div[data-testid="stTextInput"] input,
+    div[data-testid="stTextArea"] textarea {
         font-size: 1.15rem !important;
         font-weight: 700 !important;
         color: #0f172a !important;
@@ -280,11 +284,12 @@ def render_query_console(
     """, unsafe_allow_html=True)
     col_q, col_btn = st.columns([3.2, 1.2], vertical_alignment="bottom")
     with col_q:
-        q_val = st.text_input(
+        q_val = st.text_area(
             tab_badge,
             value=st.session_state.get(session_key, default_question),
             key=input_key,
             label_visibility="collapsed",
+            height=68,
         )
     with col_btn:
         actual_btn_label = btn_label or ("🚀 " + t("tab1_btn_run", lang))
