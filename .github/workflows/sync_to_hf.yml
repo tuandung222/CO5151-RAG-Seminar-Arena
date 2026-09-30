@@ -22,5 +22,6 @@ jobs:
           if [ -n "$HF_TOKEN" ]; then
             git push --force https://tuandunghcmut:$HF_TOKEN@huggingface.co/spaces/tuandunghcmut/CO5151-RAG-Seminar-Arena master:main
           else
-            echo "HF_TOKEN not set in GitHub Secrets. Skipping automatic sync."
+            echo "::error::HF_TOKEN not set in GitHub Secrets. Cannot sync to HF Space."
+            exit 1
           fi
