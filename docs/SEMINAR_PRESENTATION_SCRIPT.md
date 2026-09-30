@@ -221,7 +221,7 @@
 > - **FLARE**: agent **giám sát** confidence — trigger khi bất định
 > - **GraphRAG**: agent chọn **cách** retrieve — graph traversal thay vì vector search"
 > 
-> "Theo framework CoALA (Sumers 2024): retrieval chỉ là **một action** trong Action Space của agent. Agent có Decision Procedure để chọn action nào — retrieve, generate, hay dùng tool khác."
+> "Trong kiến trúc Agentic RAG: retrieval chỉ là **một công cụ (action)** trong Action Space của agent. Agent có cơ chế ra quyết định tự chủ (Decision Procedure) để chọn action nào — retrieve, generate, hay dùng công cụ khác."
 
 **Đóng expander.**
 

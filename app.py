@@ -786,7 +786,7 @@ with st.expander(t("master_guide_expander", lang), expanded=False):
         | **FLARE** (Jiang 2023) | **Tool theo yêu cầu** — chỉ gọi khi confidence thấp | Agent giám sát uncertainty từng câu sinh ra |
         | **GraphRAG** (Edge 2024) | **Tool cấu trúc** — truy vấn theo graph topology | Agent tổng hợp qua community map-reduce |
 
-        *Trong paradigm agentic (CoALA, Sumers 2024), retrieval không phải bước bắt buộc mà là một **action** agent có thể chọn gọi hoặc bỏ qua dựa trên trạng thái hiện tại.*
+        *Trong kiến trúc tác tử (Agentic Architecture), retrieval không phải bước bắt buộc mà là một **hành động (action)** agent có thể chọn gọi hoặc bỏ qua dựa trên trạng thái hiện tại.*
         """)
     else:
         st.info("""
@@ -815,7 +815,7 @@ with st.expander(t("master_guide_expander", lang), expanded=False):
         | **FLARE** (Jiang 2023) | **On-demand tool** — triggered only when confidence drops | Agent monitors per-sentence uncertainty |
         | **GraphRAG** (Edge 2024) | **Structured tool** — queries graph topology | Agent synthesizes via community map-reduce |
 
-        *In the agentic paradigm (CoALA, Sumers 2024), retrieval is not a mandatory step but an **action** the agent may invoke or skip based on its current state.*
+        *In the agentic paradigm, retrieval is not a mandatory step but an **action** the agent may invoke or skip based on its current state.*
         """)
 
 # Render Tabs (Stable concise labels preserve active tab index across language switches and fit 390px/1024px displays)
@@ -2733,6 +2733,50 @@ Hãy tổng hợp câu trả lời hoàn chỉnh, cấu trúc rõ ràng, viện 
             paper_modal_title="FLARE (Jiang et al., EMNLP 2023)",
             paper_ref="Jiang et al. (EMNLP 2023) — 'Active Retrieval Augmented Generation'"
         )
+
+    # =========================================================================
+    # [COMMENTED OUT - KHÔNG TRÌNH CHIẾU COALA THEO YÊU CẦU NGƯỜI DÙNG]
+    # SUBTAB 5: AGENTIC PARADIGM (COALA 2024)
+    # Không show paper này trong bài báo cáo theo chỉ đạo.
+    # Toàn bộ logic & mã nguồn được comment lưu trữ bên dưới để tham khảo nội bộ:
+    # -------------------------------------------------------------------------
+    # with sub_t5:
+    #     card_coala = """
+    #     <div class="context-card">
+    #         <div class="context-card-title">🤖 <b>Agentic RAG & CoALA Architecture (Sumers et al., 2024)</b></div>
+    #         <div>
+    #             <i>"Cognitive Architectures for Language Agents"</i> — Princeton / Stanford / Allen AI.<br>
+    #             <b>Cơ chế cốt lõi:</b> Chuyển dịch vai trò của Retrieval từ pipeline cố định sang Tool trong action space của Agent.
+    #         </div>
+    #     </div>
+    #     """
+    #     code_coala = '''def agentic_rag_loop(user_goal: str, tools: dict, max_steps: int = 5) -> str:
+    #         working_memory = [{"role": "user_goal", "content": user_goal}]
+    #         for step in range(max_steps):
+    #             decision = agent_llm.generate_decision(format_state(working_memory, tools))
+    #             if decision.action_type == "CALL_TOOL":
+    #                 obs = tools[decision.selected_tool].execute(**decision.tool_arguments)
+    #                 working_memory.append({"step": step, "thought": decision.thought, "obs": obs})
+    #             elif decision.action_type == "FINAL_ANSWER":
+    #                 return decision.final_response
+    #         return fallback_synthesis(working_memory)'''
+    #     render_algorithm_panel(
+    #         subtab_key="coala",
+    #         paper_card_html=card_coala,
+    #         diag_name="agentic_coala",
+    #         diag_height=380,
+    #         math_title="Cơ Chế Vòng Lặp Quyết Định",
+    #         math_text="Agent chủ động lựa chọn Action trong Action Space thay vì ép buộc retrieval cố định.",
+    #         math_latex="",
+    #         math_caption="",
+    #         custom_critique_block=None,
+    #         code_title="Mã Giả Vòng Lặp Quyết Định (CoALA)",
+    #         code_str=code_coala,
+    #         paper_modal_title="CoALA (Sumers et al., 2024)",
+    #         paper_ref="Sumers et al. (2024) — 'Cognitive Architectures for Language Agents'"
+    #     )
+    # =========================================================================
+
 
 
 
