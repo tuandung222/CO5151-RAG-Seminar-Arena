@@ -1059,9 +1059,17 @@ with tab1:
         box1 = st.container(border=True)
         box1.markdown(f'<div class="arena-header-1">{t("model1_title", lang)}</div>', unsafe_allow_html=True)
         box1.caption(t("model1_caption", lang))
+
+        # Micro pipeline indicator
+        p_badge_1 = "🧠 Bộ nhớ tham số ➔ ⚡ Sinh trực tiếp (Không tra cứu ngoài)" if lang == "vi" else "🧠 Parametric Memory ➔ ⚡ Direct Output (Zero Retrieval)"
+        box1.markdown(f"<div style='font-size: 0.78rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; padding: 4px 8px; margin-bottom: 8px; color: #475569;'><b>{'Cơ chế:' if lang == 'vi' else 'Mechanism:'}</b> {p_badge_1}</div>", unsafe_allow_html=True)
+
+        box1.markdown(f"**{'💬 Phản Hồi Của Mô Hình (LLM Output):' if lang == 'vi' else '💬 Model Response:'}**")
         box1.info(res_pure["answer"])
+
         box1.markdown("---")
-        box1.markdown(f"**{'Độ trễ:' if lang == 'vi' else 'Latency:'}** `{res_pure['latency_ms']} ms`")
+        box1.markdown(f"**{'🔬 Đánh Giá Hệ Thống:' if lang == 'vi' else '🔬 System Evaluation:'}**")
+        box1.markdown(f"- **{'Độ trễ:' if lang == 'vi' else 'Latency:'}** `{res_pure['latency_ms']} ms`")
         if res_pure.get("has_180_days"):
             box1.caption("✅ " + ("Nhận diện mốc 180 ngày từ bộ nhớ trong." if lang == "vi" else "Identified statutory 180-day milestone from parametric memory."))
         elif res_pure.get("has_60_days"):
@@ -1073,31 +1081,69 @@ with tab1:
         box2 = st.container(border=True)
         box2.markdown(f'<div class="arena-header-2">{t("model2_title", lang)}</div>', unsafe_allow_html=True)
         box2.caption(t("model2_caption", lang))
+
+        # Micro pipeline indicator
+        p_badge_2 = "📥 Truy xuất Top-k ➔ ⚠️ Nối thô ngữ cảnh (Blind Concat) ➔ 🤖 Sinh không kiểm tra" if lang == "vi" else "📥 Top-k Retrieval ➔ ⚠️ Blind In-Context Injection ➔ 🤖 Unfiltered Generation"
+        box2.markdown(f"<div style='font-size: 0.78rem; background: #fef2f2; border: 1px solid #fecaca; border-radius: 4px; padding: 4px 8px; margin-bottom: 8px; color: #991b1b;'><b>{'Cơ chế:' if lang == 'vi' else 'Mechanism:'}</b> {p_badge_2}</div>", unsafe_allow_html=True)
+
+        # Show Retrieved Context directly
+        exp_chunks_title = "📥 Các đoạn trích nạp vào prompt (Retrieved Chunks):" if lang == "vi" else "📥 Retrieved Chunks Injected into Prompt:"
+        with box2.expander(exp_chunks_title, expanded=True):
+            for i, p in enumerate(res_naive.get("retrieved_passages", []), 1):
+                is_dist = "2012" in p.get("title", "") or "Bãi bỏ" in p.get("title", "") or "Dieu_27" in p.get("article_id", "")
+                tag = "❌ [TÀI LIỆU HẾT HIỆU LỰC / BÃI BỎ]" if is_dist else "📄 [VĂN BẢN HIỆN HÀNH]"
+                color = "#dc2626" if is_dist else "#16a34a"
+                st.markdown(f"<span style='color:{color}; font-weight:600; font-size:0.8rem;'>#{i} {tag}</span><br><b>{p['title']}</b> <small>(RRF: `{p.get('rrf_score', 'N/A')}`)</small>", unsafe_allow_html=True)
+                st.caption(f"{p['content'][:110]}...")
+
+        box2.markdown(f"**{'💬 Phản Hồi Của Mô Hình (LLM Output):' if lang == 'vi' else '💬 Model Response:'}**")
         if res_naive["outcome"] == "POISONED_BY_DISTRACTOR":
             box2.error(res_naive["answer"])
         elif res_naive["outcome"] == "CONFUSED_CONFLICT":
             box2.warning(res_naive["answer"])
         else:
             box2.success(res_naive["answer"])
+
         box2.markdown("---")
+        box2.markdown(f"**{'🔬 Đánh Giá Hệ Thống:' if lang == 'vi' else '🔬 System Evaluation:'}**")
         box2.caption(f"**{res_naive['verdict_text']}**")
-        box2.markdown(f"**{'Độ trễ:' if lang == 'vi' else 'Latency:'}** `{res_naive['latency_ms']} ms`")
-        exp_chunks_title = "Các đoạn trích trong ngữ cảnh đưa vào prompt" if lang == "vi" else "Retrieved Passages Injected into Prompt"
-        with box2.expander(exp_chunks_title):
-            for i, p in enumerate(res_naive.get("retrieved_passages", []), 1):
-                st.markdown(f"- **#{i}** — **{p['title']}** (RRF: `{p.get('rrf_score', 'N/A')}`)")
-                st.text(p["content"][:200] + "...")
+        box2.markdown(f"- **{'Độ trễ:' if lang == 'vi' else 'Latency:'}** `{res_naive['latency_ms']} ms`")
 
     with c3:
         box3 = st.container(border=True)
         box3.markdown(f'<div class="arena-header-3">{t("model3_title", lang)}</div>', unsafe_allow_html=True)
         box3.caption(t("model3_caption", lang))
+
+        # Micro pipeline indicator
+        p_badge_3 = "🚪 [Retrieve] ➔ 🔍 [IsREL] Lọc ➔ ✍️ Sinh có điều kiện ➔ 🛡️ [IsSUP] Kiểm định" if lang == "vi" else "🚪 [Retrieve] ➔ 🔍 [IsREL] Prune ➔ ✍️ Grounded Gen ➔ 🛡️ [IsSUP] Verification"
+        box3.markdown(f"<div style='font-size: 0.78rem; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 4px; padding: 4px 8px; margin-bottom: 8px; color: #166534;'><b>{'Cơ chế:' if lang == 'vi' else 'Mechanism:'}</b> {p_badge_3}</div>", unsafe_allow_html=True)
+
+        # IsREL Passage Critique inline
+        isrel_title = "🔍 Khâu Phản Biện [IsREL] (Passage Critic):" if lang == "vi" else "🔍 [IsREL] Passage Relevance Critique:"
+        with box3.expander(isrel_title, expanded=True):
+            for p in res_self.get("all_candidates", []):
+                if p.get("is_rel_token") == "RELEVANT":
+                    st.markdown(f"""<div class="critique-pass">
+                    <b>✅ [IsREL: RELEVANT] ➔ GIỮ LẠI (Hiện hành)</b><br>
+                    <b>{p['title']}</b><br>
+                    <small>{p['content'][:110]}...</small>
+                    </div>""", unsafe_allow_html=True)
+                else:
+                    st.markdown(f"""<div class="critique-fail">
+                    <b>❌ [IsREL: IRRELEVANT] ➔ LOẠI BỎ (Đã hết hiệu lực)</b><br>
+                    <b>{p['title']}</b><br>
+                    <small>{p['content'][:110]}...</small>
+                    </div>""", unsafe_allow_html=True)
+
+        box3.markdown(f"**{'💬 Phản Hồi Của Mô Hình (LLM Output):' if lang == 'vi' else '💬 Model Response:'}**")
         box3.success(res_self["answer"])
+
         box3.markdown("---")
+        box3.markdown(f"**{'🔬 Đánh Giá Hệ Thống:' if lang == 'vi' else '🔬 System Evaluation:'}**")
         box3.caption("✅ " + ("Đã xác thực căn cứ; tài liệu gây nhiễu đã bị loại trừ." if lang == "vi" else "Attribution verified; distractor successfully pruned."))
-        box3.markdown(f"**{'Độ trễ:' if lang == 'vi' else 'Latency:'}** `{res_self['latency_ms']} ms`")
+        box3.markdown(f"- **{'Độ trễ:' if lang == 'vi' else 'Latency:'}** `{res_self['latency_ms']} ms`")
         v_info = res_self.get("verification", {})
-        box3.markdown(f"**Token [IsSUP]:** `{v_info.get('is_sup_token', 'SUPPORTED')}` | **{'Hữu dụng' if lang == 'vi' else 'Utility'} [IsUSE]:** `{v_info.get('is_use_score', 5)}/5`")
+        box3.markdown(f"- **Token [IsSUP]:** `{v_info.get('is_sup_token', 'SUPPORTED')}` | **{'Hữu dụng' if lang == 'vi' else 'Utility'} [IsUSE]:** `{v_info.get('is_use_score', 5)}/5`")
 
     # Comparative Matrix Table
     st.markdown("---")
@@ -1160,22 +1206,8 @@ with tab1:
 | **{t('matrix_domain', lang)}** | Moderate | High Risk (Susceptible to outdated context) | High (Formally verified & grounded) |
 """
 
-    st.markdown(matrix_md)
 
-    st.markdown(f"#### {'Bóc Tách Token tự đánh giá ([IsREL]):' if lang == 'vi' else 'Passage Critic Dissection ([IsREL] Tokens):'}")
-    for p in res_self.get("all_candidates", []):
-        if p.get("is_rel_token") == "RELEVANT":
-            st.markdown(f"""<div class="critique-pass">
-            <b>[IsREL: RELEVANT] - {p['title']}</b><br>
-            <i>{'Lập luận thẩm định (Critic Justification):' if lang == 'vi' else 'Critic Justification:'}</i> {p.get('critique', '')}<br>
-            <small>{'Trích đoạn:' if lang == 'vi' else 'Passage snippet:'} {p['content'][:150]}...</small>
-            </div>""", unsafe_allow_html=True)
-        else:
-            st.markdown(f"""<div class="critique-fail">
-            <b>[IsREL: IRRELEVANT / REJECTED] - {p['title']}</b><br>
-            <i>{'Lập luận thẩm định (Critic Justification):' if lang == 'vi' else 'Critic Justification:'}</i> {p.get('critique', '')}<br>
-            <small>{'Trích đoạn:' if lang == 'vi' else 'Passage snippet:'} {p['content'][:150]}...</small>
-            </div>""", unsafe_allow_html=True)
+    st.markdown(matrix_md)
 
     st.markdown("---")
     exp_poison_title = "Phân Tích Cơ Chế Khoa Học Của Nhiễm Độc Ngữ Cảnh (When Retrieval Hurts)" if lang == "vi" else "Scientific Anatomy of Context Poisoning (When Retrieval Hurts)"
@@ -1443,16 +1475,30 @@ with tab2:
 
     with col_g1:
         st.markdown(f"#### {t('tab2_naive_col', lang)}")
+        p_badge_g1 = "📥 Top-k Vector Search (Đoạn cục bộ) ➔ ⚠️ Bị điểm mù cục bộ" if lang == "vi" else "📥 Top-k Vector Search (Local Chunks) ➔ ⚠️ Local Blindness Failure"
+        st.markdown(f"<div style='font-size: 0.78rem; background: #fef2f2; border: 1px solid #fecaca; border-radius: 4px; padding: 4px 8px; margin-bottom: 8px; color: #991b1b;'><b>{'Cơ chế:' if lang == 'vi' else 'Mechanism:'}</b> {p_badge_g1}</div>", unsafe_allow_html=True)
+
+        st.markdown(f"**{'💬 Phản Hồi Của Mô Hình (LLM Output):' if lang == 'vi' else '💬 Model Response:'}**")
         st.warning(res_naive_g["answer"])
-        st.markdown(f"**{'Độ trễ:' if lang == 'vi' else 'Latency:'}** `{res_naive_g['latency_ms']} ms`")
+
+        st.markdown("---")
+        st.markdown(f"**{'🔬 Đánh Giá Hệ Thống:' if lang == 'vi' else '🔬 System Evaluation:'}**")
+        st.markdown(f"- **{'Độ trễ:' if lang == 'vi' else 'Latency:'}** `{res_naive_g['latency_ms']} ms`")
         st.caption(t("tab2_naive_caption", lang))
 
     with col_g2:
         st.markdown(f"#### {t('tab2_graph_col', lang)}")
+        p_badge_g2 = "🕸️ Đồ thị Tri thức ➔ 🧩 Modularity Q (3 Cụm) ➔ 🗺️ Map-Reduce Tổng Hợp" if lang == "vi" else "🕸️ Knowledge Graph ➔ 🧩 Modularity Q (3 Communities) ➔ 🗺️ Map-Reduce Synthesis"
+        st.markdown(f"<div style='font-size: 0.78rem; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 4px; padding: 4px 8px; margin-bottom: 8px; color: #166534;'><b>{'Cơ chế:' if lang == 'vi' else 'Mechanism:'}</b> {p_badge_g2}</div>", unsafe_allow_html=True)
+
+        st.markdown(f"**{'💬 Phản Hồi Của Mô Hình (LLM Output):' if lang == 'vi' else '💬 Model Response:'}**")
         graph_ans = res_graph_g.get("global_answer", res_graph_g.get("final_answer", ""))
         st.success(graph_ans)
+
+        st.markdown("---")
+        st.markdown(f"**{'🔬 Đánh Giá Hệ Thống:' if lang == 'vi' else '🔬 System Evaluation:'}**")
         g_lat = res_graph_g.get("total_latency_ms", res_graph_g.get("latency_ms", 0))
-        st.markdown(f"**{'Tổng Độ Trễ Map-Reduce:' if lang == 'vi' else 'Total Map-Reduce Latency:'}** `{g_lat} ms`")
+        st.markdown(f"- **{'Tổng Độ Trễ Map-Reduce:' if lang == 'vi' else 'Total Map-Reduce Latency:'}** `{g_lat} ms`")
         comm_list = res_graph_g.get("communities", [])
         comm_count = len(comm_list) if comm_list else res_graph_g.get("total_communities", 3)
         st.caption(f"{'Tổng hợp xuyên suốt' if lang == 'vi' else 'Synthesized across'} `{comm_count}` {'cụm cộng đồng bao quát toàn bộ 15 điều luật.' if lang == 'vi' else 'thematic communities covering all 15 articles.'}")

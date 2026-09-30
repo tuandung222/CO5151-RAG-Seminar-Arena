@@ -40,7 +40,7 @@
           "model": "Qwen/Qwen2.5-72B-Instruct"
         },
         "self": {
-          "answer": "Căn cứ theo quy định tại Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14 (có hiệu lực từ ngày 01/01/2021), thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp (người quản lý doanh nghiệp theo Luật Doanh nghiệp) là không quá 180 ngày.\n\n*Ghi chú phản biện:* Đoạn trích dẫn Điều 27 Bộ luật Lao động 2012 (quy định tối đa 60 ngày) đã được cơ chế [IsREL] nhận diện là văn bản hết hiệu lực và loại bỏ hoàn toàn khỏi ngữ cảnh.",
+          "answer": "Căn cứ theo quy định tại Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14 (có hiệu lực từ ngày 01/01/2021), thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp (người quản lý doanh nghiệp theo Luật Doanh nghiệp) là không quá 180 ngày.",
           "latency_ms": 3650,
           "retrieve_decision": {
             "token": "NEED_RETRIEVAL",
@@ -103,7 +103,7 @@
           "model": "meta-llama/Llama-3.1-8B-Instruct"
         },
         "self": {
-          "answer": "Căn cứ theo quy định tại **Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14** (có hiệu lực từ ngày 01/01/2021), thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp (người quản lý doanh nghiệp theo quy định của Luật Doanh nghiệp) là **không quá 180 ngày**.\n\n*Ghi chú pháp lý:* Đoạn trích dẫn Điều 27 Bộ luật Lao động 2012 (quy định tối đa 60 ngày) đã được hệ thống Self-RAG phát hiện là văn bản hết hiệu lực và loại bỏ hoàn toàn khỏi ngữ cảnh sinh câu trả lời.",
+          "answer": "Căn cứ theo quy định tại **Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14** (có hiệu lực từ ngày 01/01/2021), thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp (người quản lý doanh nghiệp theo quy định của Luật Doanh nghiệp) là **không quá 180 ngày**.",
           "latency_ms": 3720,
           "retrieve_decision": {
             "token": "NEED_RETRIEVAL",
@@ -166,7 +166,7 @@
           "model": "Qwen/Qwen3.5-9B"
         },
         "self": {
-          "answer": "Căn cứ theo quy định tại Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14 (có hiệu lực từ ngày 01/01/2021), thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp (người quản lý doanh nghiệp theo Luật Doanh nghiệp) là không quá 180 ngày.\n\n*Ghi chú phản biện:* Đoạn trích dẫn Điều 27 Bộ luật Lao động 2012 (quy định tối đa 60 ngày) đã được cơ chế [IsREL] nhận diện là văn bản hết hiệu lực và loại bỏ hoàn toàn khỏi ngữ cảnh.",
+          "answer": "Căn cứ theo quy định tại Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14 (có hiệu lực từ ngày 01/01/2021), thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp (người quản lý doanh nghiệp theo Luật Doanh nghiệp) là không quá 180 ngày.",
           "latency_ms": 2150,
           "retrieve_decision": {
             "token": "NEED_RETRIEVAL",
@@ -208,7 +208,7 @@
           "model": "Qwen/Qwen2.5-72B-Instruct"
         },
         "naive": {
-          "answer": "Trong các tài liệu tra cứu được cung cấp có thông tin mâu thuẫn giữa hai văn bản pháp luật:\n- Một đoạn tài liệu (Điều 27 Bộ luật Lao động 2012) nêu thời gian thử việc tối đa là **không quá 60 ngày** đối với công việc cần trình độ cao đẳng trở lên.\n- Một đoạn tài liệu khác (Điều 25 Bộ luật Lao động 2019) lại quy định thời gian thử việc là **không quá 180 ngày** đối với công việc của người quản lý doanh nghiệp.\n\nDo Naive RAG nối chuỗi cả hai đoạn văn bản vào ngữ cảnh mà không có cơ chế đối soát hiệu lực văn bản, mô hình bị rơi vào tình trạng **xung đột ngữ cảnh (Contextual Conflict)** và không thể tự phân định văn bản nào đang có hiệu lực thi hành.",
+          "answer": "Trong các tài liệu tra cứu được cung cấp có thông tin mâu thuẫn giữa hai văn bản pháp luật:\n- Một đoạn tài liệu (Điều 27 Bộ luật Lao động 2012) nêu thời gian thử việc tối đa là **không quá 60 ngày** đối với công việc cần trình độ cao đẳng trở lên.\n- Một đoạn tài liệu khác (Điều 25 Bộ luật Lao động 2019) lại quy định thời gian thử việc là **không quá 180 ngày** đối với công việc của người quản lý doanh nghiệp.",
           "latency_ms": 2340,
           "outcome": "CONFUSED_CONFLICT",
           "verdict_text": "⚠️ Xung đột ngữ cảnh: Ngữ cảnh chứa cả hai mốc 60 ngày (luật 2012) và 180 ngày (luật 2019), mô hình bị bối rối và mâu thuẫn!",
@@ -231,7 +231,7 @@
           "model": "Qwen/Qwen2.5-72B-Instruct"
         },
         "self": {
-          "answer": "Căn cứ theo quy định hiện hành tại **Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14** (có hiệu lực từ ngày 01/01/2021), thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp là **không quá 180 ngày**.\n\n*Phân giải xung đột ngữ cảnh:* Dù ngữ cảnh truy xuất nhận được cả Điều 27 BLLĐ 2012 (60 ngày) và Điều 25 BLLĐ 2019 (180 ngày), cơ chế phản biện Self-RAG [IsREL] đã kích hoạt bộ lọc thời hiệu, xác định BLLĐ 2012 đã bị thay thế hoàn toàn và loại trừ mốc 60 ngày khỏi câu trả lời cuối cùng.",
+          "answer": "Căn cứ theo quy định hiện hành tại **Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14** (có hiệu lực từ ngày 01/01/2021), thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp là **không quá 180 ngày**.",
           "latency_ms": 3810,
           "retrieve_decision": {
             "token": "NEED_RETRIEVAL",
@@ -294,7 +294,7 @@
           "model": "meta-llama/Llama-3.1-8B-Instruct"
         },
         "self": {
-          "answer": "Căn cứ theo quy định tại **Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14**, thời gian thử việc tối đa của người quản lý doanh nghiệp là **không quá 180 ngày**.\n\n*Loại trừ tài liệu gây nhiễu:* Bộ lọc [IsREL] đã bác bỏ Điều 27 BLLĐ 2012 vì là văn bản đã hết hiệu lực, chỉ giữ lại Điều 25 BLLĐ 2019 hiện hành.",
+          "answer": "Căn cứ theo quy định tại **Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14**, thời gian thử việc tối đa của người quản lý doanh nghiệp là **không quá 180 ngày**.",
           "latency_ms": 3620,
           "retrieve_decision": {
             "token": "NEED_RETRIEVAL",
@@ -334,7 +334,7 @@
           "model": "Qwen/Qwen3.5-9B"
         },
         "naive": {
-          "answer": "Trong các tài liệu tra cứu được cung cấp có thông tin mâu thuẫn giữa hai văn bản pháp luật:\n- Một đoạn tài liệu (Điều 27 Bộ luật Lao động 2012) nêu thời gian thử việc tối đa là **không quá 60 ngày** đối với công việc cần trình độ cao đẳng trở lên.\n- Một đoạn tài liệu khác (Điều 25 Bộ luật Lao động 2019) lại quy định thời gian thử việc là **không quá 180 ngày** đối với công việc của người quản lý doanh nghiệp.\n\nDo Naive RAG nối chuỗi cả hai đoạn văn bản vào ngữ cảnh mà không có cơ chế đối soát hiệu lực văn bản, mô hình bị rơi vào tình trạng **xung đột ngữ cảnh (Contextual Conflict)** và không thể tự phân định văn bản nào đang có hiệu lực thi hành.",
+          "answer": "Trong các tài liệu tra cứu được cung cấp có thông tin mâu thuẫn giữa hai văn bản pháp luật:\n- Một đoạn tài liệu (Điều 27 Bộ luật Lao động 2012) nêu thời gian thử việc tối đa là **không quá 60 ngày** đối với công việc cần trình độ cao đẳng trở lên.\n- Một đoạn tài liệu khác (Điều 25 Bộ luật Lao động 2019) lại quy định thời gian thử việc là **không quá 180 ngày** đối với công việc của người quản lý doanh nghiệp.",
           "latency_ms": 1240,
           "outcome": "CONFUSED_CONFLICT",
           "verdict_text": "⚠️ Xung đột ngữ cảnh: Ngữ cảnh chứa cả hai mốc 60 ngày (luật 2012) và 180 ngày (luật 2019), mô hình bị bối rối và mâu thuẫn!",
@@ -357,7 +357,7 @@
           "model": "Qwen/Qwen3.5-9B"
         },
         "self": {
-          "answer": "Căn cứ theo quy định hiện hành tại **Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14** (có hiệu lực từ ngày 01/01/2021), thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp là **không quá 180 ngày**.\n\n*Phân giải xung đột ngữ cảnh:* Dù ngữ cảnh truy xuất nhận được cả Điều 27 BLLĐ 2012 (60 ngày) và Điều 25 BLLĐ 2019 (180 ngày), cơ chế phản biện Self-RAG [IsREL] đã kích hoạt bộ lọc thời hiệu, xác định BLLĐ 2012 đã bị thay thế hoàn toàn và loại trừ mốc 60 ngày khỏi câu trả lời cuối cùng.",
+          "answer": "Căn cứ theo quy định hiện hành tại **Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14** (có hiệu lực từ ngày 01/01/2021), thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp là **không quá 180 ngày**.",
           "latency_ms": 2150,
           "retrieve_decision": {
             "token": "NEED_RETRIEVAL",
@@ -428,7 +428,7 @@
           "model": "Qwen/Qwen2.5-72B-Instruct"
         },
         "self": {
-          "answer": "Căn cứ theo quy định tại **Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14**, thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp là **không quá 180 ngày**.\n\nToàn bộ căn cứ được kiểm chứng và đối chiếu chính xác từ cơ sở dữ liệu pháp luật hiện hành.",
+          "answer": "Căn cứ theo quy định tại **Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14**, thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp là **không quá 180 ngày**.",
           "latency_ms": 3250,
           "retrieve_decision": {
             "token": "NEED_RETRIEVAL",
@@ -547,7 +547,7 @@
           "model": "Qwen/Qwen3.5-9B"
         },
         "self": {
-          "answer": "Căn cứ theo quy định tại **Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14**, thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp là **không quá 180 ngày**.\n\nToàn bộ căn cứ được kiểm chứng và đối chiếu chính xác từ cơ sở dữ liệu pháp luật hiện hành.",
+          "answer": "Căn cứ theo quy định tại **Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14**, thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp là **không quá 180 ngày**.",
           "latency_ms": 2150,
           "retrieve_decision": {
             "token": "NEED_RETRIEVAL",
@@ -611,7 +611,7 @@
         "model": "Qwen/Qwen2.5-72B-Instruct"
       },
       "self": {
-        "answer": "Căn cứ theo quy định tại Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14 (có hiệu lực từ ngày 01/01/2021), thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp (người quản lý doanh nghiệp theo Luật Doanh nghiệp) là không quá 180 ngày.\n\n*Ghi chú phản biện:* Đoạn trích dẫn Điều 27 Bộ luật Lao động 2012 (quy định tối đa 60 ngày) đã được cơ chế [IsREL] nhận diện là văn bản hết hiệu lực và loại bỏ hoàn toàn khỏi ngữ cảnh.",
+        "answer": "Căn cứ theo quy định tại Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14 (có hiệu lực từ ngày 01/01/2021), thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp (người quản lý doanh nghiệp theo Luật Doanh nghiệp) là không quá 180 ngày.",
         "latency_ms": 3650,
         "retrieve_decision": {
           "token": "NEED_RETRIEVAL",
@@ -785,7 +785,7 @@
           "is_use_score": 5,
           "critique_summary": "Đã loại bỏ văn bản đã hết hiệu lực Điều 27/2012; chấp nhận căn cứ hiện hành Điều 25 BLLĐ 2019. Khẳng định mốc 180 ngày đạt chuẩn kiểm định."
         },
-        "answer": "Căn cứ theo quy định tại **Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14** (có hiệu lực từ ngày 01/01/2021), thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp là **không quá 180 ngày**.\n\n*Ghi chú kiểm định:* Đoạn trích dẫn Điều 27 BLLĐ 2012 quy định 60 ngày đã được bộ lọc [IsREL] nhận diện là văn bản đã hết hiệu lực và loại bỏ hoàn toàn khỏi ngữ cảnh sinh câu trả lời.",
+        "answer": "Căn cứ theo quy định tại **Khoản 1 Điều 25 Bộ luật Lao động số 45/2019/QH14** (có hiệu lực từ ngày 01/01/2021), thời gian thử việc tối đa đối với vị trí giám đốc điều hành doanh nghiệp là **không quá 180 ngày**.",
         "latency_ms": 3620,
         "model": "Qwen/Qwen2.5-72B-Instruct"
       }
