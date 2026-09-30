@@ -1005,7 +1005,7 @@ with tab1:
         tab1_data = {
             "is_cached": True,
             "model": actual_model_cached,
-            "requested_model": model_key,
+            "requested_model": cur_model,
             "pure": tab1_scenario["pure"],
             "naive": tab1_scenario["naive"],
             "self": tab1_scenario["self"],
@@ -1916,7 +1916,9 @@ with tab4:
             key="flare_theta_slider"
         )
     with c_f_info:
-        st.info(f"{'Cơ chế kích hoạt:' if lang == 'vi' else 'Trigger Rule:'} $\\text{{Conf}}_{{\\text{{LLM}}}}(S_t) < {flare_theta:.1f}$\n\n{'Bỏ qua tra cứu khi Verbalized Confidence (LLM tự khai) cao.' if lang == 'vi' else 'Bypasses search when verbalized confidence is high.'}")
+        st.markdown(f"**{'Cơ chế kích hoạt:' if lang == 'vi' else 'Trigger Rule:'}**")
+        st.latex(rf"\text{{Conf}}_{{\text{{LLM}}}}(S_t) < {flare_theta:.1f}")
+        st.caption("Bỏ qua tra cứu khi Verbalized Confidence (LLM tự khai) cao." if lang == "vi" else "Bypasses search when verbalized confidence is high.")
 
     # Handle Live Re-run
     if run_btn4:
