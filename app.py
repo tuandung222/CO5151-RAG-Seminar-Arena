@@ -993,8 +993,8 @@ with tab1:
         box2.markdown(f"**{'Độ trễ:' if lang == 'vi' else 'Latency:'}** `{res_naive['latency_ms']} ms`")
         exp_chunks_title = "Các đoạn trích trong ngữ cảnh đưa vào prompt" if lang == "vi" else "Retrieved Passages Injected into Prompt"
         with box2.expander(exp_chunks_title):
-            for p in res_naive.get("retrieved_passages", []):
-                st.markdown(f"- **{p['title']}** (Score: `{p.get('rrf_score', 'N/A')}`)")
+            for i, p in enumerate(res_naive.get("retrieved_passages", []), 1):
+                st.markdown(f"- **#{i}** — **{p['title']}** (RRF: `{p.get('rrf_score', 'N/A')}`)")
                 st.text(p["content"][:200] + "...")
 
     with c3:
