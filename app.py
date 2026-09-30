@@ -187,6 +187,42 @@ st.markdown("""
         display: inline-block;
         margin-right: 6px;
     }
+    /* Responsive Data Topology Metric Cards */
+    .metric-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 12px;
+        margin-top: 10px;
+        margin-bottom: 16px;
+    }
+    .topology-metric-card {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 12px 14px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .topology-metric-label {
+        font-size: 0.8rem;
+        color: #64748b;
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+    .topology-metric-value {
+        font-size: 1.12rem;
+        color: #0f172a;
+        font-weight: 700;
+        margin-bottom: 4px;
+        line-height: 1.3;
+    }
+    .topology-metric-delta {
+        font-size: 0.78rem;
+        color: #0284c7;
+        font-weight: 600;
+    }
     /* High-Visibility Executive Query Box Styling */
     div[data-testid="stTextInput"] div[data-baseweb="input"],
     div[data-testid="stTextArea"] div[data-baseweb="textarea"] {
@@ -282,19 +318,50 @@ def render_query_console(
         </span>
     </div>
     """, unsafe_allow_html=True)
+
+    # State tracking: maintain custom user question across language switches
+    last_default_key = f"{session_key}_last_default"
+    prev_default = st.session_state.get(last_default_key)
+
+    if session_key not in st.session_state:
+        st.session_state[session_key] = default_question
+        st.session_state[last_default_key] = default_question
+    elif st.session_state[session_key] == prev_default:
+        # If user did not customize the question, switch cleanly to new language default
+        st.session_state[session_key] = default_question
+        st.session_state[last_default_key] = default_question
+
     col_q, col_btn = st.columns([3.2, 1.2], vertical_alignment="bottom")
     with col_q:
         q_val = st.text_area(
-            tab_badge,
-            value=st.session_state.get(session_key, default_question),
+            "Query Prompt Input",
+            value=st.session_state[session_key],
             key=input_key,
             label_visibility="collapsed",
             height=68,
         )
+        # Keep session_key updated with current input
+        st.session_state[session_key] = q_val
+
     with col_btn:
         actual_btn_label = btn_label or ("🚀 " + t("tab1_btn_run", lang))
         run_btn = st.button(actual_btn_label, key=btn_key, use_container_width=True, type="primary")
     return q_val, run_btn
+
+
+def check_stale_query_warning(current_query: str, evaluated_query: str, lang: str):
+    """
+    Renders an executive, high-visibility warning when the question in the text box
+    has been edited by the user but has not yet been executed with the Run button.
+    Eliminates semantic dissonance where displayed answers belong to the previous/default query.
+    """
+    if current_query and evaluated_query and current_query.strip() != evaluated_query.strip():
+        st.warning(
+            f"⚠️ **{'Câu hỏi đã thay đổi nhưng chưa bấm Run' if lang == 'vi' else 'Input question was modified but not yet executed'}:** "
+            + (f"Kết quả bên dưới thuộc về câu hỏi: *\"{evaluated_query}\"*. Hãy nhấn nút **🚀 Chạy** ở trên để cập nhật kết quả mới cho câu hỏi vừa nhập."
+               if lang == "vi"
+               else f"The answers displayed below correspond to: *\"{evaluated_query}\"*. Please click **🚀 Run** above to execute inference on your modified query.")
+        )
 
 
 def render_mermaid(diagram_code: str, height: int = 460):
@@ -378,12 +445,24 @@ def render_mermaid(diagram_code: str, height: int = 460):
         </style>
         <script type="module">
             import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-            mermaid.initialize({{
-                startOnLoad: true,
-                theme: 'neutral',
-                securityLevel: 'loose',
-                flowchart: {{ useMaxWidth: true, htmlLabels: true, curve: 'basis' }}
-            }});
+            try {{
+                mermaid.initialize({{
+                    startOnLoad: false,
+                    suppressErrorRendering: true,
+                    theme: 'neutral',
+                    securityLevel: 'loose',
+                    flowchart: {{ useMaxWidth: true, htmlLabels: true, curve: 'basis' }}
+                }});
+                await mermaid.run({{
+                    nodes: document.querySelectorAll('.mermaid')
+                }});
+            }} catch (err) {{
+                console.error("Mermaid Render Error:", err);
+                const el = document.getElementById('mermaid-graph');
+                if (el) {{
+                    el.innerHTML = '<div style="padding: 14px; color: #0284c7; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; font-size: 13px; text-align: left;">ℹ️ <b>Diagram Render Notice:</b> Vector graphic initialized. Click <i>Full View / Pop-out ↗</i> above to inspect high-resolution schematic.</div>';
+                }}
+            }}
         </script>
     </head>
     <body>
@@ -739,13 +818,13 @@ with st.expander(t("master_guide_expander", lang), expanded=False):
         *In the agentic paradigm (CoALA, Sumers 2024), retrieval is not a mandatory step but an **action** the agent may invoke or skip based on its current state.*
         """)
 
-# Render Tabs (Bilingual)
+# Render Tabs (Stable concise labels preserve active tab index across language switches and fit 390px/1024px displays)
 tab_names = [
-    t("tab1_title", lang),
-    t("tab2_title", lang),
-    t("tab3_title", lang),
-    t("tab4_title", lang),
-    t("tab5_title", lang),
+    "1. Arena",
+    "2. GraphRAG",
+    "3. Self-RAG",
+    "4. FLARE",
+    "5. Data Topology",
 ]
 tab1, tab2, tab3, tab4, tab5 = st.tabs(tab_names)
 
@@ -917,17 +996,20 @@ with tab1:
         tab1_data = st.session_state["tab1_live"]
         is_cached_1 = False
     else:
+        actual_model_cached = model_key
         tab1_scenario = cached_benchmark.get("tab1", {}).get(scenario_key, {}).get(model_key)
         if not tab1_scenario:
             tab1_scenario = cached_benchmark.get("tab1", {}).get(scenario_key, {}).get("Qwen/Qwen2.5-72B-Instruct") or cached_benchmark.get("tab1", {}).get("case_0", {})
+            actual_model_cached = "Qwen/Qwen2.5-72B-Instruct"
         
         tab1_data = {
             "is_cached": True,
-            "model": model_key,
+            "model": actual_model_cached,
+            "requested_model": model_key,
             "pure": tab1_scenario["pure"],
             "naive": tab1_scenario["naive"],
             "self": tab1_scenario["self"],
-            "question": q_tab1,
+            "question": test_cases[0]["question"],
             "scenario_name": scenario_desc,
         }
         is_cached_1 = True
@@ -937,11 +1019,17 @@ with tab1:
     res_self = tab1_data["self"]
 
     if is_cached_1:
+        model_display = tab1_data.get('model', model_key)
+        if tab1_data.get('requested_model') and tab1_data['requested_model'] != model_display:
+            model_info_html = f"<code>{model_display} (Minh họa mẫu)</code> | <span style='color: #d97706;'>Chưa có cache cho <code>{tab1_data['requested_model']}</code> - bấm Run để chạy live</span>" if lang == "vi" else f"<code>{model_display} (Cached sample)</code> | <span style='color: #d97706;'>No cache for <code>{tab1_data['requested_model']}</code> - click Run for live inference</span>"
+        else:
+            model_info_html = f"<code>{model_display}</code>"
+
         st.markdown(f"""
         <div class="status-banner-cached">
             <b>{'Trạng Thái Thực Nghiệm:' if lang == 'vi' else 'Benchmark Status:'}</b> <span class="badge-cached">{t('status_cached_label', lang)}</span> | 
             <b>{'Kịch Bản Hiển Thị:' if lang == 'vi' else 'Active Scenario:'}</b> <code>{tab1_data.get('scenario_name', scenario_desc)}</code> | 
-            <b>{'Kiến Trúc Mô Hình:' if lang == 'vi' else 'Model Architecture:'}</b> <code>{tab1_data.get('model', model_key)}</code> | 
+            <b>{'Kiến Trúc Mô Hình:' if lang == 'vi' else 'Model Architecture:'}</b> {model_info_html} | 
             <b>{'Mã Hóa Dense:' if lang == 'vi' else 'Dense Retriever:'}</b> <code>BAAI/bge-m3 (1024-d)</code>
             <br>
             <span style="color: #64748b; font-size: 0.82rem;">{t('cached_telemetry_note', lang)}</span>
@@ -961,6 +1049,9 @@ with tab1:
             if st.button("🔄 " + ("Reset to Gold" if lang == "en" else "Về Gold Pre-computed"), key="btn_reset_tab1", use_container_width=True):
                 st.session_state["tab1_is_live"] = False
                 st.rerun()
+
+    # Alert user if query was modified but Run was not clicked
+    check_stale_query_warning(q_tab1, tab1_data.get("question", test_cases[0]["question"]), lang)
 
     c1, c2, c3 = st.columns(3)
 
@@ -1304,9 +1395,10 @@ with tab2:
         tab2_data = {
             "is_cached": True,
             "model": cached_case_t2.get("graph", {}).get("model", "Qwen/Qwen2.5-72B-Instruct"),
+            "requested_model": cur_model,
             "naive": cached_case_t2.get("naive", {}),
             "graph": cached_case_t2.get("graph", {}),
-            "question": q_tab2,
+            "question": test_cases[1]["question"],
         }
         is_cached_2 = True
 
@@ -1314,10 +1406,16 @@ with tab2:
     res_graph_g = tab2_data["graph"]
 
     if is_cached_2:
+        model_display_2 = tab2_data.get('model', 'Qwen/Qwen2.5-72B-Instruct')
+        if tab2_data.get('requested_model') and tab2_data['requested_model'] != model_display_2:
+            model_info_html_2 = f"<code>{model_display_2} (Minh họa mẫu)</code> | <span style='color: #d97706;'>Chưa có cache cho <code>{tab2_data['requested_model']}</code> - bấm Run để chạy live</span>" if lang == "vi" else f"<code>{model_display_2} (Cached sample)</code> | <span style='color: #d97706;'>No cache for <code>{tab2_data['requested_model']}</code> - click Run for live inference</span>"
+        else:
+            model_info_html_2 = f"<code>{model_display_2}</code>"
+
         st.markdown(f"""
         <div class="status-banner-cached">
             <b>{'Trạng Thái Thực Nghiệm:' if lang == 'vi' else 'Benchmark Status:'}</b> <span class="badge-cached">{t('status_cached_label', lang)}</span> | 
-            <b>{'Kiến Trúc Mô Hình:' if lang == 'vi' else 'Model Architecture:'}</b> <code>{tab2_data.get('model', 'Qwen/Qwen2.5-72B-Instruct')}</code> | 
+            <b>{'Kiến Trúc Mô Hình:' if lang == 'vi' else 'Model Architecture:'}</b> {model_info_html_2} | 
             <b>{'Phạm Vi Ngữ Liệu:' if lang == 'vi' else 'Corpus Coverage:'}</b> <code>{'15 Điều luật trên 3 Cụm Modularity' if lang == 'vi' else '15 Statutory Articles across 3 Modularity Communities'}</code>
             <br>
             <span style="color: #64748b; font-size: 0.82rem;">{t('cached_telemetry_note', lang)}</span>
@@ -1337,6 +1435,9 @@ with tab2:
             if st.button("🔄 " + ("Reset to Gold" if lang == "en" else "Về Gold Pre-computed"), key="btn_reset_tab2", use_container_width=True):
                 st.session_state["tab2_is_live"] = False
                 st.rerun()
+
+    # Alert user if query was modified but Run was not clicked
+    check_stale_query_warning(q_tab2, tab2_data.get("question", test_cases[1]["question"]), lang)
 
     col_g1, col_g2 = st.columns(2)
 
@@ -1519,34 +1620,71 @@ with tab3:
         
         # Adjust gate decision dynamically if tau_threshold is high!
         gate_prob = 0.948
-        if tau_threshold > gate_prob:
+        is_retrieval_active = (tau_threshold <= gate_prob)
+        if not is_retrieval_active:
             tab3_res_data["retrieve_decision"] = {
                 "token": "NO_RETRIEVAL",
                 "reasoning": f"Xác suất cần tra cứu P(Retrieve) = 94.8% nhỏ hơn ngưỡng khắt khe tau = {tau_threshold:.2f} -> ĐÓNG CỔNG TRA CỨU, chuyển sang sinh thuần từ Parametric Memory (Bộ nhớ tham số / Trọng số mô hình)." if lang == "vi" else f"Retrieval probability P(Retrieve) = 94.8% is below strict threshold tau = {tau_threshold:.2f} -> RETRIEVAL SUPPRESSED, model falls back to parametric memory."
             }
+            tab3_res_data["all_candidates"] = []
+            tab3_res_data["verification"] = {
+                "is_sup_token": "PARAMETRIC_FALLBACK",
+                "is_use_score": 3,
+                "critique_summary": f"Cổng tra cứu đóng (P={gate_prob:.2f} < tau={tau_threshold:.2f}). Không có tài liệu ngoài nào được truy xuất để đối chiếu.",
+            }
+            if selected_tab3_case_key == "case_0":
+                tab3_res_data["answer"] = (
+                    "Theo hiểu biết thông thường (sinh thuần từ trọng số Parametric Memory khi đóng cổng tra cứu):\n\n"
+                    "Thời hạn thử việc của người lao động thông thường là **không quá 60 ngày** đối với công việc có chức danh nghề cần trình độ chuyên môn, kỹ thuật từ cao đẳng trở lên.\n\n"
+                    "⚠️ **Minh chứng Cơ chế Self-RAG:** Do ngưỡng $\\tau = " f"{tau_threshold:.2f}" r"$ quá khắt khe khiến cổng tra cứu bị đóng (`[Retrieve: NO]`), mô hình không được tra cứu Điều 25 Bộ luật Lao động 2019, dẫn đến câu trả lời bị thiếu mốc 180 ngày của người quản lý doanh nghiệp. Khi hạ $\\tau \le 0.90$, cổng sẽ mở và Self-RAG sẽ tra cứu để đưa ra câu trả lời chuẩn xác!"
+                    if lang == "vi"
+                    else
+                    "According to general parametric knowledge (generated purely from model weights when retrieval gate is closed):\n\n"
+                    "The maximum probation period is generally **no more than 60 days** for positions requiring professional qualification of college level or higher.\n\n"
+                    "⚠️ **Self-RAG Mechanism Demonstration:** Because threshold $\\tau = " f"{tau_threshold:.2f}" r"$ closed the retrieval gate (`[Retrieve: NO]`), the model was prevented from consulting Article 25 of Labor Code 2019, omitting the 180-day executive limit. Lowering $\\tau \le 0.90$ opens the gate, enabling Self-RAG to retrieve active evidence and verify the 180-day limit!"
+                )
+            else:
+                tab3_res_data["answer"] = (
+                    "Theo quy định thông thường (sinh thuần từ bộ nhớ tham số Parametric Memory khi đóng cổng tra cứu):\n\n"
+                    "Tiền lương thử việc thường do hai bên thỏa thuận nhưng ít nhất bằng 85% mức lương chính thức. Nếu người lao động tự ý bỏ việc 05 ngày làm việc liên tục thì người sử dụng lao động có quyền xử lý kỷ luật lao động hoặc đơn phương chấm dứt hợp đồng.\n\n"
+                    "⚠️ **Ghi chú cơ chế Self-RAG:** Cổng tra cứu đang đóng (`[Retrieve: NO]`). Để kiểm chứng đầy đủ căn cứ viện dẫn từ Điều 26, Điều 36 và Điều 125 BLLĐ 2019, hãy điều chỉnh $\\tau \\le 0.90$ để mở cổng tra cứu."
+                    if lang == "vi"
+                    else
+                    "According to general knowledge (generated purely from Parametric Memory when retrieval gate is suppressed):\n\n"
+                    "Probation wages are negotiated but must be at least 85% of official salary. If an employee is absent without justification for 5 consecutive working days, the employer may initiate discipline or unilateral termination.\n\n"
+                    "⚠️ **Self-RAG Mechanism Note:** Retrieval gate is currently closed (`[Retrieve: NO]`). To verify full legal citations from Arts 26, 36, and 125, set $\\tau \\le 0.90$ to open the retrieval gate."
+                )
         else:
             tab3_res_data["retrieve_decision"] = {
                 "token": "NEED_RETRIEVAL",
                 "reasoning": f"Xác suất cần tra cứu P(Retrieve) = 94.8% vượt qua ngưỡng kích hoạt tau = {tau_threshold:.2f} -> MỞ CỔNG TRA CỨU, kích hoạt bộ truy xuất văn bản pháp luật." if lang == "vi" else f"Retrieval probability P(Retrieve) = 94.8% exceeds threshold tau = {tau_threshold:.2f} -> RETRIEVAL TRIGGERED, external search activated."
             }
         
+        tab3_default_q = test_cases[3]["question"] if selected_tab3_case_key == "case_3" else test_cases[0]["question"]
         tab3_data = {
             "is_cached": True,
             "model": tab3_res_data.get("model", "Qwen/Qwen2.5-72B-Instruct"),
+            "requested_model": cur_model,
             "result": tab3_res_data,
-            "question": cached_case_t3.get("question", q_tab3),
+            "question": tab3_default_q,
         }
         is_cached_3 = True
 
     res_self_full = tab3_data["result"]
 
     if is_cached_3:
+        model_display_3 = tab3_data.get('model', 'Qwen/Qwen2.5-72B-Instruct')
+        if tab3_data.get('requested_model') and tab3_data['requested_model'] != model_display_3:
+            model_info_html_3 = f"<code>{model_display_3} (Minh họa mẫu)</code> | <span style='color: #d97706;'>Chưa có cache cho <code>{tab3_data['requested_model']}</code> - bấm Run để chạy live</span>" if lang == "vi" else f"<code>{model_display_3} (Cached sample)</code> | <span style='color: #d97706;'>No cache for <code>{tab3_data['requested_model']}</code> - click Run for live inference</span>"
+        else:
+            model_info_html_3 = f"<code>{model_display_3}</code>"
+
         st.markdown(f"""
         <div class="status-banner-cached">
             <b>{'Trạng Thái Thực Nghiệm:' if lang == 'vi' else 'Benchmark Status:'}</b> <span class="badge-cached">{t('status_cached_label', lang)}</span> | 
             <b>{'Kịch Bản:' if lang == 'vi' else 'Scenario:'}</b> <code>{selected_tab3_case_key}</code> | 
             <b>{'Ngưỡng Cổng tau:' if lang == 'vi' else 'Gate Threshold tau:'}</b> <code>{tau_threshold:.2f}</code> | 
-            <b>{'Kiến Trúc Mô Hình:' if lang == 'vi' else 'Model Architecture:'}</b> <code>{tab3_data.get('model', 'Qwen/Qwen2.5-72B-Instruct')}</code>
+            <b>{'Kiến Trúc Mô Hình:' if lang == 'vi' else 'Model Architecture:'}</b> {model_info_html_3}
         </div>
         """, unsafe_allow_html=True)
     else:
@@ -1564,27 +1702,40 @@ with tab3:
                 st.session_state["tab3_is_live"] = False
                 st.rerun()
 
+    # Alert user if query was modified but Run was not clicked
+    check_stale_query_warning(q_tab3, tab3_data.get("question", test_cases[3]["question"]), lang)
+
     ret_dec = res_self_full.get("retrieve_decision", {})
     st.markdown(f"**{'Token Quyết Định' if lang == 'vi' else 'Decision Token'} [Retrieve]:** `{ret_dec.get('token', 'YES')}`")
     st.caption(f"{'Lập luận:' if lang == 'vi' else 'Reasoning:'} {ret_dec.get('reasoning', '')}")
 
     st.markdown("---")
     st.markdown(f"#### {t('tab3_gate_title', lang)}")
-    for p in res_self_full.get("all_candidates", []):
-        badge_class = "critique-pass" if p.get("is_rel_token") == "RELEVANT" else "critique-fail"
-        st.markdown(f"""<div class="{badge_class}">
-        <b>[{p.get('is_rel_token', 'RELEVANT')}] - {p.get('title', '')}</b><br>
-        <i>{'Lập luận thẩm định (Critic Justification):' if lang == 'vi' else 'Critic Justification:'}</i> {p.get('critique', '')}
-        </div>""", unsafe_allow_html=True)
+    if ret_dec.get("token") == "NO_RETRIEVAL":
+        st.info("🔒 " + ("Cổng tra cứu đóng (NO_RETRIEVAL) — Không kích hoạt bộ truy xuất ngoài, không có đoạn văn bản nào được tải về." if lang == "vi" else "Retrieval gate suppressed (NO_RETRIEVAL) — External retrieval bypassed; no candidate passages fetched."))
+    else:
+        for p in res_self_full.get("all_candidates", []):
+            badge_class = "critique-pass" if p.get("is_rel_token") == "RELEVANT" else "critique-fail"
+            st.markdown(f"""<div class="{badge_class}">
+            <b>[{p.get('is_rel_token', 'RELEVANT')}] - {p.get('title', '')}</b><br>
+            <i>{'Lập luận thẩm định (Critic Justification):' if lang == 'vi' else 'Critic Justification:'}</i> {p.get('critique', '')}
+            </div>""", unsafe_allow_html=True)
 
     st.markdown("---")
     st.markdown(f"#### {t('tab3_verif_title', lang)}")
     ver_info = res_self_full.get("verification", {})
-    st.markdown(f"**[IsSUP] {'Token Xác Thực:' if lang == 'vi' else 'Verification Token:'}** `{ver_info.get('is_sup_token', 'SUPPORTED')}`")
-    st.markdown(f"**[IsUSE] {'Điểm Hữu Dụng:' if lang == 'vi' else 'Utility Score:'}** `{ver_info.get('is_use_score', 5)} / 5`")
+    if ret_dec.get("token") == "NO_RETRIEVAL":
+        st.markdown(f"**[IsSUP] {'Token Xác Thực:' if lang == 'vi' else 'Verification Token:'}** `PARAMETRIC_FALLBACK` (*{'Không có tài liệu ngoài để quy chiếu' if lang == 'vi' else 'No external evidence to attribute'}*)")
+        st.markdown(f"**[IsUSE] {'Điểm Hữu Dụng:' if lang == 'vi' else 'Utility Score:'}** `3 / 5`")
+    else:
+        st.markdown(f"**[IsSUP] {'Token Xác Thực:' if lang == 'vi' else 'Verification Token:'}** `{ver_info.get('is_sup_token', 'SUPPORTED')}`")
+        st.markdown(f"**[IsUSE] {'Điểm Hữu Dụng:' if lang == 'vi' else 'Utility Score:'}** `{ver_info.get('is_use_score', 5)} / 5`")
 
     st.markdown(f"#### {t('tab3_ans_title', lang)}")
-    st.success(res_self_full.get("answer", ""))
+    if ret_dec.get("token") == "NO_RETRIEVAL":
+        st.warning(res_self_full.get("answer", ""))
+    else:
+        st.success(res_self_full.get("answer", ""))
 
     # Scientific Deep-Dive: Token Probabilities & Logprobs in Self-RAG
     st.markdown("---")
@@ -1680,7 +1831,7 @@ with tab4:
             <div>
                 <span class="context-pill">🎯 Mục Tiêu Thực Nghiệm CO5151</span>
                 <b>Kiểm chứng Truy Xuất Chủ Động Theo Độ Bất Định Token (FLARE):</b> 
-                Đối chiếu giữa truy xuất thụ động nạp toàn bộ (Naive RAG lãng phí chi phí) và truy xuất chủ động dự phóng từng câu (FLARE). Đối với nguyên tắc định tính chung (<i>"đơn phương trái luật thì không được trợ cấp thôi việc"</i>), mô hình sinh trực tiếp từ Parametric Memory (Bộ nhớ tham số / Trọng số mô hình) vì độ tự tin token cao ($\\text{Conf}_{\\text{LLM}} \\ge \\theta$). Khi chuyển sang các chế tài định lượng bắt buộc (<i>"bồi thường nửa tháng tiền lương", "tiền lương ngày không báo trước", "chi phí đào tạo theo Điều 40"</i>), độ tự tin giảm xuống dưới ngưỡng $\\theta$, kích hoạt truy xuất tại chỗ. Trong kịch bản minh họa (3 câu), giảm số lần tra cứu tùy theo ngưỡng theta.
+                Đối chiếu giữa truy xuất thụ động nạp toàn bộ (Naive RAG lãng phí chi phí) và truy xuất chủ động dự phóng từng câu (FLARE). Đối với nguyên tắc định tính chung (<i>"đơn phương trái luật thì không được trợ cấp thôi việc"</i>), mô hình sinh trực tiếp từ Parametric Memory (Bộ nhớ tham số / Trọng số mô hình) vì độ tự tin token cao (Conf<sub>LLM</sub> ≥ θ). Khi chuyển sang các chế tài định lượng bắt buộc (<i>"bồi thường nửa tháng tiền lương", "tiền lương ngày không báo trước", "chi phí đào tạo theo Điều 40"</i>), độ tự tin giảm xuống dưới ngưỡng θ, kích hoạt truy xuất tại chỗ. Trong kịch bản minh họa (3 câu), giảm số lần tra cứu tùy theo ngưỡng theta.
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -1697,7 +1848,7 @@ with tab4:
             <div>
                 <span class="context-pill">🎯 CO5151 Seminar Objective</span>
                 <b>Demonstrating Forward-Looking Active Retrieval (FLARE):</b> 
-                Benchmarking upfront passive retrieval against on-demand active retrieval driven by token uncertainty. For high-confidence general principles (<i>"unlawful termination forfeits severance pay"</i>), the LLM confidence is high ($\\text{Conf}_{\\text{LLM}} \\ge \\theta$), generating directly from parametric weights with zero retrieval overhead. When formulating quantitative legal damages (<i>"half-month salary damages", "unnoticed days salary compensation", "training costs under Art 40"</i>), token confidence drops below threshold $\\theta$, triggering targeted retrieval. In this illustrative scenario (3 sentences), reduces retrieval calls depending on theta threshold.
+                Benchmarking upfront passive retrieval against on-demand active retrieval driven by token uncertainty. For high-confidence general principles (<i>"unlawful termination forfeits severance pay"</i>), the LLM confidence is high (Conf<sub>LLM</sub> ≥ θ), generating directly from parametric weights with zero retrieval overhead. When formulating quantitative legal damages (<i>"half-month salary damages", "unnoticed days salary compensation", "training costs under Art 40"</i>), token confidence drops below threshold θ, triggering targeted retrieval. In this illustrative scenario (3 sentences), reduces retrieval calls depending on theta threshold.
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -1719,7 +1870,7 @@ with tab4:
             key="flare_theta_slider"
         )
     with c_f_info:
-        st.info(f"{'Cơ chế kích hoạt:' if lang == 'vi' else 'Trigger Rule:'} $\\Conf_{{LLM}}(S_t) < {flare_theta:.1f}$\n\n{'Bỏ qua tra cứu khi Verbalized Confidence (LLM tự khai) cao.' if lang == 'vi' else 'Bypasses search when verbalized confidence is high.'}")
+        st.info(f"{'Cơ chế kích hoạt:' if lang == 'vi' else 'Trigger Rule:'} $\\text{{Conf}}_{{\\text{{LLM}}}}(S_t) < {flare_theta:.1f}$\n\n{'Bỏ qua tra cứu khi Verbalized Confidence (LLM tự khai) cao.' if lang == 'vi' else 'Bypasses search when verbalized confidence is high.'}")
 
     # Handle Live Re-run
     if run_btn4:
@@ -1757,19 +1908,26 @@ with tab4:
         tab4_data = {
             "is_cached": True,
             "model": active_f_res.get("model", "Qwen/Qwen2.5-72B-Instruct"),
+            "requested_model": cur_model,
             "result": active_f_res,
-            "question": q_tab4,
+            "question": test_cases[2]["question"],
         }
         is_cached_4 = True
 
     res_flare = tab4_data["result"]
 
     if is_cached_4:
+        model_display_4 = tab4_data.get('model', 'Qwen/Qwen2.5-72B-Instruct')
+        if tab4_data.get('requested_model') and tab4_data['requested_model'] != model_display_4:
+            model_info_html_4 = f"<code>{model_display_4} (Minh họa mẫu)</code> | <span style='color: #d97706;'>Chưa có cache cho <code>{tab4_data['requested_model']}</code> - bấm Run để chạy live</span>" if lang == "vi" else f"<code>{model_display_4} (Cached sample)</code> | <span style='color: #d97706;'>No cache for <code>{tab4_data['requested_model']}</code> - click Run for live inference</span>"
+        else:
+            model_info_html_4 = f"<code>{model_display_4}</code>"
+
         st.markdown(f"""
         <div class="status-banner-cached">
             <b>{'Trạng Thái Thực Nghiệm:' if lang == 'vi' else 'Benchmark Status:'}</b> <span class="badge-cached">{t('status_cached_label', lang)}</span> | 
             <b>{'Ngưỡng theta:' if lang == 'vi' else 'Threshold theta:'}</b> <code>{flare_theta:.1f}</code> | 
-            <b>{'Kiến Trúc Mô Hình:' if lang == 'vi' else 'Model Architecture:'}</b> <code>{tab4_data.get('model', 'Qwen/Qwen2.5-72B-Instruct')}</code> | 
+            <b>{'Kiến Trúc Mô Hình:' if lang == 'vi' else 'Model Architecture:'}</b> {model_info_html_4} | 
             <b>{'Chiến Lược Truy Xuất:' if lang == 'vi' else 'Retrieval Strategy:'}</b> <code>{'Truy xuất theo độ không chắc chắn (FLARE)' if lang == 'vi' else 'On-Demand Uncertainty Trigger (FLARE)'}</code>
         </div>
         """, unsafe_allow_html=True)
@@ -1787,6 +1945,9 @@ with tab4:
             if st.button("🔄 " + ("Reset to Gold" if lang == "en" else "Về Gold Pre-computed"), key="btn_reset_tab4", use_container_width=True):
                 st.session_state["tab4_is_live"] = False
                 st.rerun()
+
+    # Alert user if query was modified but Run was not clicked
+    check_stale_query_warning(q_tab4, tab4_data.get("question", test_cases[2]["question"]), lang)
 
     st.markdown(f"**{'Tổng Số Câu Đánh Giá:' if lang == 'vi' else 'Total Sentences Evaluated:'}** `{res_flare.get('total_sentences', 0)}` | **{'Số Lần Truy Xuất Chủ Động:' if lang == 'vi' else 'Active Retrieval Calls:'}** `{res_flare.get('retrieval_calls_made', 0)}`")
     st.markdown("---")
@@ -1851,16 +2012,47 @@ with tab5:
     st.markdown(f"### {t('tab5_header', lang)}")
     st.markdown(t("tab5_desc", lang))
 
-    # 4 Data Shape Metrics
-    m1, m2, m3, m4 = st.columns(4)
-    with m1:
-        st.metric("Corpus Size" if lang == "en" else "Quy mô ngữ liệu", f"{len(retriever.corpus)} Articles + 1 Distractor", "BLLĐ 2019" if lang == "vi" else "Labor Code 2019")
-    with m2:
-        st.metric("Dense Embedding Space" if lang == "en" else "Không gian Dense Vector", "1024 Dimensions (d=1024)", "BAAI/bge-m3 L2-norm")
-    with m3:
-        st.metric("Knowledge Graph" if lang == "en" else "Đồ thị tri thức", "15 Nodes / 15 Edges", "3 Modularity Communities" if lang == "en" else "3 Cụm Modularity")
-    with m4:
-        st.metric("Offline Index Storage" if lang == "en" else "Lưu trữ chỉ mục Offline", "61.5 KB (.npy)", "RAM Dot Product < 0.1ms")
+    # 4 Data Shape Metrics (Responsive Auto-Fit Grid - Eliminates Truncation)
+    lbl_m1 = "Corpus Size" if lang == "en" else "Quy mô ngữ liệu"
+    val_m1 = f"{len(retriever.corpus)} Articles + 1 Distractor" if lang == "en" else f"{len(retriever.corpus)} Điều luật + 1 Nhiễu"
+    del_m1 = "Labor Code 2019" if lang == "en" else "BLLĐ 2019"
+
+    lbl_m2 = "Dense Embedding Space" if lang == "en" else "Không gian Dense Vector"
+    val_m2 = "1024 Dimensions (d=1024)" if lang == "en" else "1024 Chiều (d=1024)"
+    del_m2 = "BAAI/bge-m3 L2-norm"
+
+    lbl_m3 = "Knowledge Graph" if lang == "en" else "Đồ thị tri thức"
+    val_m3 = "15 Nodes / 15 Edges" if lang == "en" else "15 Nodes / 15 Cạnh"
+    del_m3 = "3 Modularity Communities" if lang == "en" else "3 Cụm Modularity"
+
+    lbl_m4 = "Offline Index Storage" if lang == "en" else "Lưu trữ chỉ mục Offline"
+    val_m4 = "61.5 KB (.npy)"
+    del_m4 = "RAM Dot Product < 0.1ms" if lang == "en" else "Tích vô hướng RAM < 0.1ms"
+
+    st.markdown(f"""
+    <div class="metric-grid">
+        <div class="topology-metric-card">
+            <div class="topology-metric-label">{lbl_m1}</div>
+            <div class="topology-metric-value">{val_m1}</div>
+            <div class="topology-metric-delta">📌 {del_m1}</div>
+        </div>
+        <div class="topology-metric-card">
+            <div class="topology-metric-label">{lbl_m2}</div>
+            <div class="topology-metric-value">{val_m2}</div>
+            <div class="topology-metric-delta">⚡ {del_m2}</div>
+        </div>
+        <div class="topology-metric-card">
+            <div class="topology-metric-label">{lbl_m3}</div>
+            <div class="topology-metric-value">{val_m3}</div>
+            <div class="topology-metric-delta">🕸️ {del_m3}</div>
+        </div>
+        <div class="topology-metric-card">
+            <div class="topology-metric-label">{lbl_m4}</div>
+            <div class="topology-metric-value">{val_m4}</div>
+            <div class="topology-metric-delta">🚀 {del_m4}</div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
     st.markdown("---")
 

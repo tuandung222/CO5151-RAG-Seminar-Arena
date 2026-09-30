@@ -38,13 +38,13 @@ flowchart LR
 """,
     "graphrag": """
 flowchart TD
-    CORPUS["Statutory Legal Corpus<br/>(15 Labor Code Articles)"] --> EXTRACT["Entity & Cross-Reference Extraction"]
+    CORPUS["Statutory Legal Corpus<br/>(15 Labor Code Articles)"] --> EXTRACT["Entity and Cross-Reference Extraction"]
     EXTRACT --> GRAPH["Knowledge Graph Network<br/>(NetworkX G = V, E)"]
     GRAPH --> CLUSTER["Hierarchical Community Detection<br/>(Newman Modularity Q)"]
     
-    CLUSTER --> COMM1["Community 1: Labor Contracts & Probation"]
-    CLUSTER --> COMM2["Community 2: Termination & Severance Compensation"]
-    CLUSTER --> COMM3["Community 3: Discipline & Special Protections"]
+    CLUSTER --> COMM1["Community 1: Labor Contracts and Probation"]
+    CLUSTER --> COMM2["Community 2: Termination and Severance Compensation"]
+    CLUSTER --> COMM3["Community 3: Discipline and Special Protections"]
     
     COMM1 --> MAP1["MAP: Community Summary 1"]
     COMM2 --> MAP2["MAP: Community Summary 2"]
@@ -64,7 +64,7 @@ flowchart TD
 flowchart LR
     Q["User Query"] --> DRAFT["Full Draft Generation"]
     DRAFT --> SPLIT["Sentence-by-Sentence Verification"]
-    SPLIT --> CONF{"Verbalized Confidence Check<br/>Conf_LLM(S) &lt; Threshold &theta; ?"}
+    SPLIT --> CONF{"Verbalized Confidence Check<br/>Conf_LLM(S) < Threshold theta ?"}
     CONF -->|High Confidence| KEEP["Retain Sentence<br/>(Skip Retrieval)"]
     CONF -->|Low Confidence| SEARCH["Active Retrieval:<br/>Search(Sub-Query)"]
     SEARCH --> RET["Targeted BGE-M3 Retrieval"]
@@ -79,7 +79,7 @@ flowchart LR
     "offline_vs_online": """
 flowchart TD
     subgraph OFFLINE["1. Offline Indexing Phase (One-Time Ingestion Pipeline)"]
-        CORPUS["Labor Code Corpus (15 Articles)"] --> CHUNKING["Chunking & Metadata Extraction"]
+        CORPUS["Labor Code Corpus (15 Articles)"] --> CHUNKING["Chunking and Metadata Extraction"]
         CHUNKING --> EMB_GEN["Dense Neural Encoder<br/>(BAAI/bge-m3: d=1024, L2 Normalized)"]
         CHUNKING --> BM25_IDX["Sparse BM25 Inverted Index"]
         CHUNKING --> KG_BUILD["Statutory Cross-Reference Graph Construction"]
@@ -89,7 +89,7 @@ flowchart TD
 
     subgraph ONLINE["2. Online Serving Phase (Real-Time Query Pipeline)"]
         USER_Q["User Query (q)"] --> Q_ENC["Encode Single Query<br/>(BAAI/bge-m3: 1 x 1024)"]
-        Q_ENC --> DOT_PROD["RAM Dot Product Similarity (&lt; 0.1ms)<br/>Scores = NPY_FILE · q_vec"]
+        Q_ENC --> DOT_PROD["RAM Dot Product Similarity (less than 0.1ms)<br/>Scores = NPY_FILE · q_vec"]
         USER_Q --> BM25_SCORE["BM25 Lexical Scoring"]
         DOT_PROD --> RRF["Reciprocal Rank Fusion (RRF: k=60)"]
         BM25_SCORE --> RRF
@@ -105,7 +105,7 @@ flowchart TD
 """,
     "knowledge_graph_full": """
 flowchart TB
-    subgraph C1["Community 1: Labor Contracts & Probation"]
+    subgraph C1["Community 1: Labor Contracts and Probation"]
         D13["Art 13: Labor Contract"]
         D20["Art 20: Contract Types"]
         D24["Art 24: Probation Agreement"]
@@ -120,7 +120,7 @@ flowchart TB
         D24 -->|evaluation outcome| D27
     end
 
-    subgraph C2["Community 2: Termination & Severance Compensation"]
+    subgraph C2["Community 2: Termination and Severance Compensation"]
         D34["Art 34: Termination Grounds"]
         D35["Art 35: Unilateral Employee"]
         D36["Art 36: Unilateral Employer"]
@@ -138,7 +138,7 @@ flowchart TB
         D34 -->|allowance duty| D46
     end
 
-    subgraph C3["Community 3: Discipline & Special Protections"]
+    subgraph C3["Community 3: Discipline and Special Protections"]
         D122["Art 122: Disciplinary Principles"]
         D125["Art 125: Dismissal Measures"]
         
@@ -189,13 +189,13 @@ flowchart LR
 """,
     "graphrag": """
 flowchart TD
-    CORPUS["Kho ngữ liệu luật lao động<br/>(15 Điều luật BLLĐ 2019)"] --> EXTRACT["Trích xuất thực thể & Dẫn chiếu chéo"]
+    CORPUS["Kho ngữ liệu luật lao động<br/>(15 Điều luật BLLĐ 2019)"] --> EXTRACT["Trích xuất thực thể và Dẫn chiếu chéo"]
     EXTRACT --> GRAPH["Mạng lưới Đồ thị tri thức<br/>(NetworkX G = V, E)"]
     GRAPH --> CLUSTER["Phát hiện cấu trúc cộng đồng phân cấp<br/>(Tối đa hóa Modularity Q)"]
     
-    CLUSTER --> COMM1["Cụm 1: Giao kết & Chế định Thử việc"]
-    CLUSTER --> COMM2["Cụm 2: Chấm dứt HĐLĐ & Bồi thường"]
-    CLUSTER --> COMM3["Cụm 3: Kỷ luật & Bảo vệ đặc thù"]
+    CLUSTER --> COMM1["Cụm 1: Giao kết và Chế định Thử việc"]
+    CLUSTER --> COMM2["Cụm 2: Chấm dứt HĐLĐ và Bồi thường"]
+    CLUSTER --> COMM3["Cụm 3: Kỷ luật và Bảo vệ đặc thù"]
     
     COMM1 --> MAP1["MAP: Báo cáo tóm tắt Cụm 1"]
     COMM2 --> MAP2["MAP: Báo cáo tóm tắt Cụm 2"]
@@ -215,7 +215,7 @@ flowchart TD
 flowchart LR
     Q["Câu hỏi của Người dùng"] --> DRAFT["Sinh bản nháp đầy đủ"]
     DRAFT --> SPLIT["Xác minh từng câu một"]
-    SPLIT --> CONF{"Kiểm tra Verbalized Confidence<br/>Conf_LLM(S) &lt; Ngưỡng &theta; ?"}
+    SPLIT --> CONF{"Kiểm tra Verbalized Confidence<br/>Conf_LLM(S) < Ngưỡng theta ?"}
     CONF -->|Tự tin cao| KEEP["Giữ nguyên câu đã soạn<br/>(Bỏ qua truy xuất)"]
     CONF -->|Tự tin thấp| SEARCH["Kích hoạt truy xuất chủ động:<br/>Search(Ý con cần tra)"]
     SEARCH --> RET["Truy xuất BGE-M3 đúng trọng tâm"]
@@ -230,7 +230,7 @@ flowchart LR
     "offline_vs_online": """
 flowchart TD
     subgraph OFFLINE["1. Pha Đánh chỉ mục Ngoại tuyến (Offline Pipeline - 1 lần duy nhất)"]
-        CORPUS["Ngữ liệu Bộ luật Lao động (15 Điều luật)"] --> CHUNKING["Phân mảnh & Trích xuất siêu dữ liệu"]
+        CORPUS["Ngữ liệu Bộ luật Lao động (15 Điều luật)"] --> CHUNKING["Phân mảnh và Trích xuất siêu dữ liệu"]
         CHUNKING --> EMB_GEN["Bộ mã hóa Dense Vector<br/>(BAAI/bge-m3: d=1024, Chuẩn hóa L2)"]
         CHUNKING --> BM25_IDX["Chỉ mục đảo thưa BM25 (Sparse Index)"]
         CHUNKING --> KG_BUILD["Xây dựng Đồ thị dẫn chiếu pháp lý"]
@@ -240,7 +240,7 @@ flowchart TD
 
     subgraph ONLINE["2. Pha Phục vụ Trực tuyến (Online Serving - Real-time dưới 0.1ms)"]
         USER_Q["Câu hỏi người dùng (q)"] --> Q_ENC["Mã hóa 1 vector câu hỏi<br/>(BAAI/bge-m3: 1 x 1024)"]
-        Q_ENC --> DOT_PROD["Tích vô hướng trực tiếp trên RAM (&lt; 0.1ms)<br/>Điểm tương đồng = Ma_trận · q_vec"]
+        Q_ENC --> DOT_PROD["Tích vô hướng trực tiếp trên RAM (dưới 0.1ms)<br/>Điểm tương đồng = Ma_trận · q_vec"]
         USER_Q --> BM25_SCORE["Tính điểm từ khóa BM25"]
         DOT_PROD --> RRF["Hợp nhất xếp hạng (RRF: k=60)"]
         BM25_SCORE --> RRF
@@ -256,7 +256,7 @@ flowchart TD
 """,
     "knowledge_graph_full": """
 flowchart TB
-    subgraph C1["Cụm 1: Giao kết & Chế định Thử việc"]
+    subgraph C1["Cụm 1: Giao kết và Chế định Thử việc"]
         D13["Điều 13: Hợp đồng lao động"]
         D20["Điều 20: Các loại hợp đồng"]
         D24["Điều 24: Thỏa thuận thử việc"]
@@ -271,7 +271,7 @@ flowchart TB
         D24 -->|kết quả đánh giá| D27
     end
 
-    subgraph C2["Cụm 2: Chấm dứt HĐLĐ & Trợ cấp bồi thường"]
+    subgraph C2["Cụm 2: Chấm dứt HĐLĐ và Trợ cấp bồi thường"]
         D34["Điều 34: Các trường hợp chấm dứt"]
         D35["Điều 35: NLĐ đơn phương chấm dứt"]
         D36["Điều 36: NSDLĐ đơn phương chấm dứt"]
@@ -289,11 +289,11 @@ flowchart TB
         D34 -->|nghĩa vụ trợ cấp| D46
     end
 
-    subgraph C3["Cụm 3: Kỷ luật lao động & Bảo vệ đặc thù"]
+    subgraph C3["Cụm 3: Kỷ luật lao động và Bảo vệ đặc thù"]
         D122["Điều 122: Nguyên tắc xử lý kỷ luật"]
         D125["Điều 125: Áp dụng kỷ luật sa thải"]
         
-        D37 -.->|bảo vệ thai sản & nuôi con nhỏ| D122
+        D37 -.->|bảo vệ thai sản và nuôi con nhỏ| D122
         D122 -->|hình thức xử lý cao nhất| D125
         D36 -.->|xử lý tự ý bỏ việc 05 ngày| D125
     end
