@@ -151,6 +151,36 @@ flowchart TB
     style C2 fill:#fff7ed,stroke:#ea580c,stroke-width:2px
     style C3 fill:#faf5ff,stroke:#9333ea,stroke-width:2px
     style D25 fill:#ecfdf5,stroke:#059669,stroke-width:2px
+""",
+    "agentic_coala": """
+flowchart TD
+    GOAL["User Goal / Query"] --> LOOP{"Agent Decision Loop<br/>(CoALA Framework)"}
+    
+    subgraph MEMORY["Agent Memory Architecture"]
+        PARAM["Parametric Memory<br/>(Internal LLM Weights)"]
+        WM["Working Memory<br/>(Dialog History and Thoughts)"]
+        EXT["Non-Parametric Memory<br/>(Vector DB / Statutory Graph)"]
+    end
+    
+    subgraph ACTIONS["Action Space (Tools)"]
+        ACT_THINK["Reason / Reflect<br/>(Chain-of-Thought)"]
+        ACT_RET["Retrieve Action<br/>(Search Tool Call)"]
+        ACT_TOOL["External Tools<br/>(Calculator / Code Exec)"]
+        ACT_ANS["Final Synthesis<br/>(Grounded Response)"]
+    end
+    
+    LOOP -->|1. Inspect State| MEMORY
+    LOOP -->|2. Select Action| ACTIONS
+    ACT_RET -->|Observation / Evidence| WM
+    ACT_THINK -->|Intermediate State| WM
+    ACT_TOOL -->|Tool Result| WM
+    WM --> LOOP
+    ACT_ANS --> OUTPUT["Deliver Answer to User"]
+    
+    style LOOP fill:#eff6ff,stroke:#0284c7,stroke-width:2px
+    style MEMORY fill:#f8fafc,stroke:#475569,stroke-width:2px
+    style ACTIONS fill:#f0fdf4,stroke:#16a34a,stroke-width:2px
+    style OUTPUT fill:#ecfdf5,stroke:#059669,stroke-width:2px
 """
 }
 
@@ -302,6 +332,36 @@ flowchart TB
     style C2 fill:#fff7ed,stroke:#ea580c,stroke-width:2px
     style C3 fill:#faf5ff,stroke:#9333ea,stroke-width:2px
     style D25 fill:#ecfdf5,stroke:#059669,stroke-width:2px
+""",
+    "agentic_coala": """
+flowchart TD
+    GOAL["Mục tiêu / Câu hỏi Người dùng"] --> LOOP{"Vòng lặp Quyết định của Agent<br/>(Khung Kiến trúc CoALA)"}
+    
+    subgraph MEMORY["Kiến Trúc Bộ Nhớ Của Agent"]
+        PARAM["Bộ nhớ tham số<br/>(Trọng số mô hình nội tại)"]
+        WM["Bộ nhớ làm việc<br/>(Lịch sử hội thoại và Suy ngẫm)"]
+        EXT["Bộ nhớ phi tham số<br/>(Vector DB / Đồ thị Tri thức)"]
+    end
+    
+    subgraph ACTIONS["Không Gian Hành Động (Action Space)"]
+        ACT_THINK["Suy ngẫm nội tại<br/>(Chain-of-Thought)"]
+        ACT_RET["Hành động Truy xuất<br/>(Kích hoạt Search Tool)"]
+        ACT_TOOL["Công cụ mở rộng<br/>(Tính toán / Chạy mã)"]
+        ACT_ANS["Tổng hợp phản hồi<br/>(Grounded Response)"]
+    end
+    
+    LOOP -->|1. Quan sát trạng thái| MEMORY
+    LOOP -->|2. Chọn hành động| ACTIONS
+    ACT_RET -->|Bằng chứng truy xuất| WM
+    ACT_THINK -->|Trạng thái trung gian| WM
+    ACT_TOOL -->|Kết quả công cụ| WM
+    WM --> LOOP
+    ACT_ANS --> OUTPUT["Trả kết quả cho Người dùng"]
+    
+    style LOOP fill:#eff6ff,stroke:#0284c7,stroke-width:2px
+    style MEMORY fill:#f8fafc,stroke:#475569,stroke-width:2px
+    style ACTIONS fill:#f0fdf4,stroke:#16a34a,stroke-width:2px
+    style OUTPUT fill:#ecfdf5,stroke:#059669,stroke-width:2px
 """
 }
 
