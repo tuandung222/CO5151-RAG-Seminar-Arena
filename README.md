@@ -1,3 +1,13 @@
+---
+title: CO5151 RAG Paradigm Inspector
+emoji: ⚖️
+colorFrom: blue
+colorTo: green
+sdk: docker
+app_file: app.py
+pinned: false
+---
+
 # ⚖️ CO5151 RAG Paradigm Inspector
 
 [![Hugging Face Space](https://img.shields.io/badge/🤗%20Hugging%20Face-Space%20Live-yellow.svg)](https://huggingface.co/spaces/tuandunghcmut/CO5151-RAG-Seminar-Arena)
