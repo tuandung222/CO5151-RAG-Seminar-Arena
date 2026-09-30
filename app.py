@@ -969,13 +969,14 @@ with tab1:
         box1.markdown(f'<div class="arena-header-1">{t("model1_title", lang)}</div>', unsafe_allow_html=True)
         box1.caption(t("model1_caption", lang))
         box1.info(res_pure["answer"])
+        box1.markdown("---")
         box1.markdown(f"**{'Độ trễ:' if lang == 'vi' else 'Latency:'}** `{res_pure['latency_ms']} ms`")
         if res_pure.get("has_180_days"):
-            box1.caption("Nhận diện mốc 180 ngày từ bộ nhớ trong." if lang == "vi" else "Identified statutory 180-day milestone from parametric memory.")
+            box1.caption("✅ " + ("Nhận diện mốc 180 ngày từ bộ nhớ trong." if lang == "vi" else "Identified statutory 180-day milestone from parametric memory."))
         elif res_pure.get("has_60_days"):
-            box1.caption("Gợi nhớ mốc 60 ngày lỗi thời từ dữ liệu huấn luyện." if lang == "vi" else "Recalled outdated 60-day milestone from pre-training corpus.")
+            box1.caption("⚠️ " + ("Gợi nhớ mốc 60 ngày lỗi thời từ dữ liệu huấn luyện." if lang == "vi" else "Recalled outdated 60-day milestone from pre-training corpus."))
         else:
-            box1.caption("Phản hồi chung chung, không có mốc thời gian luật định." if lang == "vi" else "Generic response without exact statutory duration.")
+            box1.caption("❓ " + ("Phản hồi chung chung, không có mốc thời gian luật định." if lang == "vi" else "Generic response without exact statutory duration."))
 
     with c2:
         box2 = st.container(border=True)
@@ -983,14 +984,12 @@ with tab1:
         box2.caption(t("model2_caption", lang))
         if res_naive["outcome"] == "POISONED_BY_DISTRACTOR":
             box2.error(res_naive["answer"])
-            box2.caption(f"**{res_naive['verdict_text']}**")
         elif res_naive["outcome"] == "CONFUSED_CONFLICT":
             box2.warning(res_naive["answer"])
-            box2.caption(f"**{res_naive['verdict_text']}**")
         else:
             box2.success(res_naive["answer"])
-            box2.caption(f"**{res_naive['verdict_text']}**")
-
+        box2.markdown("---")
+        box2.caption(f"**{res_naive['verdict_text']}**")
         box2.markdown(f"**{'Độ trễ:' if lang == 'vi' else 'Latency:'}** `{res_naive['latency_ms']} ms`")
         exp_chunks_title = "Các đoạn trích trong ngữ cảnh đưa vào prompt" if lang == "vi" else "Retrieved Passages Injected into Prompt"
         with box2.expander(exp_chunks_title):
@@ -1003,7 +1002,8 @@ with tab1:
         box3.markdown(f'<div class="arena-header-3">{t("model3_title", lang)}</div>', unsafe_allow_html=True)
         box3.caption(t("model3_caption", lang))
         box3.success(res_self["answer"])
-        box3.caption("Đã xác thực căn cứ; tài liệu gây nhiễu đã bị loại trừ." if lang == "vi" else "Attribution verified; distractor successfully pruned.")
+        box3.markdown("---")
+        box3.caption("✅ " + ("Đã xác thực căn cứ; tài liệu gây nhiễu đã bị loại trừ." if lang == "vi" else "Attribution verified; distractor successfully pruned."))
         box3.markdown(f"**{'Độ trễ:' if lang == 'vi' else 'Latency:'}** `{res_self['latency_ms']} ms`")
         v_info = res_self.get("verification", {})
         box3.markdown(f"**Token [IsSUP]:** `{v_info.get('is_sup_token', 'SUPPORTED')}` | **{'Hữu dụng' if lang == 'vi' else 'Utility'} [IsUSE]:** `{v_info.get('is_use_score', 5)}/5`")
