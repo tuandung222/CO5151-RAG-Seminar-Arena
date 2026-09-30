@@ -19,15 +19,17 @@ flowchart LR
 """,
     "self_rag": """
 flowchart LR
-    Q["User Query"] --> DECIDE{"[Retrieve] Token?<br/>External Lookup"}
-    DECIDE -->|No| PARAM["Parametric Generation<br/>(Internal Memory)"]
+    Q["User Query"] --> DECIDE{"[Retrieve] Gate<br/>Need External Lookup?"}
+    DECIDE -->|No| PARAM["Parametric Generation<br/>(Internal Memory Only)"]
     DECIDE -->|Yes| RET["Dense BGE-M3 + BM25<br/>(Passage Retrieval)"]
-    RET --> CRITIC{"[IsREL] Critic<br/>Passage Filter"}
+    RET --> CRITIC{"[IsREL] Relevance Check<br/>Passage Filter"}
     CRITIC -->|Invalid / Expired| REJECT["Prune Distractor<br/>(IsREL: IRRELEVANT)"]
     CRITIC -->|Valid| GROUNDED["Verified Context<br/>(IsREL: RELEVANT)"]
     GROUNDED --> GEN["Grounded Generation<br/>(In-Context Synthesis)"]
-    GEN --> SUP{"[IsSUP] Critic<br/>Attribution"}
-    SUP --> OUT["Final Verified Response<br/>Utility: 5/5 [IsUSE]"]
+    GEN --> SUP{"[IsSUP] Attribution<br/>Grounding Check"}
+    SUP -->|Supported| OUT["Final Verified Response<br/>Utility: 5/5 [IsUSE]"]
+    SUP -->|Not Supported| GEN
+    PARAM --> OUT
     
     style DECIDE fill:#f8fafc,stroke:#64748b,stroke-width:2px
     style CRITIC fill:#ffedd5,stroke:#ea580c,stroke-width:2px
@@ -60,13 +62,14 @@ flowchart TD
 """,
     "flare": """
 flowchart LR
-    Q["User Query"] --> DRAFT["Sentence-by-Sentence Forward Drafting"]
-    DRAFT --> CONF{"Token Confidence Check<br/>P(token) &lt; Threshold &theta; ?"}
-    CONF -->|High Confidence| KEEP["Retain Drafted Sentence<br/>(Zero Retrieval Overhead)"]
-    CONF -->|Low Confidence| SEARCH["Active Tool Call:<br/>Search(Sub-Query)"]
+    Q["User Query"] --> DRAFT["Full Draft Generation"]
+    DRAFT --> SPLIT["Sentence-by-Sentence Verification"]
+    SPLIT --> CONF{"Verbalized Confidence Check<br/>Conf_LLM(S) &lt; Threshold &theta; ?"}
+    CONF -->|High Confidence| KEEP["Retain Sentence<br/>(Skip Retrieval)"]
+    CONF -->|Low Confidence| SEARCH["Active Retrieval:<br/>Search(Sub-Query)"]
     SEARCH --> RET["Targeted BGE-M3 Retrieval"]
     RET --> REWRITE["Fact-Grounded Sentence Rewriting"]
-    KEEP --> NEXT["Sentence Concatenation"]
+    KEEP --> NEXT["Concatenate Final Response"]
     REWRITE --> NEXT
     
     style CONF fill:#fef3c7,stroke:#d97706,stroke-width:2px
@@ -175,7 +178,9 @@ flowchart LR
     CRITIC -->|Hợp lệ| GROUNDED["Ngữ cảnh căn cứ chuẩn<br/>(IsREL: RELEVANT)"]
     GROUNDED --> GEN["Sinh phản hồi có căn cứ<br/>(Grounded Generation)"]
     GEN --> SUP{"Kiểm định căn cứ trích dẫn [IsSUP]<br/>Đối chiếu chứng cứ"}
-    SUP --> OUT["Câu trả lời đã kiểm định<br/>Đánh giá mức độ hữu dụng: 5/5 [IsUSE]"]
+    SUP -->|Đủ căn cứ| OUT["Câu trả lời đã kiểm định<br/>Đánh giá mức độ hữu dụng: 5/5 [IsUSE]"]
+    SUP -->|Thiếu căn cứ| GEN
+    PARAM --> OUT
     
     style DECIDE fill:#f8fafc,stroke:#64748b,stroke-width:2px
     style CRITIC fill:#ffedd5,stroke:#ea580c,stroke-width:2px
@@ -208,13 +213,14 @@ flowchart TD
 """,
     "flare": """
 flowchart LR
-    Q["Câu hỏi của Người dùng"] --> DRAFT["Soạn thảo dự phóng từng câu liên tiếp"]
-    DRAFT --> CONF{"Đánh giá độ tự tin Token<br/>P(token) &lt; Ngưỡng &theta; ?"}
-    CONF -->|Tự tin cao| KEEP["Giữ nguyên câu đã soạn<br/>(Tiết kiệm 67% chi phí truy xuất)"]
-    CONF -->|Tự tin thấp| SEARCH["Kích hoạt Tool Call chủ động:<br/>Search(Ý_con_cần_tra)"]
+    Q["Câu hỏi của Người dùng"] --> DRAFT["Sinh bản nháp đầy đủ"]
+    DRAFT --> SPLIT["Xác minh từng câu một"]
+    SPLIT --> CONF{"Kiểm tra Verbalized Confidence<br/>Conf_LLM(S) &lt; Ngưỡng &theta; ?"}
+    CONF -->|Tự tin cao| KEEP["Giữ nguyên câu đã soạn<br/>(Bỏ qua truy xuất)"]
+    CONF -->|Tự tin thấp| SEARCH["Kích hoạt truy xuất chủ động:<br/>Search(Ý con cần tra)"]
     SEARCH --> RET["Truy xuất BGE-M3 đúng trọng tâm"]
     RET --> REWRITE["Viết lại câu dựa trên căn cứ luật"]
-    KEEP --> NEXT["Ghép nối câu hoàn chỉnh"]
+    KEEP --> NEXT["Ghép nối câu trả lời hoàn chỉnh"]
     REWRITE --> NEXT
     
     style CONF fill:#fef3c7,stroke:#d97706,stroke-width:2px

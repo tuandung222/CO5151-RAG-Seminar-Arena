@@ -1711,7 +1711,7 @@ with tab4:
             key="flare_theta_slider"
         )
     with c_f_info:
-        st.info(f"{'Cơ chế kích hoạt:' if lang == 'vi' else 'Trigger Rule:'} $\\Conf_{LLM}(S_t) < {flare_theta:.1f}$\n\n{'Tiết kiệm tính toán tra cứu khi câu tự tin cao.' if lang == 'vi' else 'Bypasses search when draft tokens are confident.'}")
+        st.info(f"{'Cơ chế kích hoạt:' if lang == 'vi' else 'Trigger Rule:'} $\\Conf_{LLM}(S_t) < {flare_theta:.1f}$\n\n{'Bỏ qua tra cứu khi Verbalized Confidence (LLM tự khai) cao.' if lang == 'vi' else 'Bypasses search when verbalized confidence is high.'}")
 
     # Handle Live Re-run
     if run_btn4:
@@ -1721,7 +1721,7 @@ with tab4:
             status_t4_title = "Đang Thực Thi Truy Xuất Chủ Động FLARE Trực Tiếp..." if lang == "vi" else "Executing Forward-Looking Active Retrieval Live..."
             with st.status(status_t4_title, expanded=True) as status_box:
                 st.write("Đang soạn thảo dự phóng từng câu..." if lang == "vi" else "Drafting candidate sentences forward...")
-                st.write("Đang đánh giá độ tự tin token so với ngưỡng theta..." if lang == "vi" else "Evaluating sentence confidence metrics vs threshold theta...")
+                st.write("Đang đánh giá Verbalized Confidence (LLM tự khai) so với ngưỡng theta..." if lang == "vi" else "Evaluating sentence confidence metrics vs threshold theta...")
                 st.write("Đang kích hoạt truy xuất chủ động cho câu có độ tự tin thấp..." if lang == "vi" else "Issuing active search queries for low-confidence assertions...")
                 res_flare_live = flare_pipe.run_flare(q_tab4, theta=flare_theta)
                 status_box.update(label="Hoàn tất tổng hợp FLARE!" if lang == "vi" else "FLARE Active Synthesis Complete!", state="complete", expanded=False)
@@ -1813,7 +1813,7 @@ with tab4:
                 #### Cách Thức Vận Hành Của Active Retrieval (FLARE) (Jiang et al., EMNLP 2023):
                 Khác với Naive RAG thực hiện truy xuất thụ động ngay từ đầu, **FLARE** tiến hành soạn thảo dự phóng từng câu liên tiếp:
                 1. **Soạn thảo câu dự phóng:** LLM sinh câu dự phóng tiếp theo $S = (w_1, w_2, \\dots, w_L)$.
-                2. **Đánh giá độ chắc chắn:** Hệ thống tính toán xác suất token. Nếu có bất kỳ token sự kiện nào có độ tự tin rơi xuống dưới ngưỡng $\\theta$:
+                2. **Đánh giá độ chắc chắn:** Hệ thống đánh giá Verbalized Confidence (độ tự tin do LLM tự khai báo) cho từng câu. Nếu confidence rơi xuống dưới ngưỡng $\\theta$:
                 """)
                 st.latex(r"\text{Conf}_{\text{LLM}}(S_t) < \theta")
                 st.markdown("""
@@ -1826,7 +1826,7 @@ with tab4:
                 #### How Forward-Looking Active Retrieval (FLARE) Operates (Jiang et al., EMNLP 2023):
                 Unlike traditional RAG which retrieves passively upfront before writing a single word, **FLARE** generates forward drafts sentence-by-sentence:
                 1. **Forward Draft Generation:** The LLM generates a candidate continuation sentence $S = (w_1, w_2, \\dots, w_L)$.
-                2. **Uncertainty Evaluation:** The system computes token-level log probabilities. If any factual token's confidence drops below threshold $\\theta$:
+                2. **Uncertainty Evaluation:** The system evaluates Verbalized Confidence (LLM self-reported) for each sentence. If the confidence drops below threshold $\\theta$:
                 """)
                 st.latex(r"\text{Conf}_{\text{LLM}}(S_t) < \theta")
                 st.markdown("""
