@@ -1,259 +1,304 @@
-# 🎤 SCRIPT THUYẾT TRÌNH — Demo Walkthrough
+# 🎤 SCRIPT THUYẾT TRÌNH — Demo Walkthrough Chi Tiết
 
-> **30 phút | 19:00–19:30 | B4-305**
-> Mở app trên projector: https://tuandunghcmut-co5151-rag-seminar-arena.hf.space
-
----
-
-## TRƯỚC KHI BẮT ĐẦU (setup)
-
-1. Mở app → **Sidebar trái** → Chọn **🇻🇳 Tiếng Việt**
-2. Provider: đã set sẵn (HF Inference API)
-3. App hiển thị **kết quả Gold (cached)** mặc định → không cần chạy live ngay
-4. Thu gọn sidebar (bấm X) để màn hình rộng hơn
+> **30 phút | 19:00–19:30 | B4-305**  
+> Demo: https://tuandunghcmut-co5151-rag-seminar-arena.hf.space  
+> Sidebar: chọn 🇻🇳 Tiếng Việt, thu gọn sidebar trước khi bắt đầu
 
 ---
 
 ## PHÚT 0:00–1:30 — MỞ ĐẦU
 
-### 👀 Đang nhìn: Header + Bảng tổng quan
+**👀 Màn hình: Header app + 5 tabs**
 
-**Nói:**
-> "Chào thầy và các bạn. Nhóm G8 trình bày chủ đề Retrieval-Augmented Agents. Thay vì slide, nhóm sẽ demo trực tiếp trên app — mọi thứ mình nói đều có thể bấm chạy kiểm chứng."
+> "Chào thầy và các bạn. Nhóm G8 trình bày chủ đề **Retrieval-Augmented Agents**."
 
-**👆 Chỉ vào** tiêu đề app: *"RAG Evaluation Laboratory"*
+> "Câu hỏi cốt lõi: LLM có kiến thức sẵn trong trọng số (parametric memory), nhưng kiến thức đó bị freeze tại thời điểm pre-training. RAG giải quyết bằng cách **tra cứu thêm tài liệu bên ngoài** khi trả lời. Nhưng retrieval không phải lúc nào cũng tốt — **khi nào giúp, khi nào hại?**"
 
-> "App có 5 tabs, mỗi tab minh họa một paradigm RAG khác nhau, đối chứng trên Bộ luật Lao động Việt Nam."
+> "App demo có 5 tabs, mỗi tab là một thí nghiệm đối chứng trực tiếp. Tất cả chạy trên **Bộ luật Lao động Việt Nam** — domain có tài liệu cũ (luật 2012) và mới (luật 2019), tạo ra xung đột thực tế."
 
-**👆 Mở expander** "📋 Hướng dẫn tổng quan" → **chỉ nhanh vào bảng 5 hàng**:
-
-> "Tổng quan 5 paradigm: Pure LLM, Naive RAG, Self-RAG, GraphRAG, FLARE. Mỗi cái giải quyết một failure mode khác nhau. Mình sẽ đi từng cái."
-
-**⏱️ Đóng expander lại** — không đọc chi tiết, chỉ giới thiệu nhanh.
+**👆 Mở nhanh expander "📋 Hướng dẫn tổng quan"** → chỉ bảng 5 hàng → đóng lại (15 giây).
 
 ---
 
-## PHÚT 1:30–7:00 — TAB 1: "KHI RETRIEVAL GÂY HẠI" ⚔️
-### → Rubric Q1 (cơ chế RAG) + Q5 (retrieval giảm accuracy)
+## PHÚT 1:30–8:00 — TAB 1: KHI RETRIEVAL GÂY HẠI
 
-### 👀 Đang nhìn: Tab 1, kết quả Gold 3 cột
+### Giải pháp là gì?
+> "Tab 1 so sánh 3 paradigm: **Pure LLM** (không retrieve), **Naive RAG** (retrieve thụ động), và **Self-RAG** (retrieve + tự đánh giá). Mục đích: chứng minh retrieval có thể **làm giảm** accuracy nếu không có cơ chế lọc."
 
-**👆 Click vào Tab 1** (đã mặc định ở đây)
+### Context & Query
+> "Tình huống: Doanh nghiệp hỏi **'Thời gian thử việc CEO tối đa bao lâu?'**"
 
-**Nói:**
-> "Đây là thí nghiệm cốt lõi. Tình huống: doanh nghiệp hỏi **'Thời gian thử việc CEO tối đa bao lâu?'** — đáp án đúng là **180 ngày** theo Bộ luật Lao động 2019."
+> "Đáp án đúng: **180 ngày** theo Điều 25, Bộ luật Lao động 2019 (hiện hành từ 01/01/2021). Tuy nhiên, luật cũ 2012 (đã bãi bỏ) quy định chỉ **60 ngày**. Nếu retriever truy xuất phải luật cũ, model sẽ bị 'đầu độc'."
 
-**👆 Chỉ lần lượt 3 cột kết quả:**
+**👆 Chỉ vào query box:**
+> "Đây là câu hỏi — có thể chỉnh sửa trước khi chạy. Kết quả đang hiển thị là pre-computed."
 
-**Cột 1 — Pure LLM (xanh dương):**
-> "Pure LLM — không retrieve gì, trả lời từ parametric memory. Đây là baseline."
+### Giải thích từng thông tin trên UI
 
-**Cột 2 — Naive RAG (đỏ/vàng):**
-> "Naive RAG — retrieve top-3 passages bằng BM25 + BGE-M3, nối thô vào prompt. **Kết quả: bị poisoned** — trả lời 60 ngày vì nhồi phải luật 2012 đã bãi bỏ."
+**👆 Chỉ Cột 1 — Pure LLM (khối xanh dương `st.info`):**
+> "**Model 1: Pure LLM (Parametric Baseline)** — LLM trả lời từ trọng số nội tại, không tra cứu bất kỳ tài liệu nào."
+> 
+> "Dòng mô tả: *'Internal parameters only; zero external context'*."
+> 
+> "Kết quả: Model trả lời dúng 180 ngày — vì Qwen 72B đã học được luật 2019 trong pre-training."
 
-**👆 Mở expander** "Các đoạn trích trong ngữ cảnh đưa vào prompt":
-> "Xem đây: passage #1 là Điều 27 BLLĐ 2012 (bãi bỏ), passage #2 là Điều 25 BLLĐ 2019 (hiện hành). Naive RAG nhồi cả hai, model bị confuse."
-
-**Cột 3 — Self-RAG (xanh lá):**
-> "Self-RAG — dùng token `[IsREL]` thẩm định: luật 2012 → IRRELEVANT, loại bỏ. Chỉ giữ luật 2019 → trả lời đúng 180 ngày."
-
-**👆 Chỉ vào dòng** `Token [IsSUP]: FULLY_SUPPORTED | Utility: 5/5`
-
-> "Đây chính là hiện tượng **'When Retrieval Hurts'** — retrieval thêm noise thay vì giúp. Naive RAG **không có cơ chế lọc**, còn Self-RAG **tự đánh giá** và loại bỏ."
-
-### 📌 Nếu có thời gian — chỉ vào bảng so sánh bên dưới 3 cột
-> "Bảng tóm tắt: Naive RAG bị poisoned, Self-RAG tự sửa."
-
-**⚠️ SKIP:** Không mở expander "Bối cảnh thực tế & Kiến trúc" — quá chi tiết.
+**👆 Chỉ dưới vạch kẻ `---`:**
+> "Phía dưới là **metadata hệ thống** — phân tách khỏi output model:"
+> - "`Latency: 1420 ms`" — thời gian inference
+> - "`✅ Nhận diện mốc 180 ngày từ bộ nhớ trong`" — hệ thống verify output có chứa đáp án đúng
 
 ---
 
-## PHÚT 7:00–12:00 — TAB 2: GRAPHRAG 🌐
-### → Rubric Q2 (Naive fails global → GraphRAG)
+**👆 Chỉ Cột 2 — Naive RAG (khối đỏ `st.error`):**
+> "**Model 2: Naive RAG (Lewis et al., 2020)** — retrieve top-k passages bằng BM25 + BGE-M3, nối thô vào prompt."
+> 
+> "Mô tả: *'Blind in-context injection of top-k passages'* — 'blind' vì nhồi thụ động, không kiểm tra tài liệu."
+> 
+> "Kết quả hiện **khối đỏ** = bị poisoned. Model trả lời **60 ngày** — dẫn sai luật 2012."
 
-**👆 Click Tab 2**
+**👆 Chỉ dưới vạch kẻ:**
+> "Verdict: *'❌ Bị nhiễm độc: Mô hình bị tài liệu gây nhiễu dẫn dụ và kết luận sai thành 60 ngày!'*"
+> "Latency: giờ tốn thêm thời gian retrieve."
 
-**Nói:**
-> "Failure mode thứ hai: **Local Blindness**. Câu hỏi kiểu 'Tóm tắt tất cả quyền lợi khi sa thải trái luật' — nằm rải rác nhiều chương."
+**👆 Mở expander "Các đoạn trích trong ngữ cảnh đưa vào prompt":**
+> "Đây là bằng chứng — 2 passages được nhồi vào prompt:"
+> - "`#1 — Điều 27 BLLĐ 2012 (Bãi bỏ)` — RRF: 0.0331" — **đây là thủ phạm**, luật cũ nhưng similarity score cao hơn
+> - "`#2 — Điều 25 BLLĐ 2019 (Hiện hành)` — RRF: 0.0315" — luật đúng nhưng xếp sau
+> 
+> "RRF là Reciprocal Rank Fusion — công thức `1/(60+rank)`, max ~0.033. Đây là ranking score, không phải similarity."
+> 
+> "Naive RAG nhận **cả hai** vào prompt nhưng **không biết cái nào hiện hành** → bị luật cũ chi phối."
 
-**👆 Chỉ vào kết quả 2 cột:**
-
-**Cột trái — Naive RAG (warning vàng):**
-> "Naive RAG chỉ retrieve top-3 → bỏ sót. Trả lời thiếu."
-
-**Cột phải — GraphRAG (success xanh):**
-> "GraphRAG: (1) xây Knowledge Graph, (2) phân cụm cộng đồng — mỗi community là một nhóm điều khoản liên quan, (3) Map-Reduce qua tất cả communities → bao quát hết."
-
-**👆 Mở expander "Community Details"** nếu có:
-> "Mỗi community được tóm tắt bằng LLM, sau đó reduce thành câu trả lời tổng thể."
-
-**👆 Mở expander kiến trúc** → chỉ Mermaid diagram GraphRAG:
-> "Flowchart: Query → Tất cả Communities → Map (mỗi community sinh summary) → Reduce (tổng hợp) → Final Answer."
-
-**📌 Giải thích nhanh Modularity:**
-> "Community detection dùng Newman's Modularity Q — tối đa hóa mật độ liên kết trong community, tối thiểu hóa liên kết giữa communities. Paper gốc Edge et al. dùng Leiden algorithm, demo dùng Greedy Modularity — cùng nguyên lý."
-
-**⚠️ SKIP:** Không mở expander toán học chi tiết.
+**Đóng expander.**
 
 ---
 
-## PHÚT 12:00–18:00 — TAB 3: REFLECTION TOKENS 🔬
-### → Rubric Q3 (Self-RAG reflection tokens chi tiết)
+**👆 Chỉ Cột 3 — Self-RAG (khối xanh lá `st.success`):**
+> "**Model 3: Self-RAG (Asai et al., ICLR 2024)** — cùng retrieve nhưng thêm cơ chế tự đánh giá."
+> 
+> "Mô tả: *'Self-reflection critic loop [IsREL] & verification [IsSUP]'*."
+> 
+> "Kết quả **xanh lá** = đúng. Trả lời 180 ngày, trích dẫn Khoản 1 Điều 25 BLLĐ 2019."
 
-**👆 Click Tab 3**
+**👆 Chỉ metadata bên dưới:**
+> - "`✅ Đã xác thực căn cứ; tài liệu gây nhiễu đã bị loại trừ`" — Self-RAG đã **phát hiện và loại** luật 2012
+> - "`Token [IsSUP]: FULLY_SUPPORTED`" — câu trả lời được **xác thực có căn cứ** từ tài liệu giữ lại
+> - "`Utility [IsUSE]: 5/5`" — đánh giá hữu dụng cao nhất
 
-**Nói:**
-> "Tab 3 bóc tách chi tiết cơ chế Self-RAG. Asai et al. (ICLR 2024) đưa vào 4 special tokens."
-
-**👆 Chỉ lần lượt vào kết quả — mỗi passage có verdict:**
-
-> "Passage 1: Điều 27 BLLĐ 2012 → `[IsREL]: IRRELEVANT` — phát hiện luật hết hiệu lực, **loại bỏ**."
-
-> "Passage 2: Điều 25 BLLĐ 2019 → `[IsREL]: RELEVANT` — luật hiện hành, **giữ lại**."
-
-> "Sau khi lọc, model sinh câu trả lời → `[IsSUP]: FULLY_SUPPORTED` — câu trả lời có căn cứ từ tài liệu đã giữ."
-
-> "`[IsUSE]: 5/5` — đánh giá mức độ hữu dụng cao nhất."
-
-**👆 Nếu có slider τ — kéo demo:**
-> "Slider τ kiểm soát trade-off: τ cao → ưu tiên critique chặt (lọc nhiều hơn), τ thấp → ưu tiên fluency."
-
-**📌 QUAN TRỌNG — nói rõ:**
-> "**Lưu ý**: Demo dùng In-Context Surrogate — zero-shot prompting thay vì trained critic như paper. Paper gốc train trên 150K examples với GPT-4 labels. Demo đã ghi rõ disclaimer trên giao diện."
-
-**👆 Chỉ vào caption disclaimer** trên UI.
-
-**⚠️ SKIP:** Không mở Deep Dive expander — quá dài.
+> "**Đây chính là hiện tượng 'When Retrieval Hurts':** cùng một retriever, cùng kết quả retrieve, nhưng Naive RAG bị poisoned vì nhồi thụ động, Self-RAG sống sót vì có cơ chế lọc."
 
 ---
 
-## PHÚT 18:00–23:00 — TAB 4: FLARE ⚡
-### → Rubric Q4 (FLARE active retrieval)
+## PHÚT 8:00–13:00 — TAB 2: GRAPHRAG
 
-**👆 Click Tab 4**
+### Giải pháp là gì?
+> "GraphRAG (Edge et al., 2024) giải quyết failure mode thứ hai: **Local Blindness**. Naive RAG chỉ retrieve top-k chunks gần nhất — bỏ sót khi câu hỏi trải dài nhiều chương."
 
-**Nói:**
-> "FLARE (Jiang et al., EMNLP 2023) — câu hỏi: **khi nào cần retrieve?** Naive RAG luôn retrieve. FLARE chỉ retrieve khi cần."
+### Context & Query
 
-**👆 Chỉ vào kết quả FLARE — từng câu:**
+**👆 Click Tab 2. Chỉ vào query box:**
+> "Câu hỏi: *'Tổng hợp toàn diện các trường hợp NSDLĐ KHÔNG ĐƯỢC hoặc BỊ HẠN CHẾ quyền chấm dứt hợp đồng và xử lý kỷ luật?'*"
+> 
+> "Câu hỏi này là **global/synthesis query** — đáp án nằm rải rác ở Điều 37, 122, 123, 125, 36... không cluster trong một đoạn. Top-3 vector search không đủ."
 
-> "FLARE sinh nháp, rồi kiểm tra confidence từng câu:
-> - Câu 1: confidence cao → **skip retrieval** (tiết kiệm latency)
-> - Câu 2: confidence thấp → **trigger retrieval** → viết lại với evidence
-> - Câu 3: confidence thấp → **trigger retrieval**"
+### Giải thích từng thông tin trên UI
 
-**👆 Chỉ vào dòng** `Trigger Rule: Conf_LLM < θ`:
-> "Ngưỡng θ quyết định khi nào trigger. Demo dùng Verbalized Confidence — LLM tự khai mức tự tin — thay vì token logprobs trong paper gốc."
+**👆 Chỉ Cột trái — Naive RAG (khối warning vàng):**
+> "Naive RAG retrieve top-3 → trả lời **thiếu**, chỉ nêu được 1-2 trường hợp."
 
-**👆 Mở expander kiến trúc** → chỉ Mermaid diagram:
+**👆 Chỉ Cột phải — GraphRAG (khối success xanh):**
+> "GraphRAG liệt kê **đầy đủ** — bao quát tất cả điều khoản liên quan."
+> 
+> "Cách hoạt động:
+> 1. **Xây Knowledge Graph** — mỗi node là thực thể pháp lý (điều luật, khái niệm), mỗi edge là quan hệ
+> 2. **Community Detection** — phân cụm graph thành communities (nhóm điều khoản liên quan). Paper dùng Leiden algorithm, demo dùng Greedy Modularity — cùng nguyên lý tối đa hóa Newman's Modularity Q
+> 3. **Map phase** — LLM tóm tắt từng community liên quan đến query
+> 4. **Reduce phase** — tổng hợp tất cả community summaries thành câu trả lời cuối"
+
+**👆 Mở expander kiến trúc → chỉ Mermaid diagram GraphRAG:**
+> "Flowchart: Query → Tất cả Communities → Map (mỗi community sinh summary) → Reduce (tổng hợp) → Final Answer. Khác biệt cốt lõi: GraphRAG **duyệt qua tất cả communities**, không chỉ top-k."
+
+**Đóng expander. SKIP expander toán học.**
+
+---
+
+## PHÚT 13:00–19:00 — TAB 3: SELF-RAG REFLECTION TOKENS
+
+### Giải pháp là gì?
+> "Self-RAG (Asai et al., ICLR 2024) đưa vào 4 **special tokens** — gọi là Reflection Tokens — để kiểm soát toàn bộ vòng đời: có cần retrieve không, tài liệu có liên quan không, câu trả lời có căn cứ không, có hữu dụng không."
+
+### Context & Query
+
+**👆 Click Tab 3. Chỉ vào query:**
+> "Cùng câu hỏi thử việc CEO — nhưng tab này **bóc tách chi tiết** từng bước Self-RAG làm gì."
+
+### Giải thích từng thông tin trên UI
+
+**👆 Chỉ phần trên — Retrieve Decision:**
+> "Đầu tiên: **`[Retrieve]: NEED_RETRIEVAL`** — Self-RAG quyết định câu hỏi này CẦN tra cứu (câu hỏi về mốc thời gian cụ thể, không thể trả lời từ parametric memory alone)."
+> 
+> "Reasoning: *'Câu hỏi đòi hỏi xác định mốc thời gian thử việc tối đa... cần kích hoạt tra cứu.'*"
+
+**👆 Chỉ phần giữa — Per-passage critique:**
+> "Sau khi retrieve, Self-RAG **đánh giá từng passage**:"
+> 
+> "Passage 1: **Điều 27 BLLĐ 2012 (Hết hiệu lực)** → `[IsREL]: IRRELEVANT` — phát hiện luật đã bãi bỏ, **loại bỏ**."
+> 
+> "Passage 2: **Điều 25 BLLĐ 2019 (Hiện hành)** → `[IsREL]: RELEVANT` — luật hiện hành, **giữ lại**."
+> 
+> "Đây là bước **quyết định** — Naive RAG không có bước này, nên nhồi cả hai."
+
+**👆 Chỉ phần dưới — Generation + Verification:**
+> "Sau khi lọc, model sinh câu trả lời chỉ từ tài liệu RELEVANT:"
+> 
+> "`[IsSUP]: FULLY_SUPPORTED` — câu trả lời **có căn cứ** từ Điều 25."
+> 
+> "`[IsUSE]: 5/5` — mức hữu dụng cao nhất."
+> 
+> "Critique summary: *'Đã loại bỏ văn bản đã hết hiệu lực (BLLĐ 2012); chấp nhận căn cứ hiện hành Điều 25 BLLĐ 2019. Khẳng định mốc 180 ngày.'*"
+
+**📌 Lưu ý quan trọng — nói rõ:**
+> "**Disclaimer**: Paper gốc **train** critic model trên 150K examples với GPT-4 labels. Demo dùng **In-Context Surrogate** — zero-shot prompting. Giao diện đã ghi rõ disclaimer này."
+
+**SKIP Deep Dive expander.**
+
+---
+
+## PHÚT 19:00–24:00 — TAB 4: FLARE
+
+### Giải pháp là gì?
+> "FLARE (Jiang et al., EMNLP 2023) — **Forward-Looking Active REtrieval**. Thay vì retrieve ngay từ đầu (Naive RAG) hay đánh giá sau khi retrieve (Self-RAG), FLARE **sinh trước rồi kiểm tra**: nếu model tự tin → không retrieve; nếu model bất định → trigger retrieve + viết lại."
+
+### Context & Query
+
+**👆 Click Tab 4. Chỉ vào query:**
+> "Câu hỏi: *'Khi NLĐ đơn phương chấm dứt HĐLĐ trái pháp luật thì có được nhận trợ cấp thôi việc không và phải bồi thường gì?'*"
+> 
+> "Câu hỏi này có phần **nguyên tắc chung** (model tự tin) và phần **số liệu cụ thể** (cần tra cứu)."
+
+### Giải thích từng thông tin trên UI
+
+**👆 Chỉ phần `Trigger Rule: Conf_LLM < θ`:**
+> "Quy tắc kích hoạt: Khi confidence của LLM cho câu đang sinh < ngưỡng θ (mặc định 0.5), FLARE trigger retrieval."
+
+**👆 Chỉ trace từng câu — 3 bước:**
+
+> "**Câu 1**: Nguyên tắc chung ('đơn phương trái luật → không được trợ cấp')
+> - Confidence: **0.94** (rất cao) → **SKIP retrieval** ✅
+> - Model tự tin vì đây là kiến thức phổ thông pháp luật"
+
+> "**Câu 2**: Số liệu bồi thường cụ thể ('nửa tháng tiền lương')
+> - Confidence: **0.38** (thấp hơn θ=0.5) → **TRIGGER retrieval** 🔍
+> - Model bất định về con số chính xác → retrieve Điều 40-41 → viết lại"
+
+> "**Câu 3**: Thêm chi tiết ('chi phí đào tạo')
+> - Confidence: **0.91** → **SKIP retrieval** ✅"
+
+> "Tổng kết hiển thị: **3 câu, chỉ 1 lần retrieval** — tiết kiệm so với Naive RAG (luôn retrieve)."
+
+**👆 Mở expander kiến trúc → chỉ Mermaid diagram:**
 > "Flow: Query → Sinh nháp đầy đủ → Xác minh từng câu → Confidence < θ? → Có: retrieve + viết lại. Không: giữ nguyên."
 
-**📌 So sánh với Self-RAG:**
-> "Self-RAG đánh giá **sau** khi retrieve (lọc passage). FLARE đánh giá **trước** khi retrieve (quyết định có retrieve không). Hai chiến lược bổ trợ nhau."
+**📌 So sánh 3 paradigm:**
+> "- **Naive RAG**: luôn retrieve → lãng phí khi model đã biết
+> - **Self-RAG**: đánh giá **sau** retrieve → lọc passage xấu
+> - **FLARE**: đánh giá **trước** retrieve → quyết định có cần retrieve không
+> 
+> Ba chiến lược **bổ trợ** nhau, không thay thế."
 
-**⚠️ SKIP:** Không mở Deep Dive expander.
-
----
-
-## PHÚT 23:00–26:00 — QUAY VỀ HEADER: RETRIEVAL AS TOOL
-### → Rubric Q6 (Retrieval trong agent decision loop)
-
-**👆 Cuộn lên đầu trang** → mở expander "📋 Hướng dẫn tổng quan"
-
-**👆 Chỉ vào bảng thứ 2** (Retrieval: Từ Pipeline → Tool):
-
-**Nói:**
-> "Tổng kết sự tiến hóa:"
-
-> "- **Naive RAG**: retrieval là stage cố định — luôn retrieve, không lựa chọn
-> - **Self-RAG**: retrieval là tool có điều kiện — `[Retrieve]` gate quyết định
-> - **FLARE**: retrieval là tool theo yêu cầu — trigger khi confidence thấp
-> - **GraphRAG**: retrieval là tool cấu trúc — truy vấn theo graph topology"
-
-> "Theo framework CoALA (Sumers 2024), Language Agent có Action Space gồm nhiều tools — retrieval chỉ là **một action** mà agent **chọn gọi hoặc bỏ qua** dựa trên trạng thái hiện tại. Không phải bước bắt buộc."
+**Đóng expander. SKIP Deep Dive.**
 
 ---
 
-## PHÚT 26:00–28:00 — TAB 5: DATA EXPLORER (nhanh)
-### → Rubric Q7 (Extensions) + bonus
+## PHÚT 24:00–27:00 — RETRIEVAL AS TOOL + TỔNG KẾT
 
-**👆 Click Tab 5**
+**👆 Cuộn lên header → mở expander "📋 Hướng dẫn tổng quan"**
 
-> "Tab 5 cho phép inspect hạ tầng: corpus, embedding space, knowledge graph."
+> "Nhìn lại toàn cảnh: Sự tiến hóa từ **Retrieval-as-Pipeline** sang **Retrieval-as-Tool**:"
+> 
+> "- **Naive RAG**: retrieval là bước cố định, luôn chạy — giống một stage trong pipeline
+> - **Self-RAG**: agent có `[Retrieve]` gate — **tự quyết** có retrieve không
+> - **FLARE**: agent **giám sát** confidence — trigger khi bất định
+> - **GraphRAG**: agent chọn **cách** retrieve — graph traversal thay vì vector search"
+> 
+> "Theo framework CoALA (Sumers 2024): retrieval chỉ là **một action** trong Action Space của agent. Agent có Decision Procedure để chọn action nào — retrieve, generate, hay dùng tool khác."
 
-**👆 Lướt nhanh** — chỉ vào:
-- Bảng corpus (các điều luật)
-- Knowledge graph visualization (nếu có)
+**Đóng expander.**
 
-> "Hạn chế và mở rộng:
-> 1. Self-RAG cần trained critic → hướng: LLM-as-judge zero-shot
-> 2. GraphRAG tốn chi phí graph construction → hướng: incremental update
-> 3. FLARE cần logprobs → hướng: verbalized confidence (như demo)
-> 4. Tất cả đều single-hop → hướng: multi-hop chain-of-retrieval
+---
+
+## PHÚT 27:00–29:00 — TAB 5 LƯỚT NHANH + HẠN CHẾ
+
+**👆 Click Tab 5 — lướt nhanh:**
+> "Tab 5 cho phép inspect hạ tầng: corpus 15 điều luật, knowledge graph, embedding space."
+
+**Hạn chế và hướng mở rộng (nói nhanh):**
+> "1. Self-RAG cần trained critic → hướng: LLM-as-judge zero-shot
+> 2. GraphRAG tốn chi phí graph construction → hướng: incremental update  
+> 3. FLARE cần logprobs (API hạn chế) → hướng: verbalized confidence
+> 4. Tất cả single-hop → hướng: multi-hop chain-of-retrieval
 > 5. Chỉ text → hướng: multimodal RAG"
 
 ---
 
-## PHÚT 28:00–30:00 — KẾT LUẬN
+## PHÚT 29:00–30:00 — KẾT LUẬN
 
-**👆 Cuộn lên bảng tổng quan** hoặc đứng trước 3 cột Tab 1:
+**👆 Về Tab 1 — chỉ 3 cột:**
+> "Retrieval là con dao hai lưỡi. Corpus sạch → Naive RAG đủ. Corpus có conflict → Self-RAG lọc. Câu hỏi global → GraphRAG phủ sóng. Sinh dài → FLARE tiết kiệm. Và agent tự quyết định dùng cái nào."
 
-> "Tóm lại: Retrieval là con dao hai lưỡi.
-> - Corpus sạch → Naive RAG đủ
-> - Corpus có conflict → Self-RAG lọc
-> - Câu hỏi global → GraphRAG phủ sóng
-> - Sinh dài → FLARE tiết kiệm
-> - Tất cả → Agent tự quyết định"
-
-> "Mọi thứ trên app đều live, các bạn có thể truy cập link trên Hugging Face Space để thử. Xin cảm ơn, nhóm sẵn sàng nhận câu hỏi."
+> "Demo vẫn live trên Hugging Face, mọi người thử được. Xin cảm ơn."
 
 ---
 
 ## 🗺️ TÓM TẮT: CLICK GÌ, SKIP GÌ
 
-| Thứ tự | UI Element | Hành động | Thời gian |
+| # | UI Element | Hành động | Phút |
 |:---:|---|:---:|:---:|
-| 1 | Header expander "Hướng dẫn tổng quan" | **MỞ NHANH** → chỉ bảng → đóng | 30s |
-| 2 | Tab 1: 3 cột kết quả Gold | **CHỈ VÀO** từng cột | 3 phút |
-| 3 | Tab 1: Expander "Passages injected" | **MỞ** xem 2 passages | 30s |
-| 4 | Tab 1: Expander "Bối cảnh & Kiến trúc" | **❌ SKIP** | — |
-| 5 | Tab 2: 2 cột kết quả | **CHỈ VÀO** | 2 phút |
-| 6 | Tab 2: Expander kiến trúc GraphRAG | **MỞ** xem diagram | 1 phút |
-| 7 | Tab 2: Expander toán học | **❌ SKIP** | — |
-| 8 | Tab 3: Kết quả reflection per-passage | **CHỈ VÀO** từng verdict | 3 phút |
-| 9 | Tab 3: Deep Dive expander | **❌ SKIP** | — |
-| 10 | Tab 4: Kết quả FLARE per-sentence | **CHỈ VÀO** confidence | 2 phút |
-| 11 | Tab 4: Expander kiến trúc FLARE | **MỞ** xem diagram | 1 phút |
-| 12 | Tab 4: Deep Dive expander | **❌ SKIP** | — |
-| 13 | Header: bảng "Retrieval as Tool" | **MỞ** cho Q6 | 2 phút |
-| 14 | Tab 5: Data Explorer | **LƯỚT NHANH** | 1 phút |
+| 1 | Header expander "Hướng dẫn tổng quan" | **MỞ 15s** → đóng | 0:30 |
+| 2 | Tab 1: Query box | **CHỈ** — đọc câu hỏi | 1:30 |
+| 3 | Tab 1: Cột 1 Pure LLM (info xanh) | **CHỈ** output + metadata | 3:00 |
+| 4 | Tab 1: Cột 2 Naive RAG (error đỏ) | **CHỈ** output + verdict | 4:00 |
+| 5 | Tab 1: Expander "Passages injected" | **MỞ** — chỉ 2 passages | 5:00 |
+| 6 | Tab 1: Cột 3 Self-RAG (success xanh) | **CHỈ** output + IsSUP + IsUSE | 6:30 |
+| 7 | Tab 1: Expander "Bối cảnh & Kiến trúc" | **❌ SKIP** | — |
+| 8 | Tab 2: 2 cột kết quả | **CHỈ** Naive thiếu vs Graph đủ | 9:00 |
+| 9 | Tab 2: Expander kiến trúc GraphRAG | **MỞ** — diagram 30s | 11:00 |
+| 10 | Tab 2: Expander toán học | **❌ SKIP** | — |
+| 11 | Tab 3: Retrieve Decision | **CHỈ** NEED_RETRIEVAL | 14:00 |
+| 12 | Tab 3: Per-passage IsREL | **CHỈ** IRRELEVANT vs RELEVANT | 16:00 |
+| 13 | Tab 3: IsSUP + IsUSE | **CHỈ** FULLY_SUPPORTED + 5/5 | 17:30 |
+| 14 | Tab 3: Deep Dive | **❌ SKIP** | — |
+| 15 | Tab 4: Trigger Rule + trace 3 câu | **CHỈ** confidence per sentence | 21:00 |
+| 16 | Tab 4: Expander kiến trúc FLARE | **MỞ** — diagram 20s | 23:00 |
+| 17 | Tab 4: Deep Dive | **❌ SKIP** | — |
+| 18 | Header expander "Hướng dẫn" lần 2 | **MỞ** cho Q6 (agent loop) | 25:00 |
+| 19 | Tab 5: Data Explorer | **LƯỚT 1 phút** | 28:00 |
+| 20 | Tab 1: Quay lại 3 cột | **CHỈ** kết luận | 29:00 |
 
-### ❌ TUYỆT ĐỐI KHÔNG MỞ:
-- Deep Dive expanders (quá dài, lạc đề)
-- Toán học chi tiết expanders (giám khảo sẽ hỏi nếu muốn)
-- Sidebar settings (đã setup sẵn)
-- Nút "Run Live" (dùng Gold cached, tránh rủi ro timeout/error)
-
-### ✅ NÊN MỞ:
-- Mermaid diagrams (trực quan, 5 giây hiểu)
-- Passages retrieved (chứng minh poisoning)
-- Bảng tổng quan (Q1 + Q6)
+### ❌ KHÔNG MỞ:
+- Deep Dive expanders (dành cho Q&A nếu bị hỏi)
+- Toán học chi tiết  
+- Sidebar settings
+- Nút "Run Live" (dùng Gold, tránh timeout)
 
 ---
 
-## 🛡️ Q&A DỰ BỊ (15 phút)
+## 🛡️ Q&A DỰ BỊ
 
-**Nếu G7 hỏi "Demo dùng surrogate, khác paper thế nào?":**
-> "Paper train 150K labels. Demo dùng zero-shot prompting — approximation. Đã ghi disclaimer trên UI."
+**"Demo dùng surrogate, khác paper?"**
+> Paper train 150K labels, demo zero-shot prompting. Đã disclaimer trên UI.
 
-**Nếu hỏi "Score 0.03 là sao?":**
-> "Đó là RRF score = 1/(60+rank). Max = 0.033. Không phải similarity score."
+**"Score 0.03 nghĩa gì?"**
+> RRF = 1/(60+rank). Max ~0.033. Ranking score, không phải similarity.
 
-**Nếu hỏi "GraphRAG hand-craft graph, fair không?":**
-> "Corpus nhỏ 5 điều luật. Mục đích demo community detection + map-reduce, không phải entity extraction."
+**"GraphRAG hand-craft graph?"**
+> Corpus nhỏ 5 điều luật. Demo minh họa community detection + map-reduce.
 
-**Nếu hỏi "Lost in the Middle số liệu?":**
-> "Liu 2024: GPT-3.5 giảm 56→44% khi gold passage ở giữa context."
+**"Lost in the Middle số liệu?"**
+> Liu 2024: GPT-3.5 giảm 56→44% khi gold passage ở giữa 20 documents.
 
-**Nếu thầy hỏi "Khi nào dùng paradigm nào?":**
-> Chỉ vào bảng 5 hàng ở header expander — cột cuối "Khi Nào Nên Triển Khai".
+**"FLARE verbalized confidence có đáng tin?"**
+> Paper dùng token logprobs. Verbalized là approximation, nhưng LLMs self-calibrate hợp lý (Kadavath 2022).
+
+**"Khi nào dùng paradigm nào?"**
+> Chỉ bảng 5 hàng header: corpus sạch→Naive, conflict→Self-RAG, global→GraphRAG, multi-sentence→FLARE.
